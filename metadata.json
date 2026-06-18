@@ -1,0 +1,6 @@
+{
+  "name": "Foto Momen",
+  "description": "Aplikasi Web Photobooth Minimalis & Modern dengan Pilihan Frame Kustom, Filter Foto, dan Berbagi Instan.",
+  "requestFramePermissions": ["camera"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
