@@ -1,19 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import { FrameLayout, FrameColor } from '../../types';
+import { FrameColor, PhotoArea } from '../../types';
 import { Camera, ChevronRight, RefreshCw, Printer } from 'lucide-react';
 
 interface LivePreviewProps {
-  capturedPhotos: string[];       // Array of base64 captured photos
-  layout: FrameLayout;
+  capturedPhotos: string[];
   frameColor: FrameColor;
-  onContinue: () => void;         // Lanjut ke halaman edit
-  onRetake: () => void;           // Ambil ulang foto (kembali ke camera)
+  photoAreas?: PhotoArea[];
+  onContinue: () => void;
+  onRetake: () => void;
 }
 
 export default function LivePreview({
   capturedPhotos,
-  layout,
   frameColor,
+  photoAreas,
   onContinue,
   onRetake,
 }: LivePreviewProps) {
@@ -25,7 +25,7 @@ export default function LivePreview({
     if (visibleCount < capturedPhotos.length) {
       const timer = setTimeout(() => {
         setVisibleCount((prev) => prev + 1);
-      }, 550); // Delay between each photo slot printing
+      }, 550);
       return () => clearTimeout(timer);
     } else {
       const timer = setTimeout(() => {
@@ -36,176 +36,108 @@ export default function LivePreview({
     }
   }, [visibleCount, capturedPhotos.length]);
 
-  const renderUnifiedStrip = () => {
+  const renderStrip = () => {
     const textColor = frameColor.textColor;
-    const isDark = frameColor.id === 'navy' || frameColor.id === 'midnight' || frameColor.id === 'royal-blue' || frameColor.id === 'gold-navy';
-    
-    // Determine layouts
-    switch (layout) {
-      case 'vertical-strip':
-      case 'triple-strip':
-        const displayPhotosCount = layout === 'triple-strip' ? 3 : capturedPhotos.length;
-        return (
-          <div 
-            className="w-[200px] p-4 flex flex-col items-center rounded-xl transition-all duration-500 border border-slate-200/50 shadow-2xl relative bg-white animate-print-in select-none"
-            style={{ 
-              backgroundColor: frameColor.hex, 
-              boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.4), 0 0 40px rgba(0, 0, 0, 0.1)',
-            }}
-          >
-            {/* Glossy sheen overlay */}
-            <div className="absolute inset-0 bg-gradient-to-tr from-white/0 via-white/5 to-white/10 rounded-xl pointer-events-none z-10" />
-            
-            <div className="flex flex-col gap-3 w-full">
-              {capturedPhotos.slice(0, displayPhotosCount).map((photo, index) => {
-                const isVisible = index < visibleCount;
-                return (
-                  <div 
-                    key={index} 
-                    className={`aspect-[4/3] w-full rounded overflow-hidden bg-slate-800/10 border border-black/5 shadow-inner transition-all duration-500 ease-out transform ${
-                      isVisible ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-95 -translate-y-4'
-                    }`}
-                  >
-                    {isVisible && (
-                      <img
-                        src={photo}
-                        alt={`Pose ${index + 1}`}
-                        className="w-full h-full object-cover"
-                      />
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-            
-            <div className="text-center font-display font-black text-xs mt-5 tracking-widest uppercase" style={{ color: textColor }}>
-              Foto Momen
-            </div>
-            <div className="text-[7.5px] font-mono mt-1 opacity-70" style={{ color: textColor }}>
-              {new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}
-            </div>
-          </div>
-        );
 
-      case 'grid-2x2':
-        return (
-          <div 
-            className="w-[260px] p-5 flex flex-col items-center rounded-xl transition-all duration-500 border border-slate-200/50 shadow-2xl relative bg-white animate-print-in select-none"
-            style={{ 
-              backgroundColor: frameColor.hex,
-              boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.4), 0 0 40px rgba(0, 0, 0, 0.1)'
-            }}
-          >
-            <div className="absolute inset-0 bg-gradient-to-tr from-white/0 via-white/5 to-white/10 rounded-xl pointer-events-none z-10" />
-
-            <div className="grid grid-cols-2 gap-3 w-full">
-              {capturedPhotos.slice(0, 4).map((photo, index) => {
-                const isVisible = index < visibleCount;
-                return (
-                  <div 
-                    key={index} 
-                    className={`aspect-[4/3] w-full rounded overflow-hidden bg-slate-800/10 border border-black/5 shadow-inner transition-all duration-500 ease-out transform ${
-                      isVisible ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-95 -translate-y-4'
-                    }`}
-                  >
-                    {isVisible && (
-                      <img
-                        src={photo}
-                        alt={`Pose ${index + 1}`}
-                        className="w-full h-full object-cover"
-                      />
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-            
-            <div className="text-center font-display font-black text-sm mt-5 tracking-wider" style={{ color: textColor }}>
-              Grid Collection
-            </div>
-            <div className="text-[8px] font-mono mt-1 opacity-70" style={{ color: textColor }}>
-              {new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}
-            </div>
-          </div>
-        );
-
-      case 'single-polar':
-      default:
-        return (
-          <div 
-            className="w-[260px] p-5 flex flex-col items-center rounded-xl transition-all duration-500 border border-slate-200/50 shadow-2xl relative bg-white animate-print-in select-none"
-            style={{ 
-              backgroundColor: frameColor.hex,
-              boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.4), 0 0 40px rgba(0, 0, 0, 0.1)'
-            }}
-          >
-            <div className="absolute inset-0 bg-gradient-to-tr from-white/0 via-white/5 to-white/10 rounded-xl pointer-events-none z-10" />
-
-            {/* Main big shot */}
-            <div 
-              className={`w-full aspect-[4/3] rounded overflow-hidden bg-slate-800/10 border border-black/5 shadow-inner mb-3 transition-all duration-500 ease-out transform ${
-                visibleCount > 0 ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-95 -translate-y-4'
-              }`}
-            >
-              {visibleCount > 0 && (
-                <img
-                  src={capturedPhotos[0]}
-                  alt="Main Shot"
-                  className="w-full h-full object-cover"
-                />
-              )}
-            </div>
-
-            {/* Bottom 3 miniatures */}
-            <div className="grid grid-cols-3 gap-2.5 w-full">
-              {capturedPhotos.slice(1).map((photo, index) => {
-                const actualIndex = index + 1;
-                const isVisible = actualIndex < visibleCount;
-                return (
-                  <div 
-                    key={actualIndex} 
-                    className={`aspect-[4/3] w-full rounded overflow-hidden bg-slate-800/10 border border-black/5 shadow-inner transition-all duration-500 ease-out transform ${
-                      isVisible ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-95 -translate-y-4'
-                    }`}
-                  >
-                    {isVisible && (
-                      <img
-                        src={photo}
-                        alt={`Mini Pose ${actualIndex}`}
-                        className="w-full h-full object-cover"
-                      />
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-            
-            <div className="text-center font-display font-black text-xs mt-5 tracking-widest uppercase" style={{ color: textColor }}>
-              Polaroid Style
-            </div>
-            <div className="text-[7.5px] font-mono mt-1 opacity-70" style={{ color: textColor }}>
-              {new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}
-            </div>
-          </div>
-        );
+    // Template admin dengan photoAreas: render foto di posisi lubang, frame overlay di atas
+    if (photoAreas && photoAreas.length > 0 && frameColor.imageUrl) {
+      return (
+        <div
+          className="relative rounded-xl overflow-hidden shadow-2xl animate-print-in select-none flex-shrink-0"
+          style={{
+            width: '220px',
+            aspectRatio: '2/3',
+            backgroundColor: frameColor.hex,
+            boxShadow: '0 25px 50px -12px rgba(0,0,0,0.4)',
+          }}
+        >
+          {photoAreas.map((area, index) => {
+            const isVisible = index < visibleCount;
+            return (
+              <div
+                key={index}
+                className={`absolute overflow-hidden transition-all duration-500 ease-out ${
+                  isVisible ? 'opacity-100 scale-100' : 'opacity-0 scale-95'
+                }`}
+                style={{
+                  left: `${area.x}%`,
+                  top: `${area.y}%`,
+                  width: `${area.width}%`,
+                  height: `${area.height}%`,
+                }}
+              >
+                {isVisible && capturedPhotos[index] && (
+                  <img
+                    src={capturedPhotos[index]}
+                    alt={`Pose ${index + 1}`}
+                    className="w-full h-full object-cover"
+                  />
+                )}
+              </div>
+            );
+          })}
+          {/* Frame overlay di atas foto */}
+          <img
+            src={frameColor.imageUrl}
+            alt="Frame overlay"
+            className="absolute inset-0 w-full h-full object-cover z-20 pointer-events-none"
+          />
+        </div>
+      );
     }
+
+    // Fallback: vertical strip sederhana
+    return (
+      <div
+        className="w-[200px] p-4 flex flex-col items-center rounded-xl border border-slate-200/50 shadow-2xl relative animate-print-in select-none"
+        style={{
+          backgroundColor: frameColor.hex,
+          boxShadow: '0 25px 50px -12px rgba(0,0,0,0.4)',
+        }}
+      >
+        <div className="absolute inset-0 bg-gradient-to-tr from-white/0 via-white/5 to-white/10 rounded-xl pointer-events-none" />
+
+        <div className="flex flex-col gap-3 w-full">
+          {capturedPhotos.map((photo, index) => {
+            const isVisible = index < visibleCount;
+            return (
+              <div
+                key={index}
+                className={`aspect-[4/3] w-full rounded overflow-hidden bg-slate-800/10 border border-black/5 shadow-inner transition-all duration-500 ease-out transform ${
+                  isVisible ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-95 -translate-y-4'
+                }`}
+              >
+                {isVisible && (
+                  <img src={photo} alt={`Pose ${index + 1}`} className="w-full h-full object-cover" />
+                )}
+              </div>
+            );
+          })}
+        </div>
+
+        <div className="text-center font-display font-black text-xs mt-5 tracking-widest uppercase" style={{ color: textColor }}>
+          Foto Momen
+        </div>
+        <div className="text-[7.5px] font-mono mt-1 opacity-70" style={{ color: textColor }}>
+          {new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}
+        </div>
+      </div>
+    );
   };
 
   return (
     <div className="flex-1 min-h-[calc(100vh-4rem-4rem)] flex flex-col justify-center items-center py-10 px-4 relative overflow-hidden bg-slate-50 text-slate-800">
-      
-      {/* Background elegant pattern */}
+
+      {/* Background dot pattern */}
       <div className="absolute inset-0 bg-[radial-gradient(#3b82f6_1.5px,transparent_1.5px)] [background-size:32px_32px] opacity-10 pointer-events-none" />
 
       {/* Printing Notification Bar */}
       <div className="absolute top-6 right-6 bg-white/90 border border-slate-200 backdrop-blur-md px-4 py-2.5 rounded-2xl font-mono text-slate-700 text-xs flex items-center gap-2.5 shadow-lg select-none">
-        <Printer className={`w-4 h-4 ${isPrinting ? 'text-blue-650 animate-bounce' : 'text-emerald-500'}`} />
-        <span>
-          {isPrinting ? 'MENCETAK STRIP FOTO...' : 'SELESAI MENCETAK'}
-        </span>
+        <Printer className={`w-4 h-4 ${isPrinting ? 'text-blue-500 animate-bounce' : 'text-emerald-500'}`} />
+        <span>{isPrinting ? 'MENCETAK STRIP FOTO...' : 'SELESAI MENCETAK'}</span>
       </div>
 
-      {/* Header Section */}
+      {/* Header */}
       <div className="text-center mb-10 max-w-md z-10 select-none">
         <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50 border border-blue-100 text-blue-700 text-xs font-bold uppercase tracking-wider mb-3">
           ✨ Selesai Capture!
@@ -213,44 +145,35 @@ export default function LivePreview({
         <h2 className="font-display text-4xl font-black text-slate-900 leading-tight">
           Cetak Foto Berhasil
         </h2>
-        <p className="text-slate-550 text-sm mt-2 leading-relaxed">
-          Tunggu hingga strip foto Anda selesai tercetak dari mesin simulator kami.
+        <p className="text-slate-500 text-sm mt-2">
+          Lihat hasilnya! Lanjutkan untuk menambahkan efek dan filter kece.
         </p>
       </div>
 
-      {/* Simulated printer output container */}
-      <div className="relative w-full max-w-md flex flex-col items-center mb-10 z-10">
-        
-        {/* Physical Printer Slot Graphic */}
-        <div className="w-[300px] h-3 bg-gradient-to-b from-slate-900 to-slate-800 rounded-full shadow-md border-b border-white/10 z-20 flex items-center justify-center">
-          <div className="w-[280px] h-[2px] bg-slate-950 rounded" />
-        </div>
-        
-        {/* Printed Strip emerging from Slot */}
-        <div className="pt-2 origin-top animate-fade-in flex justify-center w-full">
-          {renderUnifiedStrip()}
-        </div>
+      {/* Strip Preview */}
+      <div className="z-10 flex justify-center mb-10">
+        {renderStrip()}
       </div>
 
-      {/* Buttons Panel */}
-      <div 
-        className={`flex flex-col sm:flex-row gap-4 w-full max-w-sm px-4 justify-center items-center z-10 transition-all duration-500 transform ${
-          showButtons ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6 pointer-events-none'
+      {/* Action Buttons */}
+      <div
+        className={`z-10 flex flex-col sm:flex-row gap-3 w-full max-w-sm transition-all duration-500 ${
+          showButtons ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4 pointer-events-none'
         }`}
       >
         <button
           onClick={onRetake}
-          className="w-full sm:w-auto min-w-[140px] px-6 py-3.5 bg-white border border-slate-300 text-slate-700 hover:bg-slate-50 rounded-lg font-bold transition flex items-center justify-center gap-2"
+          className="flex-1 flex items-center justify-center gap-2 py-3 px-6 bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 font-bold rounded-xl transition text-sm"
         >
-          <Camera className="h-4.5 w-4.5 text-slate-500" />
-          <span>Foto Ulang</span>
+          <RefreshCw className="w-4 h-4" />
+          Foto Ulang
         </button>
         <button
           onClick={onContinue}
-          className="w-full sm:w-auto min-w-[180px] px-6 py-3.5 bg-[#1d90ff] hover:bg-blue-600 text-white rounded-lg font-bold transition-all flex items-center justify-center gap-2 shadow-md shadow-blue-500/20 active:scale-95"
+          className="flex-1 flex items-center justify-center gap-2 py-3 px-6 bg-[#1d90ff] hover:bg-blue-600 text-white font-bold rounded-xl transition shadow-md shadow-blue-500/20 text-sm"
         >
-          <span>Lanjut Edit & Simpan</span>
-          <ChevronRight className="h-4.5 w-4.5" />
+          <span>Lanjut Edit</span>
+          <ChevronRight className="w-4 h-4" />
         </button>
       </div>
 

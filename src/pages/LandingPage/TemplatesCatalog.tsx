@@ -1,197 +1,162 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { Palette, ChevronLeft, ChevronRight, Sparkles } from 'lucide-react';
+import { Camera, ChevronLeft, ChevronRight, Sparkles, RefreshCw, Image as ImageIcon } from 'lucide-react';
 import { getFrameTemplates } from '../../services/dbService';
-import { FRAME_COLORS } from '../Photobooth/FrameSelector';
-import { getPosePlaceholder } from '../Photobooth/PosePlaceholders';
+import { FrameColor } from '../../types';
 
-export default function TemplatesCatalog() {
-  const [templates, setTemplates] = useState<any[]>([]);
+interface TemplatesCatalogProps {
+  onStartWithTemplate: (template: FrameColor) => void;
+}
+
+export default function TemplatesCatalog({ onStartWithTemplate }: TemplatesCatalogProps) {
+  const [templates, setTemplates] = useState<FrameColor[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    getFrameTemplates().then(data => {
-      if (data && data.length > 0) {
-        const mapped = data.map((t: any) => ({
-          id: t.id,
-          name: t.name,
-          hex: t.hex,
-          textColor: t.text_color || '#ffffff',
-          imageUrl: t.image_url,
-          layout: t.layout,
-          badge: 'NEW LAYOUT',
-          badgeColor: 'bg-rose-500 text-white',
-          layoutDesc: t.layout === 'grid-2x2' ? 'Size 2x2 Grid' : 'Size 6 x 2 Strip',
-          poses: `${t.photoCount || 4} Pose`,
-          active: t.active !== false,
-          photoAreas: t.photoAreas
-        }));
-        setTemplates(mapped.filter((t: any) => t.active));
-      }
-    }).catch(console.error);
+    setIsLoading(true);
+    getFrameTemplates()
+      .then(data => {
+        const mapped: FrameColor[] = data
+          .filter((t: any) => t.active !== false)
+          .map((t: any) => ({
+            id: t.id,
+            name: t.name,
+            bgClass: 'bg-white',
+            hex: t.hex || '#ffffff',
+            textColor: t.textColor || '#000000',
+            borderClass: t.borderClass || 'border-slate-200',
+            imageUrl: t.imageUrl,
+            layout: t.layout,
+            active: t.active,
+            photoCount: t.photoCount || 4,
+            photoAreas: t.photoAreas,
+          }));
+        setTemplates(mapped);
+      })
+      .catch(console.error)
+      .finally(() => setIsLoading(false));
   }, []);
 
-  const defaultThemes = FRAME_COLORS.map((c, index) => {
-    let badge = 'TRY IT NOW';
-    let badgeColor = 'bg-amber-500 text-white';
-    if (index % 3 === 1) {
-      badge = 'COLLAB EVENT';
-      badgeColor = 'bg-emerald-500 text-white';
-    } else if (index % 3 === 2) {
-      badge = 'NEW LAYOUT';
-      badgeColor = 'bg-rose-500 text-white';
-    }
-    return {
-      id: c.id,
-      name: c.name,
-      hex: c.hex,
-      textColor: c.textColor,
-      badge,
-      badgeColor,
-      layoutDesc: 'Size 6 x 2 Strip',
-      poses: index % 2 === 0 ? '3 Pose' : '4 Pose'
-    };
-  });
-
-  const allThemes = [...defaultThemes, ...templates];
-
   const scrollLeft = () => {
-    if (scrollContainerRef.current) {
-      scrollContainerRef.current.scrollBy({ left: -300, behavior: 'smooth' });
-    }
+    scrollContainerRef.current?.scrollBy({ left: -320, behavior: 'smooth' });
   };
 
   const scrollRight = () => {
-    if (scrollContainerRef.current) {
-      scrollContainerRef.current.scrollBy({ left: 300, behavior: 'smooth' });
-    }
+    scrollContainerRef.current?.scrollBy({ left: 320, behavior: 'smooth' });
   };
 
   return (
     <div className="w-full py-12 px-4 select-none bg-gradient-to-b from-blue-50/20 via-white to-white rounded-[40px] border border-slate-100 shadow-sm relative overflow-hidden">
-      
-      {/* Decorative Blur Background Blob */}
+
+      {/* Decorative Blob */}
       <div className="absolute -top-24 left-1/2 -translate-x-1/2 w-96 h-96 rounded-full bg-blue-300/10 blur-3xl pointer-events-none" />
 
-      {/* Header section */}
+      {/* Header */}
       <div className="text-center space-y-3 mb-10 relative z-10">
         <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
-          choose your layout
+          Pilih Frame Foto Kamu
         </h2>
         <p className="text-xs text-slate-500 italic font-medium">
-          Select from our collection of photo booth layouts
+          Klik frame favoritmu untuk langsung mulai sesi foto!
         </p>
       </div>
 
-      {/* Carousel Container with Arrows next to it */}
-      <div className="relative max-w-5xl mx-auto flex items-center justify-center gap-4 px-2">
-        
-        {/* Left Arrow Button (Hidden on pure touch devices if desired, but nice to have) */}
-        <button
-          onClick={scrollLeft}
-          className="h-11 w-11 rounded-full border border-slate-200 bg-white hover:bg-slate-50 flex items-center justify-center text-slate-650 cursor-pointer shadow-sm active:scale-95 transition"
-        >
-          <ChevronLeft className="w-5 h-5 stroke-[2.5]" />
-        </button>
+      {isLoading ? (
+        <div className="flex flex-col items-center justify-center py-16 gap-4 text-slate-400">
+          <RefreshCw className="w-8 h-8 animate-spin text-blue-400" />
+          <p className="text-sm">Memuat koleksi frame...</p>
+        </div>
+      ) : templates.length === 0 ? (
+        <div className="flex flex-col items-center justify-center py-16 gap-4 text-slate-400 border-2 border-dashed border-slate-200 rounded-2xl mx-4">
+          <ImageIcon className="w-12 h-12 text-slate-200" />
+          <div className="text-center">
+            <p className="font-bold text-slate-500">Belum ada template tersedia</p>
+            <p className="text-sm mt-1 text-slate-400">Admin sedang menyiapkan koleksi frame terbaik untuk Anda.</p>
+          </div>
+        </div>
+      ) : (
+        /* Carousel */
+        <div className="relative max-w-5xl mx-auto flex items-center justify-center gap-4 px-2">
 
-        {/* Scroll Wrapper */}
-        <div
-          ref={scrollContainerRef}
-          className="flex-1 flex gap-6 overflow-x-auto snap-x snap-mandatory py-4 px-2 hide-scrollbar scroll-smooth"
-        >
-          {allThemes.map((theme) => (
-            <div
-              key={theme.id}
-              className="flex-shrink-0 w-[180px] sm:w-[200px] snap-start flex flex-col items-center space-y-4"
-            >
-              
-              {/* Polaroid Frame Card */}
-              <div 
-                className="relative aspect-[1/2.8] w-full rounded-[24px] p-3 flex flex-col justify-between shadow-lg border border-slate-200/50 bg-white group transition duration-300 select-none overflow-hidden"
+          {/* Left Arrow */}
+          <button
+            onClick={scrollLeft}
+            className="h-11 w-11 rounded-full border border-slate-200 bg-white hover:bg-slate-50 flex items-center justify-center text-slate-600 cursor-pointer shadow-sm active:scale-95 transition flex-shrink-0"
+          >
+            <ChevronLeft className="w-5 h-5 stroke-[2.5]" />
+          </button>
+
+          {/* Scroll Container */}
+          <div
+            ref={scrollContainerRef}
+            className="flex-1 flex gap-5 overflow-x-auto snap-x snap-mandatory py-4 px-2 hide-scrollbar scroll-smooth"
+          >
+            {templates.map((template) => (
+              <div
+                key={template.id}
+                className="flex-shrink-0 w-[200px] sm:w-[220px] snap-start flex flex-col items-center gap-3"
               >
-                
-                {/* Badge Overlay */}
-                <span className={`absolute top-2 left-1/2 -translate-x-1/2 text-[7px] font-black tracking-widest px-2.5 py-1 rounded-full uppercase shadow-sm ${theme.badgeColor} z-10 scale-95`}>
-                  {theme.badge}
-                </span>
-
-                {/* Inner Frame Background Box */}
-                <div 
-                  className="w-full h-full rounded-[18px] p-2 flex flex-col justify-between relative shadow-inner overflow-hidden"
-                  style={{ backgroundColor: theme.hex }}
+                {/* Frame Card */}
+                <div
+                  className="w-full rounded-2xl overflow-hidden border border-slate-200/50 shadow-lg group transition-all duration-300 hover:shadow-xl hover:-translate-y-1 cursor-pointer"
+                  onClick={() => onStartWithTemplate(template)}
                 >
-                  {/* Grid of Polaroid Poses inside the Frame */}
-                  {(theme as any).photoAreas && (theme as any).photoAreas.length > 0 ? (
-                    <div className="absolute inset-0 z-10 pointer-events-none">
-                      {(theme as any).photoAreas.map((area: any, idx: number) => (
-                        <div 
-                          key={idx} 
-                          className="absolute bg-slate-100/50 rounded overflow-hidden flex items-center justify-center border border-white/20 shadow-inner"
-                          style={{
-                            left: `${area.x}%`,
-                            top: `${area.y}%`,
-                            width: `${area.width}%`,
-                            height: `${area.height}%`
-                          }}
-                        >
-                          {getPosePlaceholder(idx, "w-full h-full p-1 opacity-50", theme.hex)}
-                        </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <div className="flex-1 flex flex-col justify-center gap-1.5 py-6 z-10 relative">
-                      <div className="aspect-[4/3] bg-slate-100/50 rounded-lg border border-white/20 flex items-center justify-center overflow-hidden">
-                        {getPosePlaceholder(0, "w-full h-full p-0.5", theme.hex)}
-                      </div>
-                      <div className="aspect-[4/3] bg-slate-100/50 rounded-lg border border-white/20 flex items-center justify-center overflow-hidden">
-                        {getPosePlaceholder(1, "w-full h-full p-0.5", theme.hex)}
-                      </div>
-                      <div className="aspect-[4/3] bg-slate-100/50 rounded-lg border border-white/20 flex items-center justify-center overflow-hidden">
-                        {getPosePlaceholder(2, "w-full h-full p-0.5", theme.hex)}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Frame branding footer text */}
-                  <div 
-                    className="text-center pb-1 truncate" 
-                    style={{ color: theme.textColor, zIndex: 10 }}
+                  {/* Frame image */}
+                  <div
+                    className="w-full aspect-[2/3] relative overflow-hidden"
+                    style={{ backgroundColor: template.hex }}
                   >
-                    <p className="text-[7px] font-black uppercase tracking-widest font-mono">
-                      {theme.name}
+                    {template.imageUrl ? (
+                      <img
+                        src={template.imageUrl}
+                        alt={template.name}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      />
+                    ) : (
+                      <div className="flex items-center justify-center h-full">
+                        <Camera className="w-10 h-10 text-slate-300" />
+                      </div>
+                    )}
+
+                    {/* Hover Overlay */}
+                    <div className="absolute inset-0 bg-blue-900/0 group-hover:bg-blue-900/30 transition-all duration-300 flex items-center justify-center">
+                      <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-white text-blue-600 font-bold text-xs px-4 py-2 rounded-full shadow-lg flex items-center gap-1.5">
+                        <Camera className="w-3.5 h-3.5" />
+                        Mulai Foto
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Info */}
+                  <div className="p-3 bg-white">
+                    <p className="font-extrabold text-sm text-slate-800 truncate">{template.name}</p>
+                    <p className="text-[10px] text-slate-400 font-mono mt-0.5 font-medium">
+                      {template.photoCount || template.photoAreas?.length || '?'} Pose
                     </p>
                   </div>
-                  
-                  {theme.imageUrl && (
-                    <img src={theme.imageUrl} alt="Frame Overlay" className="absolute inset-0 w-full h-full object-fill pointer-events-none z-20" />
-                  )}
                 </div>
 
+                {/* CTA Button */}
+                <button
+                  onClick={() => onStartWithTemplate(template)}
+                  className="w-full flex items-center justify-center gap-2 py-2.5 bg-[#1d90ff] hover:bg-blue-600 text-white text-xs font-bold rounded-xl transition shadow-sm shadow-blue-500/20 active:scale-95"
+                >
+                  <Sparkles className="w-3.5 h-3.5" />
+                  Mulai dengan Frame Ini
+                </button>
               </div>
+            ))}
+          </div>
 
-              {/* Sub-label text */}
-              <div className="text-center space-y-0.5">
-                <h4 className="font-extrabold text-xs text-slate-800 tracking-wide truncate max-w-[170px]">
-                  {theme.name}
-                </h4>
-                <p className="text-[9px] text-slate-400 font-bold font-mono">
-                  {theme.layoutDesc} <span className="block mt-0.5">({theme.poses})</span>
-                </p>
-              </div>
-
-            </div>
-          ))}
+          {/* Right Arrow */}
+          <button
+            onClick={scrollRight}
+            className="h-11 w-11 rounded-full border border-slate-200 bg-white hover:bg-slate-50 flex items-center justify-center text-slate-600 cursor-pointer shadow-sm active:scale-95 transition flex-shrink-0"
+          >
+            <ChevronRight className="w-5 h-5 stroke-[2.5]" />
+          </button>
         </div>
-
-        {/* Right Arrow Button */}
-        <button
-          onClick={scrollRight}
-          className="h-11 w-11 rounded-full border border-slate-200 bg-white hover:bg-slate-50 flex items-center justify-center text-slate-650 cursor-pointer shadow-sm active:scale-95 transition"
-        >
-          <ChevronRight className="w-5 h-5 stroke-[2.5]" />
-        </button>
-
-      </div>
-
+      )}
     </div>
   );
 }

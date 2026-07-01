@@ -1,14 +1,13 @@
 import React, { useRef, useState, useEffect, useCallback } from 'react';
 import Webcam from 'react-webcam';
 import { Camera, RefreshCw, Sparkles, CheckCircle2, AlertTriangle, Play, HelpCircle, Timer, Palette, Info } from 'lucide-react';
-import { FrameLayout, PhotoCount } from '../../types';
+import { PhotoCount } from '../../types';
 import FilmStripRoll from './FilmStripRoll';
 import CameraControls from './CameraControls';
 
 const WebcamComponent = Webcam as any;
 
 interface CameraBoothProps {
-  layout: FrameLayout;
   photoCount: PhotoCount;
   onPhotosCaptured: (photos: string[]) => void;
   onBack: () => void;
@@ -31,7 +30,7 @@ const videoConstraints = {
   facingMode: 'user',
 };
 
-export default function CameraBooth({ layout, photoCount, onPhotosCaptured, onBack }: CameraBoothProps) {
+export default function CameraBooth({ photoCount, onPhotosCaptured, onBack }: CameraBoothProps) {
   const webcamRef = useRef<any>(null);
 
   const [capturedPhotos, setCapturedPhotos] = useState<string[]>([]);

@@ -17,11 +17,8 @@ import PhotoPreviewControls from './PhotoPreviewControls';
 import ShareSuccessPanel from './ShareSuccessPanel';
 
 interface PhotoPreviewProps {
-  layout: FrameLayout;
   frameColor: FrameColor;
-  onColorSelect: (color: FrameColor) => void;
   photoCount: PhotoCount;
-  borderStyle: BorderStyle;
   capturedPhotos: string[];
   onBackToSelector: () => void;
 }
@@ -124,14 +121,15 @@ function isColorLight(hex: string): boolean {
 }
 
 export default function PhotoPreview({
-  layout,
   frameColor,
-  onColorSelect,
   photoCount,
-  borderStyle,
   capturedPhotos,
   onBackToSelector,
 }: PhotoPreviewProps) {
+  // Derive layout and borderStyle from frameColor (since they are no longer props)
+  const layout: FrameLayout = (frameColor.layout as FrameLayout) || 'vertical-strip';
+  const borderStyle = 'classic' as string;
+  // onColorSelect is no longer needed (frame is fixed once selected)
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   const [selectedFilter, setSelectedFilter] = useState<PhotoFilter>('original');
@@ -575,7 +573,7 @@ export default function PhotoPreview({
               setSelectedBackdrop={setSelectedBackdrop}
               allFrameColors={allFrameColors}
               frameColor={frameColor}
-              onColorSelect={onColorSelect}
+              onColorSelect={() => {}} // Frame is fixed after selection
               selectedPattern={selectedPattern}
               setSelectedPattern={setSelectedPattern}
               selectedFilter={selectedFilter}
