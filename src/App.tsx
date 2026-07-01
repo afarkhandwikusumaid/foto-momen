@@ -7,7 +7,7 @@ import React, { useState, useEffect } from 'react';
 import Navbar from './components/layout/Navbar';
 import Footer from './components/layout/Footer';
 import LandingPage from './pages/LandingPage/LandingPage';
-import FrameSelector, { FRAME_COLORS } from './pages/Photobooth/FrameSelector';
+import FrameSelector from './pages/Photobooth/FrameSelector';
 import CameraBooth from './pages/Photobooth/CameraBooth';
 import LivePreview from './pages/Photobooth/LivePreview';
 import PhotoPreview from './pages/Photobooth/PhotoPreview';
@@ -15,8 +15,8 @@ import AdminPage from './pages/AdminPage/AdminPage';
 import { ActivePhase, FrameColor, PhotoCount, PhotoArea } from './types';
 import { ensureAuth, getPhotoSession } from './services/dbService';
 
-// Default placeholder frame color (used as initial state only)
-const DEFAULT_FRAME: FrameColor = FRAME_COLORS[0] || {
+// Empty placeholder FrameColor used as initial state before user selects a template
+const EMPTY_FRAME: FrameColor = {
   id: '',
   name: '',
   bgClass: '',
@@ -27,7 +27,7 @@ const DEFAULT_FRAME: FrameColor = FRAME_COLORS[0] || {
 
 export default function App() {
   const [currentPhase, setCurrentPhase] = useState<ActivePhase>('landing');
-  const [selectedColor, setSelectedColor] = useState<FrameColor>(DEFAULT_FRAME);
+  const [selectedColor, setSelectedColor] = useState<FrameColor>(EMPTY_FRAME);
   const [activeTab, setActiveTab] = useState<'home' | 'catalog'>('home');
   const [capturedPhotos, setCapturedPhotos] = useState<string[]>([]);
   const [photoCount, setPhotoCount] = useState<PhotoCount>(4);

@@ -1,7 +1,6 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { Download, Palette, Sparkles, Wand2, ArrowLeft, Type, Calendar, Cloud, Check, QrCode, X } from 'lucide-react';
 import { FrameLayout, FrameColor, PhotoFilter, PhotoCount, BorderStyle } from '../../types';
-import { FRAME_COLORS } from './FrameSelector';
 import { 
   uploadPhotoSession, 
   getBackdrops, 
@@ -209,8 +208,8 @@ export default function PhotoPreview({
     }
   }, [dbFonts]);
 
-  // Merge default presets and custom color templates
-  const allFrameColors = [...FRAME_COLORS, ...customTemplates];
+  // Only use admin custom templates (no default color swatches)
+  const allFrameColors = [...customTemplates];
 
   useEffect(() => {
     const renderCanvas = async () => {
