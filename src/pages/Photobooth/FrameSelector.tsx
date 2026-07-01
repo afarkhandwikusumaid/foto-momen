@@ -114,6 +114,7 @@ export default function FrameSelector({
           layout: t.layout,
           active: t.active !== false,
           photoCount: t.photoCount || 4,
+          photoAreas: t.photoAreas,
         }));
         setCustomTemplates(mapped.filter((t: any) => t.active));
       }

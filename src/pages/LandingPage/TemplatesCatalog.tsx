@@ -22,7 +22,8 @@ export default function TemplatesCatalog() {
           badgeColor: 'bg-rose-500 text-white',
           layoutDesc: t.layout === 'grid-2x2' ? 'Size 2x2 Grid' : 'Size 6 x 2 Strip',
           poses: `${t.photoCount || 4} Pose`,
-          active: t.active !== false
+          active: t.active !== false,
+          photoAreas: t.photoAreas
         }));
         setTemplates(mapped.filter((t: any) => t.active));
       }
@@ -119,17 +120,36 @@ export default function TemplatesCatalog() {
                   style={{ backgroundColor: theme.hex }}
                 >
                   {/* Grid of Polaroid Poses inside the Frame */}
-                  <div className="flex-1 flex flex-col justify-center gap-1.5 py-6">
-                    <div className="aspect-[4/3] bg-slate-100/50 rounded-lg border border-white/20 flex items-center justify-center overflow-hidden">
-                      {getPosePlaceholder(0, "w-full h-full p-0.5", theme.hex)}
+                  {(theme as any).photoAreas && (theme as any).photoAreas.length > 0 ? (
+                    <div className="absolute inset-0 z-10 pointer-events-none">
+                      {(theme as any).photoAreas.map((area: any, idx: number) => (
+                        <div 
+                          key={idx} 
+                          className="absolute bg-slate-100/50 rounded overflow-hidden flex items-center justify-center border border-white/20 shadow-inner"
+                          style={{
+                            left: `${area.x}%`,
+                            top: `${area.y}%`,
+                            width: `${area.width}%`,
+                            height: `${area.height}%`
+                          }}
+                        >
+                          {getPosePlaceholder(idx, "w-full h-full p-1 opacity-50", theme.hex)}
+                        </div>
+                      ))}
                     </div>
-                    <div className="aspect-[4/3] bg-slate-100/50 rounded-lg border border-white/20 flex items-center justify-center overflow-hidden">
-                      {getPosePlaceholder(1, "w-full h-full p-0.5", theme.hex)}
+                  ) : (
+                    <div className="flex-1 flex flex-col justify-center gap-1.5 py-6 z-10 relative">
+                      <div className="aspect-[4/3] bg-slate-100/50 rounded-lg border border-white/20 flex items-center justify-center overflow-hidden">
+                        {getPosePlaceholder(0, "w-full h-full p-0.5", theme.hex)}
+                      </div>
+                      <div className="aspect-[4/3] bg-slate-100/50 rounded-lg border border-white/20 flex items-center justify-center overflow-hidden">
+                        {getPosePlaceholder(1, "w-full h-full p-0.5", theme.hex)}
+                      </div>
+                      <div className="aspect-[4/3] bg-slate-100/50 rounded-lg border border-white/20 flex items-center justify-center overflow-hidden">
+                        {getPosePlaceholder(2, "w-full h-full p-0.5", theme.hex)}
+                      </div>
                     </div>
-                    <div className="aspect-[4/3] bg-slate-100/50 rounded-lg border border-white/20 flex items-center justify-center overflow-hidden">
-                      {getPosePlaceholder(2, "w-full h-full p-0.5", theme.hex)}
-                    </div>
-                  </div>
+                  )}
 
                   {/* Frame branding footer text */}
                   <div 
