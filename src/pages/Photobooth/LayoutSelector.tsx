@@ -9,6 +9,7 @@ interface LayoutSelectorProps {
   onLayoutSelect: (l: FrameLayout) => void;
 }
 
+
 export default function LayoutSelector({
   photoCount, onPhotoCountSelect,
   selectedLayout, onLayoutSelect
