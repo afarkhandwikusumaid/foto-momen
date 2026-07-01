@@ -59,9 +59,6 @@ export default function LiveGifPreview({
         </div>
         
         <div className="mt-4 text-center select-none" style={{ color: textColor }}>
-          <p className="text-[10px] font-black tracking-wider uppercase truncate max-w-[180px]">
-            {caption || 'Live Memory'}
-          </p>
           <p className="text-[7px] opacity-75 mt-0.5 uppercase tracking-widest font-mono">
             ★ Live Boomerang Loop ★
           </p>

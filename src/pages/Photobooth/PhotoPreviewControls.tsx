@@ -202,51 +202,45 @@ export default function PhotoPreviewControls({
         setSmoothing={setSmoothing}
       />
 
-      {/* 6. Teks Footer & Custom Fonts */}
+      {/* 6. Date Settings */}
       <div className="bg-white border border-slate-200 p-6 rounded-xl mt-4 space-y-4">
         <h3 className="flex items-center gap-2 font-display text-xs font-bold text-slate-800 uppercase tracking-wider mb-1">
-          <Type className="h-4 w-4 text-slate-800" /> Teks Footer Frame
+          <Calendar className="h-4 w-4 text-slate-800" /> Pengaturan Tanggal
         </h3>
         
-        <div className="space-y-3">
-          <input
-            type="text"
-            value={stickerText}
-            readOnly
-            disabled
-            className="w-full px-4 py-3 rounded-2xl border border-slate-200 text-sm font-bold text-slate-500 bg-slate-100 cursor-not-allowed"
-          />
-          
-          <div className="space-y-1.5">
-            <label className="text-[10px] font-bold text-slate-500 block">Pilih Font Tulisan:</label>
-            <div className="flex flex-wrap gap-2">
-              {dbFonts.map(f => (
-                <button
-                  key={f.id}
-                  onClick={() => setSelectedFont(f.name)}
-                  className={`px-3 py-1.5 rounded-md text-xs font-semibold border transition-colors ${
-                    selectedFont === f.name
-                      ? 'border-[#1d90ff] bg-[#1d90ff] text-white font-bold shadow-md shadow-blue-500/20'
-                      : 'border-slate-200 bg-white hover:bg-slate-50 text-slate-600'
-                  }`}
-                  style={{ fontFamily: f.name }}
-                >
-                  {f.displayName}
-                </button>
-              ))}
+        <div className="space-y-4">
+          <label className="flex items-center gap-2.5 cursor-pointer text-xs font-black text-slate-750 select-none bg-slate-50 p-3 rounded-lg border border-slate-100">
+            <input 
+               type="checkbox" 
+               checked={showDate} 
+               onChange={e => setShowDate(e.target.checked)}
+               className="rounded text-blue-650 focus:ring-blue-500 w-5 h-5 accent-blue-600 border-slate-300 cursor-pointer" 
+            />
+            Tampilkan Tanggal Hari Ini di Cetakan
+          </label>
+
+          {showDate && (
+            <div className="space-y-2 pt-2 border-t border-slate-100">
+              <label className="text-[10px] font-bold text-slate-500 block uppercase tracking-wider">Pilih Font Tanggal:</label>
+              <div className="flex flex-wrap gap-2">
+                {dbFonts.map(f => (
+                  <button
+                    key={f.id}
+                    onClick={() => setSelectedFont(f.name)}
+                    className={`px-3 py-1.5 rounded-md text-xs font-semibold border transition-colors ${
+                      selectedFont === f.name
+                        ? 'border-[#1d90ff] bg-[#1d90ff] text-white font-bold shadow-md shadow-blue-500/20'
+                        : 'border-slate-200 bg-white hover:bg-slate-50 text-slate-600'
+                    }`}
+                    style={{ fontFamily: f.name }}
+                  >
+                    {f.displayName}
+                  </button>
+                ))}
+              </div>
             </div>
-          </div>
+          )}
         </div>
-        
-        <label className="flex items-center gap-2.5 mt-2 cursor-pointer text-xs font-black text-slate-750 select-none">
-          <input 
-             type="checkbox" 
-             checked={showDate} 
-             onChange={e => setShowDate(e.target.checked)}
-             className="rounded text-blue-650 focus:ring-blue-500 w-4.5 h-4.5 accent-blue-600 border-slate-300 cursor-pointer" 
-          />
-          <Calendar className="w-4 h-4 text-slate-450" /> Tampilkan Tanggal Hari Ini
-        </label>
       </div>
 
       {/* Action Buttons */}
