@@ -39,12 +39,12 @@ export default function LiveSimulator({
       {/* The Actual Simulator */}
       <div className="shrink-0 flex items-center justify-center relative">
         <div 
-          className="relative w-full max-w-[200px] flex flex-col items-center border shadow-xl rounded-xl transition-all overflow-hidden"
+          className={`relative w-full max-w-[200px] flex flex-col items-center border shadow-xl rounded-xl transition-all overflow-hidden ${photoAreas && photoAreas.length > 0 ? '' : 'min-h-[300px]'}`}
           style={{ backgroundColor: hex, borderColor: `${textColor}40` }}
         >
           {/* Frame Overlay (Layered on top of photos) */}
           {previewUrl && (
-             <img src={previewUrl} alt="Overlay" className="absolute inset-0 w-full h-full object-fill z-20 pointer-events-none" />
+             <img src={previewUrl} alt="Overlay" className="relative w-full h-auto object-cover z-20 pointer-events-none" />
           )}
 
           {/* Photos (Underneath) */}
