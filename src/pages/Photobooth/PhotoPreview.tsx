@@ -477,11 +477,12 @@ export default function PhotoPreview({
 
       setShareResult({ ...result, qrDataUrl });
       confetti({ particleCount: 120, spread: 80, origin: { y: 0.6 } });
-    } catch (err) {
+    } catch (err: any) {
       console.error('Upload gagal:', err);
+      const errMsg = err?.message || 'Gagal mengunggah foto ke Cloud. Silakan periksa koneksi internet Anda.';
       Swal.fire({
         title: 'Upload Gagal',
-        text: 'Gagal mengunggah foto ke Cloud. Silakan periksa koneksi internet Anda.',
+        text: errMsg,
         icon: 'error',
         confirmButtonColor: '#3085d6'
       });
