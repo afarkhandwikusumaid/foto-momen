@@ -6,12 +6,12 @@
 import React, { useState, useEffect } from 'react';
 import Navbar from './components/layout/Navbar';
 import Footer from './components/layout/Footer';
-import LandingPage from './components/landing-page/LandingPage';
-import FrameSelector, { FRAME_COLORS } from './components/photobooth/FrameSelector';
-import CameraBooth from './components/photobooth/CameraBooth';
-import LivePreview from './components/photobooth/LivePreview';
-import PhotoPreview from './components/photobooth/PhotoPreview';
-import AdminPanel from './components/admin/AdminPanel';
+import LandingPage from './pages/LandingPage/LandingPage';
+import FrameSelector, { FRAME_COLORS } from './pages/Photobooth/FrameSelector';
+import CameraBooth from './pages/Photobooth/CameraBooth';
+import LivePreview from './pages/Photobooth/LivePreview';
+import PhotoPreview from './pages/Photobooth/PhotoPreview';
+import AdminPage from './pages/AdminPage/AdminPage';
 import { ActivePhase, FrameLayout, FrameColor, PhotoCount, BorderStyle } from './types';
 import { ensureAuth, getPhotoSession } from './services/dbService';
 
@@ -28,20 +28,9 @@ export default function App() {
   const [sharedSession, setSharedSession] = useState<any>(null);
   const [isLoadingShare, setIsLoadingShare] = useState(false);
 
-  // Initialize Anonymous Auth, check share parameter, and set up hash-based admin routing
+  // Initialize Anonymous Auth and check share parameter
   useEffect(() => {
     ensureAuth().catch(console.error);
-
-    const handleHashChange = () => {
-      if (window.location.hash === '#admin') {
-        setCurrentPhase('admin');
-      } else if (currentPhase === 'admin') {
-        setCurrentPhase('landing');
-      }
-    };
-
-    window.addEventListener('hashchange', handleHashChange);
-    handleHashChange(); // Run once initially
 
     const urlParams = new URLSearchParams(window.location.search);
     const shareId = urlParams.get('share');
@@ -59,17 +48,13 @@ export default function App() {
         });
     }
 
-    return () => {
-      window.removeEventListener('hashchange', handleHashChange);
-    };
-  }, [currentPhase]);
+    // Admin route is now handled via pathname checking before rendering
+
+  }, []); // Only run once on mount
 
   const handleResetToHome = () => {
     setCapturedPhotos([]);
     setCurrentPhase('landing');
-    if (window.location.hash === '#admin') {
-      window.location.hash = '';
-    }
     // Clear URL share parameter if returning to home
     if (window.location.search.includes('share')) {
       window.history.replaceState({}, document.title, window.location.pathname);
@@ -79,24 +64,28 @@ export default function App() {
   const handlePhotosCaptured = (photos: string[]) => {
     setCapturedPhotos(photos);
     setCurrentPhase('live-preview');
-    // Increment the free photobooth sessions count!
-    const currentUses = parseInt(localStorage.getItem('foto_momen_free_uses') || '0', 10);
-    localStorage.setItem('foto_momen_free_uses', (currentUses + 1).toString());
   };
+
+  const handleStartBooth = () => {
+    setCurrentPhase('select-frame');
+  };
+
+  const isAdminRoute = window.location.pathname === '/admin';
+  if (isAdminRoute) {
+    return <AdminPage />;
+  }
 
   return (
     <div className="min-h-screen flex flex-col premium-bg text-slate-900 antialiased font-sans">
-      {currentPhase !== 'admin' && (
-        <Navbar 
-          currentPhase={currentPhase} 
-          onReset={handleResetToHome} 
-          activeTab={activeTab}
-          setActiveTab={setActiveTab}
-          onStartBooth={() => setCurrentPhase('select-frame')}
-        />
-      )}
+      <Navbar 
+        currentPhase={currentPhase} 
+        onReset={handleResetToHome} 
+        activeTab={activeTab}
+        setActiveTab={setActiveTab}
+        onStartBooth={handleStartBooth}
+      />
 
-      <main className={`flex-grow flex items-center justify-center ${currentPhase === 'admin' ? 'p-0' : 'py-6 px-4'}`}>
+      <main className="flex-grow flex items-center justify-center py-6 px-4">
         <div className="w-full transition-all duration-300">
           {sharedSession ? (
             <div className="max-w-md w-full mx-auto p-2 text-center animate-fade-in">
@@ -152,6 +141,7 @@ export default function App() {
                   borderStyle={borderStyle}
                   onBorderStyleSelect={setBorderStyle}
                   onNext={() => setCurrentPhase('camera')}
+                  onPrev={handleResetToHome}
                 />
               )}
 
@@ -186,17 +176,12 @@ export default function App() {
                 />
               )}
 
-              {currentPhase === 'admin' && (
-                <AdminPanel 
-                  onBackToHome={handleResetToHome} 
-                />
-              )}
             </>
           )}
         </div>
       </main>
 
-      {currentPhase !== 'admin' && <Footer />}
+      <Footer />
     </div>
   );
 }

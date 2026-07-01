@@ -59,8 +59,8 @@ export default function PhotoPreviewControls({
   return (
     <>
       {/* 1. Warna Frame Row (Circles) */}
-      <div className="bg-white border border-slate-200 p-6 rounded-3xl shadow-sm space-y-3">
-        <h3 className="text-xs font-extrabold text-slate-800 uppercase tracking-wider mb-2">
+      <div className="bg-white border border-slate-200 p-6 rounded-xl space-y-3">
+        <h3 className="text-xs font-bold text-slate-800 uppercase tracking-wider mb-2">
           Warna Frame
         </h3>
         
@@ -89,8 +89,8 @@ export default function PhotoPreviewControls({
                 style={{ backgroundColor: color.hex }}
                 className={`h-9 w-9 rounded-full border transition-all cursor-pointer flex-shrink-0 ${
                   isSelected
-                    ? 'ring-2 ring-offset-2 ring-blue-500 scale-105 border-blue-600'
-                    : 'border-slate-200/90 hover:scale-[1.01]'
+                    ? 'ring-2 ring-offset-2 ring-[#1d90ff] border-[#1d90ff]'
+                    : 'border-slate-300'
                 }`}
                 title={color.name}
               />
@@ -100,8 +100,8 @@ export default function PhotoPreviewControls({
       </div>
 
       {/* 2. Stiker / Pola Frame Grid */}
-      <div className="bg-white border border-slate-200 p-6 rounded-3xl shadow-sm space-y-3">
-        <h3 className="text-xs font-extrabold text-slate-800 uppercase tracking-wider mb-2">
+      <div className="bg-white border border-slate-200 p-6 rounded-xl space-y-3 mt-4">
+        <h3 className="text-xs font-bold text-slate-800 uppercase tracking-wider mb-2">
           Stiker (Motif Frame)
         </h3>
         <div className="grid grid-cols-3 sm:grid-cols-6 gap-3">
@@ -111,10 +111,10 @@ export default function PhotoPreviewControls({
               <button
                 key={pattern.id}
                 onClick={() => setSelectedPattern(pattern.id)}
-                className={`flex flex-col items-center justify-center p-2 h-16 rounded-2xl border transition-all cursor-pointer overflow-hidden ${
+                className={`flex flex-col items-center justify-center p-2 h-16 rounded-lg border transition-colors cursor-pointer overflow-hidden ${
                   isSelected
-                    ? 'border-blue-650 bg-blue-50/20 text-blue-800 ring-2 ring-blue-500/10 font-bold scale-102'
-                    : 'border-slate-200 bg-white hover:border-slate-300'
+                    ? 'border-[#1d90ff] bg-blue-50 text-[#1d90ff] font-bold'
+                    : 'border-slate-200 bg-white hover:border-slate-300 text-slate-500'
                 }`}
               >
                 <div className={`w-8 h-8 rounded-lg mb-1 shadow-inner border border-slate-100 ${pattern.previewClass}`}>
@@ -154,9 +154,9 @@ export default function PhotoPreviewControls({
       )}
 
       {/* 4. Pilih Filter Estetik */}
-      <div className="bg-white border border-slate-200 p-6 rounded-3xl shadow-sm">
-        <h3 className="flex items-center gap-2 font-display text-xs font-extrabold text-slate-800 uppercase tracking-wider mb-4">
-          <Wand2 className="h-4.5 w-4.5 text-blue-600" /> Pilih Filter Estetik
+      <div className="bg-white border border-slate-200 p-6 rounded-xl mt-4">
+        <h3 className="flex items-center gap-2 font-display text-xs font-bold text-slate-800 uppercase tracking-wider mb-4">
+          <Wand2 className="h-4 w-4 text-slate-800" /> Pilih Filter Estetik
         </h3>
         <div className="grid grid-cols-3 gap-3">
           {FILTERS.map((filter) => {
@@ -165,13 +165,13 @@ export default function PhotoPreviewControls({
               <button
                 key={filter.id}
                 onClick={() => setSelectedFilter(filter.id as PhotoFilter)}
-                className={`flex flex-col items-center p-2 rounded-2xl border transition-all cursor-pointer overflow-hidden ${
+                className={`flex flex-col items-center p-2 rounded-lg border transition-colors cursor-pointer overflow-hidden ${
                   isSelected
-                    ? 'border-blue-650 bg-blue-50/20 text-blue-800 shadow-sm ring-1 ring-blue-500/10 font-bold'
-                    : 'border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50'
+                    ? 'border-[#1d90ff] bg-blue-50 text-[#1d90ff] font-bold'
+                    : 'border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50 text-slate-700'
                 }`}
               >
-                <div className="w-10 h-10 rounded-lg overflow-hidden bg-slate-100 mb-1.5 shadow-inner">
+                <div className="w-10 h-10 rounded overflow-hidden bg-slate-100 mb-1.5">
                   {capturedPhotos[0] && (
                     <img 
                       src={capturedPhotos[0]} 
@@ -203,19 +203,18 @@ export default function PhotoPreviewControls({
       />
 
       {/* 6. Teks Footer & Custom Fonts */}
-      <div className="bg-white border border-slate-200 p-6 rounded-3xl shadow-sm space-y-4">
-        <h3 className="flex items-center gap-2 font-display text-xs font-extrabold text-slate-800 uppercase tracking-wider mb-1">
-          <Type className="h-4.5 w-4.5 text-blue-600" /> Teks Footer Frame
+      <div className="bg-white border border-slate-200 p-6 rounded-xl mt-4 space-y-4">
+        <h3 className="flex items-center gap-2 font-display text-xs font-bold text-slate-800 uppercase tracking-wider mb-1">
+          <Type className="h-4 w-4 text-slate-800" /> Teks Footer Frame
         </h3>
         
         <div className="space-y-3">
           <input
             type="text"
-            maxLength={36}
             value={stickerText}
-            onChange={(e) => setStickerText(e.target.value)}
-            placeholder="Contoh: 🌟 Malam Bahagia 🌟"
-            className="w-full px-4 py-3 rounded-2xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm font-bold text-slate-800 bg-slate-50"
+            readOnly
+            disabled
+            className="w-full px-4 py-3 rounded-2xl border border-slate-200 text-sm font-bold text-slate-500 bg-slate-100 cursor-not-allowed"
           />
           
           <div className="space-y-1.5">
@@ -225,9 +224,9 @@ export default function PhotoPreviewControls({
                 <button
                   key={f.id}
                   onClick={() => setSelectedFont(f.name)}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-semibold border transition ${
+                  className={`px-3 py-1.5 rounded-md text-xs font-semibold border transition-colors ${
                     selectedFont === f.name
-                      ? 'border-blue-600 bg-blue-50/20 text-blue-800 font-bold'
+                      ? 'border-[#1d90ff] bg-[#1d90ff] text-white font-bold shadow-md shadow-blue-500/20'
                       : 'border-slate-200 bg-white hover:bg-slate-50 text-slate-600'
                   }`}
                   style={{ fontFamily: f.name }}
@@ -251,26 +250,26 @@ export default function PhotoPreviewControls({
       </div>
 
       {/* Action Buttons */}
-      <div className="flex flex-col gap-3 pt-2">
+      <div className="flex flex-col gap-3 pt-6">
         <div className="flex flex-col sm:flex-row gap-3">
           <button
             onClick={handleDownloadImage}
             disabled={isProcessing}
-            className="flex-1 group flex items-center justify-center gap-2.5 py-4 bg-[#1d90ff] hover:bg-blue-600 text-white rounded-2xl text-[13px] font-extrabold shadow-lg shadow-blue-500/20 hover:scale-[1.01] active:scale-98 transition cursor-pointer"
+            className="flex-1 flex items-center justify-center gap-2.5 py-4 bg-[#1d90ff] hover:bg-blue-600 text-white rounded-lg text-[13px] font-bold transition-all cursor-pointer shadow-md shadow-blue-500/20 active:scale-95"
           >
-            <Download className="h-4.5 w-4.5 group-hover:scale-110 transition" />
+            <Download className="h-4.5 w-4.5" />
             <span>Download</span>
           </button>
           
           <button
             onClick={handleUploadAndShare}
             disabled={isProcessing || isUploading}
-            className="flex-1 group flex items-center justify-center gap-2.5 py-4 bg-purple-600 hover:bg-purple-700 text-white rounded-2xl text-[13px] font-extrabold shadow-lg shadow-purple-500/20 hover:scale-[1.01] active:scale-98 transition cursor-pointer disabled:opacity-70 disabled:cursor-wait"
+            className="flex-1 flex items-center justify-center gap-2.5 py-4 bg-slate-100 border border-slate-300 hover:bg-slate-200 text-slate-800 rounded-lg text-[13px] font-bold transition-colors cursor-pointer disabled:opacity-70 disabled:cursor-wait"
           >
             {isUploading ? (
-              <div className="w-4.5 h-4.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+              <div className="w-4.5 h-4.5 border-2 border-slate-400 border-t-slate-800 rounded-full animate-spin" />
             ) : (
-              <QrCode className="h-4.5 w-4.5 group-hover:scale-110 transition" />
+              <QrCode className="h-4.5 w-4.5" />
             )}
             <span>{isUploading ? 'Menyimpan...' : 'QR Code Cloud'}</span>
           </button>
@@ -280,7 +279,7 @@ export default function PhotoPreviewControls({
           onClick={onBackToSelector}
           className="flex items-center justify-center gap-1.5 py-2 text-xs font-bold text-slate-400 hover:text-slate-650 transition mt-2 cursor-pointer"
         >
-          <ArrowLeft className="h-3.5 w-3.5" /> Kembali Ke Awal
+          <ArrowLeft className="h-3.5 w-3.5" /> Ubah Layout / Frame
         </button>
       </div>
     </>

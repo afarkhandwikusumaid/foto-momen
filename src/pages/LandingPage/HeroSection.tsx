@@ -1,6 +1,6 @@
 import React from 'react';
 import { Camera, Sparkles, Wand2 } from 'lucide-react';
-import { getPosePlaceholder } from '../photobooth/PosePlaceholders';
+import { getPosePlaceholder } from '../Photobooth/PosePlaceholders';
 
 interface HeroSectionProps {
   onStart: () => void;
@@ -55,7 +55,7 @@ export default function HeroSection({ onStart }: HeroSectionProps) {
         {/* Right Side: Round-Backdrop Character Illustration */}
         <div className="lg:col-span-5 flex justify-center items-center relative mt-8 lg:mt-0">
           
-          <div className="relative w-full max-w-[380px] aspect-square bg-gradient-to-br from-blue-50 to-purple-50 border border-white rounded-[60px] flex items-center justify-center p-6 shadow-2xl shadow-blue-900/5">
+          <div className="relative w-full max-w-[380px] aspect-square bg-[#1d90ff] border border-white rounded-[60px] flex items-center justify-center p-6 shadow-2xl shadow-blue-900/10 ">
             
             {/* Background Decorative Rings */}
             <div className="absolute inset-4 border border-white/60 rounded-[50px] pointer-events-none" />

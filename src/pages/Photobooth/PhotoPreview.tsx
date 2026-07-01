@@ -162,6 +162,7 @@ export default function PhotoPreview({
   } | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [sessionRecorded, setSessionRecorded] = useState(false);
 
   // Load customizations on mount
   useEffect(() => {
@@ -425,13 +426,15 @@ export default function PhotoPreview({
     if (!finalImageBase64 || isUploading) return;
     setIsUploading(true);
     try {
+      // 4. Upload to Supabase
       const result = await uploadPhotoSession(finalImageBase64, {
         layout,
         frameColorId: frameColor.id,
         filter: selectedFilter,
-        stickerText,
-        showDate,
+        stickerText: stickerText,
+        showDate: showDate
       });
+
 
       const QRCode = await import('qrcode');
       const qrDataUrl = await QRCode.default.toDataURL(result.shareUrl, {

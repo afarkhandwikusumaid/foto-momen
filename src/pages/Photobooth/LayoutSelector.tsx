@@ -16,9 +16,9 @@ export default function LayoutSelector({
   return (
     <>
       {/* Jumlah Foto */}
-      <div className="bg-white border border-slate-200 p-6 rounded-[28px] shadow-sm">
-        <h3 className="flex items-center gap-2 font-display text-sm font-extrabold text-slate-800 mb-4 select-none uppercase tracking-wider">
-          <Camera className="h-4.5 w-4.5 text-[#ff007f]" />
+      <div className="bg-white border border-slate-200 p-6 rounded-xl">
+        <h3 className="flex items-center gap-2 font-display text-sm font-bold text-slate-800 mb-4 select-none uppercase tracking-wider">
+          <Camera className="h-4 w-4 text-slate-800" />
           1. Jumlah Pose Sesi Ini
         </h3>
         <div className="grid grid-cols-3 gap-3">
@@ -29,16 +29,16 @@ export default function LayoutSelector({
                 key={count}
                 type="button"
                 onClick={() => onPhotoCountSelect(count as PhotoCount)}
-                className={`group relative py-4 px-4 rounded-2xl border-2 transition-all font-extrabold text-xs text-center cursor-pointer ${
+                className={`group relative py-3.5 px-4 rounded-lg border transition-colors font-bold text-xs text-center cursor-pointer ${
                   isSelected
-                    ? 'border-blue-600 bg-blue-50/20 text-blue-700 shadow-sm font-black'
-                    : 'border-slate-200 text-slate-600 bg-white hover:border-slate-300'
+                    ? 'border-[#1d90ff] bg-blue-50 text-[#1d90ff]'
+                    : 'border-slate-200 text-slate-500 bg-white hover:bg-slate-50 hover:border-slate-300'
                 }`}
               >
                 <span>{count} Pose</span>
                 {isSelected && (
-                  <span className="absolute -top-1.5 -right-1.5 h-4.5 w-4.5 rounded-full bg-blue-600 text-white flex items-center justify-center text-[9px] shadow animate-pulse">
-                    <Check className="h-2.5 w-2.5 stroke-[3]" />
+                  <span className="absolute -top-2 -right-2 h-5 w-5 rounded-full bg-[#1d90ff] border border-white text-white flex items-center justify-center shadow-sm">
+                    <Check className="h-3 w-3 stroke-[3]" />
                   </span>
                 )}
               </button>
@@ -48,9 +48,9 @@ export default function LayoutSelector({
       </div>
 
       {/* Layout */}
-      <div className="bg-white border border-slate-200 p-6 rounded-[28px] shadow-sm">
-        <h3 className="flex items-center gap-2 font-display text-sm font-extrabold text-slate-800 mb-4 select-none uppercase tracking-wider">
-          <Layout className="h-4.5 w-4.5 text-[#1d90ff]" />
+      <div className="bg-white border border-slate-200 p-6 rounded-xl mt-6">
+        <h3 className="flex items-center gap-2 font-display text-sm font-bold text-slate-800 mb-4 select-none uppercase tracking-wider">
+          <Layout className="h-4 w-4 text-slate-800" />
           2. Pilihan Tata Letak (Layout)
         </h3>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
@@ -66,17 +66,17 @@ export default function LayoutSelector({
                 key={l.id}
                 type="button"
                 onClick={() => onLayoutSelect(l.id as FrameLayout)}
-                className={`group relative p-3 flex flex-col items-center justify-center text-center rounded-2xl border-2 transition-all cursor-pointer ${
+                className={`group relative p-3 flex flex-col items-center justify-center text-center rounded-lg border transition-colors cursor-pointer ${
                   isSelected
-                    ? 'border-blue-600 bg-blue-50/20 text-blue-800 shadow-sm font-black'
-                    : 'border-slate-200 bg-white hover:border-slate-300'
+                    ? 'border-[#1d90ff] bg-blue-50 text-[#1d90ff]'
+                    : 'border-slate-200 bg-white hover:bg-slate-50 hover:border-slate-300 text-slate-700'
                 }`}
               >
-                <span className="text-[11px] font-bold text-slate-800">{l.name}</span>
-                <span className="text-[8px] text-slate-400 mt-0.5">{l.desc}</span>
+                <span className="text-[11px] font-bold">{l.name}</span>
+                <span className={`text-[8px] mt-0.5 ${isSelected ? 'text-blue-400' : 'text-slate-400'}`}>{l.desc}</span>
                 {isSelected && (
-                  <span className="absolute -top-1.5 -right-1.5 h-4.5 w-4.5 rounded-full bg-blue-600 text-white flex items-center justify-center text-[9px] shadow animate-pulse">
-                    <Check className="h-2.5 w-2.5 stroke-[3]" />
+                  <span className="absolute -top-2 -right-2 h-5 w-5 rounded-full bg-[#1d90ff] border border-white text-white flex items-center justify-center shadow-sm">
+                    <Check className="h-3 w-3 stroke-[3]" />
                   </span>
                 )}
               </button>

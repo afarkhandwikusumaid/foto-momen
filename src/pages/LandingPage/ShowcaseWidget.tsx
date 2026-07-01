@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Layout, Sparkles } from 'lucide-react';
-import { FRAME_COLORS } from '../photobooth/FrameSelector';
-import { getPosePlaceholder } from '../photobooth/PosePlaceholders';
+import { FRAME_COLORS } from '../Photobooth/FrameSelector';
+import { getPosePlaceholder } from '../Photobooth/PosePlaceholders';
 import { FrameLayout, FrameColor } from '../../types';
 
 export default function ShowcaseWidget() {

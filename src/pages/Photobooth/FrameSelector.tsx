@@ -15,6 +15,7 @@ interface FrameSelectorProps {
   borderStyle: BorderStyle;
   onBorderStyleSelect: (style: BorderStyle) => void;
   onNext: () => void;
+  onPrev: () => void;
 }
 
 export const FRAME_COLORS: FrameColor[] = [
@@ -94,6 +95,7 @@ export default function FrameSelector({
   borderStyle,
   onBorderStyleSelect,
   onNext,
+  onPrev,
 }: FrameSelectorProps) {
   
   const [customTemplates, setCustomTemplates] = useState<FrameColor[]>([]);
@@ -109,13 +111,19 @@ export default function FrameSelector({
           textColor: t.textColor || '#000000',
           borderClass: t.borderClass || 'border-slate-200',
           imageUrl: t.imageUrl,
+          layout: t.layout,
+          active: t.active !== false,
+          photoCount: t.photoCount || 4,
         }));
-        setCustomTemplates(mapped);
+        setCustomTemplates(mapped.filter((t: any) => t.active));
       }
     }).catch(console.error);
   }, []);
 
-  const allFrameColors = [...FRAME_COLORS, ...customTemplates];
+  const allFrameColors = [
+    ...FRAME_COLORS, 
+    ...customTemplates.filter(t => !t.layout || t.layout === selectedLayout)
+  ];
 
   // Get padding class based on border thickness setting
   const getBorderPaddingClass = () => {
@@ -133,12 +141,12 @@ export default function FrameSelector({
       case 'vertical-strip':
         return (
           <div 
-            className={`w-[170px] ${paddingClass} flex flex-col items-center border rounded-xl shadow-sm transition-all duration-300 bg-white`}
+            className={`w-[170px] ${paddingClass} flex flex-col items-center border rounded-none bg-white`}
             style={{ backgroundColor: selectedColor.hex, borderColor: selectedColor.textColor + '22' }}
           >
             <div className="flex flex-col gap-2 w-full">
               {Array.from({ length: photoCount }).map((_, idx) => (
-                <div key={idx} className="aspect-[4/3] bg-white/10 rounded overflow-hidden flex items-center justify-center border border-white/5 shadow-inner">
+                <div key={idx} className="aspect-[4/3] bg-white/10 overflow-hidden flex items-center justify-center border border-white/5">
                   {getPosePlaceholder(idx, "w-full h-full p-1.5", textColor)}
                 </div>
               ))}
@@ -155,12 +163,12 @@ export default function FrameSelector({
       case 'triple-strip':
         return (
           <div 
-            className={`w-[170px] ${paddingClass} flex flex-col items-center border rounded-xl shadow-sm transition-all duration-300 bg-white`}
+            className={`w-[170px] ${paddingClass} flex flex-col items-center border rounded-none bg-white`}
             style={{ backgroundColor: selectedColor.hex, borderColor: selectedColor.textColor + '22' }}
           >
             <div className="flex flex-col gap-2 w-full">
               {Array.from({ length: 3 }).map((_, idx) => (
-                <div key={idx} className="aspect-[4/3] bg-white/10 rounded overflow-hidden flex items-center justify-center border border-white/5 shadow-inner">
+                <div key={idx} className="aspect-[4/3] bg-white/10 overflow-hidden flex items-center justify-center border border-white/5">
                   {getPosePlaceholder(idx + 1, "w-full h-full p-1.5", textColor)}
                 </div>
               ))}
@@ -177,12 +185,12 @@ export default function FrameSelector({
       case 'grid-2x2':
         return (
           <div 
-            className={`w-[210px] ${paddingClass} flex flex-col items-center border rounded-xl shadow-sm transition-all duration-300 bg-white`}
+            className={`w-[210px] ${paddingClass} flex flex-col items-center border rounded-none bg-white`}
             style={{ backgroundColor: selectedColor.hex, borderColor: selectedColor.textColor + '22' }}
           >
             <div className="grid grid-cols-2 gap-2 w-full">
               {Array.from({ length: 4 }).map((_, idx) => (
-                <div key={idx} className="aspect-[4/3] bg-white/10 rounded overflow-hidden flex items-center justify-center border border-white/5 shadow-inner">
+                <div key={idx} className="aspect-[4/3] bg-white/10 overflow-hidden flex items-center justify-center border border-white/5">
                   {getPosePlaceholder(idx, "w-full h-full p-1", textColor)}
                 </div>
               ))}
@@ -200,15 +208,15 @@ export default function FrameSelector({
       default:
         return (
           <div 
-            className={`w-[210px] ${paddingClass} flex flex-col items-center border rounded-xl shadow-sm transition-all duration-300 bg-white`}
+            className={`w-[210px] ${paddingClass} flex flex-col items-center border rounded-none bg-white`}
             style={{ backgroundColor: selectedColor.hex, borderColor: selectedColor.textColor + '22' }}
           >
-            <div className="w-full aspect-[4/3] bg-white/10 rounded overflow-hidden flex items-center justify-center border border-white/5 shadow-inner mb-2">
+            <div className="w-full aspect-[4/3] bg-white/10 overflow-hidden flex items-center justify-center border border-white/5 mb-2">
               {getPosePlaceholder(3, "w-full h-full p-2", textColor)}
             </div>
             <div className="grid grid-cols-3 gap-1.5 w-full">
               {Array.from({ length: 3 }).map((_, idx) => (
-                <div key={idx} className="aspect-[4/3] bg-white/10 rounded overflow-hidden flex items-center justify-center border border-white/5 shadow-inner">
+                <div key={idx} className="aspect-[4/3] bg-white/10 overflow-hidden flex items-center justify-center border border-white/5">
                   {getPosePlaceholder(idx, "w-full h-full p-0.5", textColor)}
                 </div>
               ))}
@@ -251,7 +259,12 @@ export default function FrameSelector({
           <ThemeSelector 
             allFrameColors={allFrameColors}
             selectedColor={selectedColor}
-            onColorSelect={onColorSelect}
+            onColorSelect={(color) => {
+              onColorSelect(color);
+              if ((color as any).photoCount && (color as any).photoCount !== photoCount) {
+                onPhotoCountSelect((color as any).photoCount as PhotoCount);
+              }
+            }}
             borderStyle={borderStyle}
             onBorderStyleSelect={onBorderStyleSelect}
           />
@@ -260,20 +273,34 @@ export default function FrameSelector({
 
         {/* Live Preview Panel */}
         <div className="lg:col-span-5 flex flex-col items-center sticky top-24">
-          <div className="w-full bg-slate-100/50 flex flex-col items-center justify-center p-6 rounded-[32px] border border-slate-200 shadow-inner min-h-[460px]">
+          <div className="w-full bg-slate-50 flex flex-col items-center justify-center p-6 border border-slate-200 min-h-[460px] rounded-xl">
             {/* Dynamic visual preview */}
             {renderInteractivePreview()}
           </div>
-          
+        </div>
+      </div>
+
+      {/* Static Bottom Navigation Bar */}
+      <div className="mt-12 border-t border-slate-200 pt-6">
+        <div className="flex items-center justify-between gap-4">
+          <button
+            onClick={onPrev}
+            className="flex items-center justify-center gap-2 rounded-lg bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 py-3 px-6 sm:px-8 text-sm font-bold transition-colors"
+          >
+            <ArrowRight className="h-4.5 w-4.5 rotate-180" />
+            <span className="hidden sm:inline">Kembali</span>
+          </button>
+
           <button
             onClick={onNext}
-            className="group w-full mt-6 flex items-center justify-center gap-3 rounded-full bg-[#1d90ff] hover:bg-blue-600 text-white py-4 px-6 text-sm font-extrabold hover:scale-[1.01] active:scale-[0.98] cursor-pointer transition-all duration-200"
+            className="flex-1 sm:flex-none sm:min-w-[280px] flex items-center justify-center gap-3 rounded-lg bg-[#1d90ff] hover:bg-blue-600 text-white py-3 px-8 text-sm font-bold transition-all shadow-md shadow-blue-500/20 active:scale-95"
           >
-            <span>Lanjut Ke Kamera Booth</span>
-            <ArrowRight className="h-4.5 w-4.5 transition-transform duration-200 group-hover:translate-x-1" />
+            <span>Lanjut Ke Kamera</span>
+            <ArrowRight className="h-4.5 w-4.5" />
           </button>
         </div>
       </div>
+
     </div>
   );
 }

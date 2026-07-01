@@ -234,20 +234,20 @@ export default function LivePreview({
 
       {/* Buttons Panel */}
       <div 
-        className={`flex flex-col sm:flex-row gap-4.5 w-full max-w-sm px-4 justify-center items-center z-10 transition-all duration-500 transform ${
-          showButtons ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 translate-y-6 scale-95 pointer-events-none'
+        className={`flex flex-col sm:flex-row gap-4 w-full max-w-sm px-4 justify-center items-center z-10 transition-all duration-500 transform ${
+          showButtons ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6 pointer-events-none'
         }`}
       >
         <button
           onClick={onRetake}
-          className="w-full sm:w-auto min-w-[140px] px-6 py-3.5 bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 hover:border-slate-300 rounded-2xl font-bold transition flex items-center justify-center gap-2 hover:scale-[1.01] cursor-pointer shadow-sm"
+          className="w-full sm:w-auto min-w-[140px] px-6 py-3.5 bg-white border border-slate-300 text-slate-700 hover:bg-slate-50 rounded-lg font-bold transition flex items-center justify-center gap-2"
         >
           <Camera className="h-4.5 w-4.5 text-slate-500" />
           <span>Foto Ulang</span>
         </button>
         <button
           onClick={onContinue}
-          className="w-full sm:w-auto min-w-[180px] px-6 py-3.5 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-500 hover:to-blue-600 text-white rounded-2xl font-extrabold shadow-lg shadow-blue-600/10 transition flex items-center justify-center gap-2 hover:scale-[1.01] cursor-pointer"
+          className="w-full sm:w-auto min-w-[180px] px-6 py-3.5 bg-[#1d90ff] hover:bg-blue-600 text-white rounded-lg font-bold transition-all flex items-center justify-center gap-2 shadow-md shadow-blue-500/20 active:scale-95"
         >
           <span>Lanjut Edit & Simpan</span>
           <ChevronRight className="h-4.5 w-4.5" />

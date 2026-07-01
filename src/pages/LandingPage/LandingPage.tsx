@@ -2,7 +2,6 @@ import React from 'react';
 
 // Modular Component Imports (1 Feature = 1 File)
 import HeroSection from './HeroSection';
-import AboutSection from './AboutSection';
 import ShowcaseWidget from './ShowcaseWidget';
 import VisualGuide from './VisualGuide';
 import TemplatesCatalog from './TemplatesCatalog';
@@ -19,7 +18,6 @@ export default function LandingPage({ onStart, activeTab }: LandingPageProps) {
       {activeTab === 'home' && (
         <div className="space-y-12 animate-fade-in">
           <HeroSection onStart={onStart} />
-          <AboutSection />
           <ShowcaseWidget />
           <VisualGuide />
         </div>

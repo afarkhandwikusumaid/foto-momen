@@ -20,9 +20,9 @@ export default function ThemeSelector({
   return (
     <>
       {/* Warna Frame */}
-      <div className="bg-white border border-slate-200 p-6 rounded-[28px] shadow-sm">
-        <h3 className="flex items-center gap-2 font-display text-sm font-extrabold text-slate-800 mb-4 select-none uppercase tracking-wider">
-          <Palette className="h-4.5 w-4.5 text-[#ff007f]" />
+      <div className="bg-white border border-slate-200 p-6 rounded-xl mt-6">
+        <h3 className="flex items-center gap-2 font-display text-sm font-bold text-slate-800 mb-4 select-none uppercase tracking-wider">
+          <Palette className="h-4 w-4 text-slate-800" />
           3. Palet Warna Frame
         </h3>
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
@@ -33,14 +33,14 @@ export default function ThemeSelector({
                 key={color.id}
                 type="button"
                 onClick={() => onColorSelect(color)}
-                className={`group relative flex items-center gap-2.5 p-3.5 rounded-2xl border-2 transition-all text-left cursor-pointer ${
+                className={`relative flex items-center gap-2.5 p-3 rounded-lg border transition-colors text-left cursor-pointer ${
                   isSelected
-                    ? 'border-blue-600 bg-blue-50/20 text-blue-800 shadow-sm font-black'
-                    : 'border-slate-200 bg-white hover:border-slate-300'
+                    ? 'border-[#1d90ff] bg-blue-50'
+                    : 'border-slate-200 bg-white hover:bg-slate-50 hover:border-slate-300'
                 }`}
               >
                 <div 
-                  className={`h-6 w-6 rounded-lg shadow-inner border transition group-hover:scale-105 ${color.borderClass} flex items-center justify-center overflow-hidden shrink-0 bg-slate-100`} 
+                  className={`h-5 w-5 rounded-md border border-slate-200 flex items-center justify-center overflow-hidden shrink-0 bg-slate-100`} 
                   style={!color.imageUrl ? { backgroundColor: color.hex } : undefined} 
                 >
                   {color.imageUrl ? (
@@ -50,8 +50,8 @@ export default function ThemeSelector({
                 <span className="text-[11px] font-bold text-slate-700 truncate">{color.name}</span>
                 
                 {isSelected && (
-                  <span className="absolute -top-1.5 -right-1.5 h-4.5 w-4.5 rounded-full bg-blue-600 text-white flex items-center justify-center text-[9px] shadow animate-pulse">
-                    <Check className="h-2.5 w-2.5 stroke-[3]" />
+                  <span className="absolute -top-2 -right-2 h-5 w-5 rounded-full bg-[#1d90ff] border border-white text-white flex items-center justify-center shadow-sm">
+                    <Check className="h-3 w-3 stroke-[3]" />
                   </span>
                 )}
               </button>
@@ -61,9 +61,9 @@ export default function ThemeSelector({
       </div>
 
       {/* Ketebalan Frame */}
-      <div className="bg-white border border-slate-200 p-6 rounded-[28px] shadow-sm">
-        <h3 className="flex items-center gap-2 font-display text-sm font-extrabold text-slate-800 mb-4 select-none uppercase tracking-wider">
-          <Box className="h-4.5 w-4.5 text-[#1d90ff]" />
+      <div className="bg-white border border-slate-200 p-6 rounded-xl mt-6">
+        <h3 className="flex items-center gap-2 font-display text-sm font-bold text-slate-800 mb-4 select-none uppercase tracking-wider">
+          <Box className="h-4 w-4 text-slate-800" />
           4. Ketebalan Border Frame
         </h3>
         <div className="grid grid-cols-3 gap-3">
@@ -78,16 +78,16 @@ export default function ThemeSelector({
                 key={style.id}
                 type="button"
                 onClick={() => onBorderStyleSelect(style.id as BorderStyle)}
-                className={`group relative py-3 px-2 rounded-2xl border-2 transition-all font-extrabold text-center text-[10px] cursor-pointer ${
+                className={`relative py-3 px-2 rounded-lg border transition-colors font-bold text-center text-[10px] cursor-pointer ${
                   isSelected
-                    ? 'border-blue-600 bg-blue-50/20 text-blue-800 shadow-sm font-black'
-                    : 'border-slate-200 bg-white hover:border-slate-300'
+                    ? 'border-[#1d90ff] bg-blue-50 text-[#1d90ff]'
+                    : 'border-slate-200 bg-white hover:bg-slate-50 hover:border-slate-300 text-slate-600'
                 }`}
               >
                 <span>{style.name}</span>
                 {isSelected && (
-                  <span className="absolute -top-1.5 -right-1.5 h-4.5 w-4.5 rounded-full bg-blue-600 text-white flex items-center justify-center text-[9px] shadow animate-pulse">
-                    <Check className="h-2.5 w-2.5 stroke-[3]" />
+                  <span className="absolute -top-2 -right-2 h-5 w-5 rounded-full bg-[#1d90ff] border border-white text-white flex items-center justify-center shadow-sm">
+                    <Check className="h-3 w-3 stroke-[3]" />
                   </span>
                 )}
               </button>

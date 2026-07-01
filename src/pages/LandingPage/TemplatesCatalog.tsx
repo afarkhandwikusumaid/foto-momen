@@ -1,8 +1,8 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { Palette, ChevronLeft, ChevronRight, Sparkles } from 'lucide-react';
 import { getFrameTemplates } from '../../services/dbService';
-import { FRAME_COLORS } from '../photobooth/FrameSelector';
-import { getPosePlaceholder } from '../photobooth/PosePlaceholders';
+import { FRAME_COLORS } from '../Photobooth/FrameSelector';
+import { getPosePlaceholder } from '../Photobooth/PosePlaceholders';
 
 export default function TemplatesCatalog() {
   const [templates, setTemplates] = useState<any[]>([]);
@@ -16,12 +16,15 @@ export default function TemplatesCatalog() {
           name: t.name,
           hex: t.hex,
           textColor: t.text_color || '#ffffff',
+          imageUrl: t.image_url,
+          layout: t.layout,
           badge: 'NEW LAYOUT',
           badgeColor: 'bg-rose-500 text-white',
-          layoutDesc: 'Size 6 x 2 Strip',
-          poses: '4 Pose'
+          layoutDesc: t.layout === 'grid-2x2' ? 'Size 2x2 Grid' : 'Size 6 x 2 Strip',
+          poses: `${t.photoCount || 4} Pose`,
+          active: t.active !== false
         }));
-        setTemplates(mapped);
+        setTemplates(mapped.filter((t: any) => t.active));
       }
     }).catch(console.error);
   }, []);
@@ -131,12 +134,16 @@ export default function TemplatesCatalog() {
                   {/* Frame branding footer text */}
                   <div 
                     className="text-center pb-1 truncate" 
-                    style={{ color: theme.textColor }}
+                    style={{ color: theme.textColor, zIndex: 10 }}
                   >
                     <p className="text-[7px] font-black uppercase tracking-widest font-mono">
                       {theme.name}
                     </p>
                   </div>
+                  
+                  {theme.imageUrl && (
+                    <img src={theme.imageUrl} alt="Frame Overlay" className="absolute inset-0 w-full h-full object-fill pointer-events-none z-20" />
+                  )}
                 </div>
 
               </div>

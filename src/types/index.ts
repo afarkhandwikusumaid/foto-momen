@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-export type ActivePhase = 'landing' | 'select-frame' | 'camera' | 'live-preview' | 'preview' | 'admin' | 'limit-reached';
+export type ActivePhase = 'landing' | 'select-frame' | 'camera' | 'live-preview' | 'preview' | 'limit-reached';
 
 export type FrameLayout = 'vertical-strip' | 'grid-2x2' | 'single-polar' | 'triple-strip';
 
@@ -19,6 +19,9 @@ export interface FrameColor {
   textColor: string;
   borderClass: string;
   imageUrl?: string;
+  layout?: FrameLayout | string;
+  active?: boolean;
+  photoCount?: PhotoCount | number;
 }
 
 export type PhotoFilter = 'original' | 'grayscale' | 'sepia' | 'vivid' | 'cool' | 'instant';

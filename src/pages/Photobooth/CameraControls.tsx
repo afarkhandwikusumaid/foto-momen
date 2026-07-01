@@ -73,16 +73,16 @@ export default function CameraControls({
         <button
           onClick={onBack}
           disabled={isCapturing}
-          className="px-6 py-3.5 rounded-2xl border border-slate-200 text-sm font-bold text-slate-600 bg-white hover:bg-slate-50 disabled:opacity-50 transition cursor-pointer shadow-sm"
+          className="px-6 py-3.5 rounded-lg border border-slate-300 text-sm font-bold text-slate-700 bg-white hover:bg-slate-50 disabled:opacity-50 transition-colors"
         >
-          Kembali
+          Ganti Layout / Frame
         </button>
 
         {!isCapturing ? (
           <button
             onClick={startPhotoSession}
             disabled={cameraPermissionError}
-            className="flex items-center gap-2.5 px-8 py-4 bg-[#1d90ff] hover:bg-blue-600 disabled:opacity-60 text-white rounded-full text-base font-extrabold shadow active:scale-98 transition cursor-pointer"
+            className="flex items-center gap-2.5 px-8 py-3.5 bg-[#1d90ff] hover:bg-blue-600 disabled:opacity-60 text-white rounded-lg text-base font-bold transition-all shadow-md shadow-blue-500/20 active:scale-95"
           >
             <Play className="h-5 w-5 fill-white" />
             <span>{capturedPhotosCount > 0 ? 'Mulai Ulang Sesi' : `Mulai Capture (${photoCount} Pose)`}</span>
@@ -90,7 +90,7 @@ export default function CameraControls({
         ) : (
           <button
             onClick={handleReset}
-            className="flex items-center gap-2 px-6 py-4 bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 rounded-full text-sm font-bold transition cursor-pointer"
+            className="flex items-center gap-2 px-6 py-3.5 bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 rounded-lg text-sm font-bold transition-colors"
           >
             <RefreshCw className="h-4 w-4 animate-spin-slow" />
             <span>Hentikan & Reset</span>
