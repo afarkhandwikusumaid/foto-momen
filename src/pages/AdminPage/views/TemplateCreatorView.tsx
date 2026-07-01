@@ -133,9 +133,10 @@ export default function TemplateCreatorView({ initialData, onSuccess, onCancel }
       
       alert(`Template berhasil ${editingId ? 'diperbarui' : 'ditambahkan'}!`);
       await onSuccess(); // This should reload templates and maybe redirect back to catalog
-    } catch (err) {
-      console.error(err);
-      alert('Terjadi kesalahan saat menyimpan template.');
+    } catch (err: any) {
+      console.error('handleSubmit error:', err);
+      const msg = err?.message || 'Terjadi kesalahan tidak dikenal.';
+      alert(`❌ Gagal menyimpan template.\n\nDetail: ${msg}`);
     } finally {
       setIsUploading(false);
     }
