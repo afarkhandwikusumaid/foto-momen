@@ -123,7 +123,7 @@ export default function TemplateForm({
         </div>
 
         <button 
-          type="submit" disabled={isUploading || (!file && !editingId) || !name.trim()}
+          type="submit" disabled={isUploading}
           className="w-full flex items-center justify-center gap-2 bg-[#1d90ff] hover:bg-blue-600 disabled:bg-slate-300 text-white font-bold py-3.5 rounded-xl transition shadow-md shadow-blue-500/20"
         >
           {isUploading ? <RefreshCw className="w-5 h-5 animate-spin" /> : <UploadCloud className="w-5 h-5" />}
