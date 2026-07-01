@@ -10,7 +10,6 @@ import AdminLayout from './layouts/AdminLayout';
 import DashboardView from './views/DashboardView';
 import TemplateCreatorView from './views/TemplateCreatorView';
 import TemplateCatalogView from './views/TemplateCatalogView';
-import GalleryView from './views/GalleryView';
 
 export default function AdminPage() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -136,8 +135,6 @@ export default function AdminPage() {
             onEditRequest={handleEditRequest}
           />
         );
-      case 'gallery':
-        return <GalleryView />;
       default:
         return <DashboardView templates={templates} />;
     }
