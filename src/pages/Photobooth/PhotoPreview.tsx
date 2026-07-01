@@ -536,10 +536,7 @@ export default function PhotoPreview({
                 <img
                   src={finalImageBase64}
                   alt="Foto Momen Render Final"
-                  className={`max-w-full rounded-2xl border border-slate-200/50 shadow-2xl transition-all duration-300 ease-out 
-                    ${layout === 'vertical-strip' || layout === 'triple-strip' ? 'h-[460px] md:h-[600px]' : 'h-[320px] md:h-[460px]'} 
-                    object-contain bg-white
-                  `}
+                  className="max-w-full rounded-2xl border border-slate-200/50 shadow-2xl transition-all duration-300 ease-out max-h-[500px] md:max-h-[650px] w-auto object-contain bg-white"
                 />
               )
             ) : (

@@ -39,24 +39,28 @@ export default function LivePreview({
   const renderStrip = () => {
     const textColor = frameColor.textColor;
 
-    // Template admin dengan photoAreas: render foto di posisi lubang, frame overlay di atas
     if (photoAreas && photoAreas.length > 0 && frameColor.imageUrl) {
       return (
         <div
           className="relative rounded-xl overflow-hidden shadow-2xl animate-print-in select-none flex-shrink-0"
           style={{
-            width: '220px',
-            aspectRatio: '2/3',
+            width: '260px', // slightly wider so long strips don't look too thin
             backgroundColor: frameColor.hex,
             boxShadow: '0 25px 50px -12px rgba(0,0,0,0.4)',
           }}
         >
+          {/* Frame overlay defines container height */}
+          <img
+            src={frameColor.imageUrl}
+            alt="Frame overlay"
+            className="w-full h-auto relative z-20 pointer-events-none block"
+          />
           {photoAreas.map((area, index) => {
             const isVisible = index < visibleCount;
             return (
               <div
                 key={index}
-                className={`absolute overflow-hidden transition-all duration-500 ease-out ${
+                className={`absolute overflow-hidden transition-all duration-500 ease-out z-10 ${
                   isVisible ? 'opacity-100 scale-100' : 'opacity-0 scale-95'
                 }`}
                 style={{
@@ -76,12 +80,6 @@ export default function LivePreview({
               </div>
             );
           })}
-          {/* Frame overlay di atas foto */}
-          <img
-            src={frameColor.imageUrl}
-            alt="Frame overlay"
-            className="absolute inset-0 w-full h-full object-cover z-20 pointer-events-none"
-          />
         </div>
       );
     }

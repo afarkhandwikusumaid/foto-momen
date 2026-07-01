@@ -63,7 +63,9 @@ export default function TemplateCatalog({
               
               <div className="px-1 pb-1 text-center">
                 <h3 className="font-bold text-slate-800 text-sm truncate">{tpl.name}</h3>
-                <p className="text-[10px] text-slate-500 font-medium mt-1">{tpl.layout} • {tpl.photoCount || 4} Pose</p>
+                <p className="text-[10px] text-slate-500 font-medium mt-1">
+                  {tpl.layout?.startsWith('[') ? 'Custom Layout' : tpl.layout} • {tpl.photoCount || 4} Pose
+                </p>
               </div>
               
               <button 
