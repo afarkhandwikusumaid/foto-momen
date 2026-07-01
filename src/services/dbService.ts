@@ -310,7 +310,11 @@ export async function saveTemplate(template: any): Promise<void> {
     photo_count: template.photoCount || 4,
     active: template.active !== undefined ? template.active : true
   };
-  await supabase.from('templates').upsert([dbTemplate]);
+  const { error } = await supabase.from('templates').upsert([dbTemplate]);
+  if (error) {
+    console.error("Supabase upsert error:", error);
+    throw error;
+  }
 }
 
 export async function deleteTemplate(id: string): Promise<void> {
