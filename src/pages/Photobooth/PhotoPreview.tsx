@@ -1,6 +1,7 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { Download, Palette, Sparkles, Wand2, ArrowLeft, Type, Calendar, Cloud, Check, QrCode, X } from 'lucide-react';
 import { FrameLayout, FrameColor, PhotoFilter, PhotoCount, BorderStyle } from '../../types';
+import Swal from 'sweetalert2';
 import { 
   uploadPhotoSession, 
   getBackdrops, 
@@ -478,7 +479,12 @@ export default function PhotoPreview({
       confetti({ particleCount: 120, spread: 80, origin: { y: 0.6 } });
     } catch (err) {
       console.error('Upload gagal:', err);
-      alert('Gagal mengunggah foto ke Cloud. Silakan periksa koneksi internet Anda.');
+      Swal.fire({
+        title: 'Upload Gagal',
+        text: 'Gagal mengunggah foto ke Cloud. Silakan periksa koneksi internet Anda.',
+        icon: 'error',
+        confirmButtonColor: '#3085d6'
+      });
     } finally {
       setIsUploading(false);
     }

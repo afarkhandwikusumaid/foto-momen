@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { getFrameTemplates } from '../../services/dbService';
 import { supabase } from '../../config/supabase';
 
+import Swal from 'sweetalert2';
+
 import AdminLoginForm from './components/AdminLoginForm';
 import AdminLayout from './layouts/AdminLayout';
 
@@ -43,7 +45,12 @@ export default function AdminPage() {
 
   const handleLogin = async (emailInput: string, passwordInput: string) => {
     if (!supabase) {
-      alert("Supabase tidak dikonfigurasi. Harap isi file .env.local.");
+      Swal.fire({
+        title: 'Konfigurasi Tidak Lengkap',
+        text: 'Supabase tidak dikonfigurasi. Harap isi file .env.local.',
+        icon: 'warning',
+        confirmButtonColor: '#3085d6'
+      });
       return;
     }
     setIsLoggingIn(true);

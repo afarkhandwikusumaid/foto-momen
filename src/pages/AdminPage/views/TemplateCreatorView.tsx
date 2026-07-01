@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import Swal from 'sweetalert2';
 import TemplateForm from '../components/TemplateForm';
 import LiveSimulator from '../components/LiveSimulator';
 import { FrameLayout, PhotoArea } from '../../../types';
@@ -81,7 +82,12 @@ export default function TemplateCreatorView({ initialData, onSuccess, onCancel }
             }
           }
         } else {
-          alert('Peringatan: Tidak ada area lubang transparan (bolong) yang terdeteksi pada gambar ini.');
+          Swal.fire({
+            title: 'Peringatan',
+            text: 'Tidak ada area lubang transparan (bolong) yang terdeteksi pada gambar ini.',
+            icon: 'warning',
+            confirmButtonColor: '#3085d6'
+          });
           setPhotoAreas([]);
         }
       } catch (err) {
@@ -131,12 +137,22 @@ export default function TemplateCreatorView({ initialData, onSuccess, onCancel }
       
       await saveTemplate(newTemplate);
       
-      alert(`Template berhasil ${editingId ? 'diperbarui' : 'ditambahkan'}!`);
+      Swal.fire({
+        title: 'Berhasil!',
+        text: `Template berhasil ${editingId ? 'diperbarui' : 'ditambahkan'}!`,
+        icon: 'success',
+        confirmButtonColor: '#3085d6'
+      });
       await onSuccess(); // This should reload templates and maybe redirect back to catalog
     } catch (err: any) {
       console.error('handleSubmit error:', err);
       const msg = err?.message || 'Terjadi kesalahan tidak dikenal.';
-      alert(`❌ Gagal menyimpan template.\n\nDetail: ${msg}`);
+      Swal.fire({
+        title: 'Gagal Menyimpan',
+        text: `Detail: ${msg}`,
+        icon: 'error',
+        confirmButtonColor: '#3085d6'
+      });
     } finally {
       setIsUploading(false);
     }

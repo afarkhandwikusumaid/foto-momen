@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Image as ImageIcon, Calendar, Layout, Trash2 } from 'lucide-react';
 import { getAllSessions } from '../../../services/dbService';
 
+import Swal from 'sweetalert2';
+
 export default function GalleryView() {
   const [sessions, setSessions] = useState<any[]>([]);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
@@ -25,13 +27,26 @@ export default function GalleryView() {
     }
   };
 
-  const deleteSession = (id: string, e: React.MouseEvent) => {
+  const deleteSession = async (id: string, e: React.MouseEvent) => {
     e.stopPropagation();
-    if (!window.confirm('Yakin ingin menghapus riwayat sesi ini dari galeri? (File asli di pengunjung tidak terhapus)')) return;
+    const result = await Swal.fire({
+      title: 'Hapus Riwayat?',
+      text: 'Yakin ingin menghapus riwayat sesi ini dari galeri? (File asli di pengunjung tidak terhapus)',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Ya, Hapus!',
+      cancelButtonText: 'Batal'
+    });
+
+    if (!result.isConfirmed) return;
+
     // Note: In a real app with Supabase, perform a DELETE operation here.
     // For now, we simulate the local deletion.
     const updated = sessions.filter(s => s.id !== id);
     setSessions(updated);
+    Swal.fire('Terhapus!', 'Riwayat foto berhasil dihapus.', 'success');
   };
 
   return (

@@ -2,6 +2,8 @@ import React from 'react';
 import TemplateCatalog from '../components/TemplateCatalog';
 import { deleteTemplate } from '../../../services/dbService';
 
+import Swal from 'sweetalert2';
+
 interface TemplateCatalogViewProps {
   templates: any[];
   loadTemplates: () => Promise<void>;
@@ -13,13 +15,27 @@ export default function TemplateCatalogView({ templates, loadTemplates, isLoadin
   
   const handleDelete = async (id: string, e: React.MouseEvent) => {
     e.stopPropagation();
-    if (!window.confirm('Yakin ingin menghapus template ini secara permanen?')) return;
+    
+    const result = await Swal.fire({
+      title: 'Hapus Template?',
+      text: 'Yakin ingin menghapus template ini secara permanen?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Ya, Hapus!',
+      cancelButtonText: 'Batal'
+    });
+
+    if (!result.isConfirmed) return;
+
     try {
       await deleteTemplate(id);
       await loadTemplates();
+      Swal.fire('Terhapus!', 'Template berhasil dihapus.', 'success');
     } catch (err) {
       console.error(err);
-      alert('Gagal menghapus template.');
+      Swal.fire('Gagal', 'Gagal menghapus template.', 'error');
     }
   };
 
