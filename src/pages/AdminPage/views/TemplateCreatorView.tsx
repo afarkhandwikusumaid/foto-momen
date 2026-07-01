@@ -64,11 +64,22 @@ export default function TemplateCreatorView({ initialData, onSuccess, onCancel }
       // Deteksi area transparan otomatis
       setIsDetecting(true);
       try {
-        const detectedHoles = await detectTransparentHoles(objectUrl);
-        if (detectedHoles.length > 0) {
-          setPhotoAreas(detectedHoles);
-          setPhotoCount(detectedHoles.length);
-          setLayout(JSON.stringify(detectedHoles));
+        const { holes, processedImageUrl } = await detectTransparentHoles(objectUrl);
+        if (holes.length > 0) {
+          setPhotoAreas(holes);
+          setPhotoCount(holes.length);
+          setLayout(JSON.stringify(holes));
+          
+          if (processedImageUrl) {
+            setPreviewUrl(processedImageUrl);
+            try {
+              const res = await fetch(processedImageUrl);
+              const blob = await res.blob();
+              setFile(new File([blob], selectedFile.name, { type: 'image/png' }));
+            } catch(e) {
+              console.error("Gagal memproses file chroma key", e);
+            }
+          }
         } else {
           alert('Peringatan: Tidak ada area lubang transparan (bolong) yang terdeteksi pada gambar ini.');
           setPhotoAreas([]);

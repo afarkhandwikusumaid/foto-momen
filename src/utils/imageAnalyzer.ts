@@ -1,22 +1,37 @@
-export interface PhotoArea {
-  x: number;      // persentase (0-100)
-  y: number;      // persentase (0-100)
-  width: number;  // persentase (0-100)
-  height: number; // persentase (0-100)
+import { PhotoArea } from '../types';
+
+export interface DetectionResult {
+  holes: PhotoArea[];
+  processedImageUrl: string | null;
+}
+
+/**
+ * Mengecek apakah pixel merupakan target lubang (Transparan, Putih, atau Hijau Green Screen)
+ */
+function isTargetPixel(r: number, g: number, b: number, a: number): boolean {
+  // Transparan (Alpha sangat rendah)
+  if (a <= 20) return true;
+  
+  // Putih Bersih (R, G, B > 245)
+  if (r > 245 && g > 245 && b > 245) return true;
+  
+  // Hijau Terang / Green Screen (G tinggi, R dan B rendah)
+  if (r < 60 && g > 180 && b < 60) return true;
+  
+  return false;
 }
 
 /**
  * Menganalisis gambar PNG (dari URL/ObjectURL) untuk menemukan
- * kotak-kotak transparan (alpha <= threshold).
- * Mengembalikan array Bounding Box dalam format persentase.
+ * kotak-kotak lubang foto. Mendeteksi area transparan, putih bersih, atau hijau terang.
+ * Area yang memenuhi syarat akan diubah menjadi transparan (Alpha = 0).
  */
-export async function detectTransparentHoles(imageUrl: string): Promise<PhotoArea[]> {
+export async function detectTransparentHoles(imageUrl: string): Promise<DetectionResult> {
   return new Promise((resolve, reject) => {
     const img = new Image();
     img.crossOrigin = 'anonymous'; // Jika dari external URL
     img.onload = () => {
       const canvas = document.createElement('canvas');
-      // Membantu performa saat getImageData
       const ctx = canvas.getContext('2d', { willReadFrequently: true });
       if (!ctx) {
          reject(new Error('Canvas 2D context not available'));
@@ -36,24 +51,28 @@ export async function detectTransparentHoles(imageUrl: string): Promise<PhotoAre
       const visited = new Uint8Array(width * height);
       const holes: PhotoArea[] = [];
       
-      // Toleransi pixel transparan (0-255)
-      const ALPHA_THRESHOLD = 20; 
-      // Area minimal untuk dianggap sebagai lubang foto (misal: 2% dari total area)
+      // Area minimal untuk dianggap sebagai lubang foto (2% dari total area)
       const MIN_AREA_PIXELS = (width * height) * 0.02; 
       
       // Antrean untuk algoritma Flood Fill (BFS) menggunakan TypedArray agar super cepat
       const qx = new Int32Array(width * height);
       const qy = new Int32Array(width * height);
       
+      // Variabel untuk melacak apakah ada pixel yang dimodifikasi
+      let imageModified = false;
+      
       for (let y = 0; y < height; y++) {
         for (let x = 0; x < width; x++) {
           const idx = y * width + x;
           if (visited[idx]) continue;
           
-          const alpha = data[(idx * 4) + 3]; // Komponen Alpha (A dari RGBA)
+          const r = data[(idx * 4)];
+          const g = data[(idx * 4) + 1];
+          const b = data[(idx * 4) + 2];
+          const a = data[(idx * 4) + 3];
           
-          if (alpha <= ALPHA_THRESHOLD) {
-             // Ditemukan pixel transparan baru! Mulai pencarian Flood Fill.
+          if (isTargetPixel(r, g, b, a)) {
+             // Ditemukan pixel target baru! Mulai pencarian Flood Fill.
              let minX = x;
              let maxX = x;
              let minY = y;
@@ -91,14 +110,17 @@ export async function detectTransparentHoles(imageUrl: string): Promise<PhotoAre
                  if (nx >= 0 && nx < width && ny >= 0 && ny < height) {
                    const nIdx = ny * width + nx;
                    if (!visited[nIdx]) {
-                     const nAlpha = data[(nIdx * 4) + 3];
-                     if (nAlpha <= ALPHA_THRESHOLD) {
+                     const nr = data[(nIdx * 4)];
+                     const ng = data[(nIdx * 4) + 1];
+                     const nb = data[(nIdx * 4) + 2];
+                     const na = data[(nIdx * 4) + 3];
+                     
+                     if (isTargetPixel(nr, ng, nb, na)) {
                        visited[nIdx] = 1;
                        qx[tail] = nx;
                        qy[tail] = ny;
                        tail++;
                      } else {
-                       // Tandai non-transparan agar tak dicek ulang
                        visited[nIdx] = 1; 
                      }
                    }
@@ -114,24 +136,43 @@ export async function detectTransparentHoles(imageUrl: string): Promise<PhotoAre
                   width: ((maxX - minX + 1) / width) * 100,
                   height: ((maxY - minY + 1) / height) * 100,
                 });
+                
+                // Set semua pixel di area ini menjadi transparan (Alpha = 0)
+                imageModified = true;
+                for (let i = 0; i < tail; i++) {
+                  const px = qx[i];
+                  const py = qy[i];
+                  const pIdx = (py * width + px) * 4;
+                  data[pIdx + 3] = 0; // Set Alpha ke 0
+                }
              }
           } else {
-             visited[idx] = 1; // Pixel padat (non-transparan)
+             visited[idx] = 1; // Pixel padat (non-target)
           }
         }
       }
       
       // Urutkan lubang dari atas ke bawah, lalu kiri ke kanan
       holes.sort((a, b) => {
-        // Jika posisinya di baris yang kurang lebih sama (selisih Y < 5%), urutkan berdasar X (kiri ke kanan)
-        if (Math.abs(a.y - b.y) < 5) {
-          return a.x - b.x;
-        }
-        // Jika tidak, urutkan berdasar Y (atas ke bawah)
+        if (Math.abs(a.y - b.y) < 5) return a.x - b.x;
         return a.y - b.y;
       });
       
-      resolve(holes);
+      if (imageModified) {
+        ctx.putImageData(imgData, 0, 0);
+        canvas.toBlob((blob) => {
+          if (blob) {
+            resolve({
+              holes,
+              processedImageUrl: URL.createObjectURL(blob)
+            });
+          } else {
+            resolve({ holes, processedImageUrl: null });
+          }
+        }, 'image/png');
+      } else {
+        resolve({ holes, processedImageUrl: null });
+      }
     };
     
     img.onerror = () => reject(new Error('Gagal memuat gambar untuk analisis'));
