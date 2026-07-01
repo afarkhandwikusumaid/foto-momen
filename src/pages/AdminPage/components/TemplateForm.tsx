@@ -84,22 +84,7 @@ export default function TemplateForm({
           </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <label className="block text-sm font-bold text-slate-700 mb-1.5">Warna Dasar (Hex)</label>
-            <div className="flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-xl px-3 py-1.5">
-              <input type="color" value={hex} onChange={e => setHex(e.target.value)} className="w-8 h-8 rounded cursor-pointer border-0 p-0 bg-transparent" />
-              <input type="text" value={hex} onChange={e => setHex(e.target.value)} className="w-full bg-transparent text-sm font-mono uppercase focus:outline-none" />
-            </div>
-          </div>
-          <div>
-            <label className="block text-sm font-bold text-slate-700 mb-1.5">Warna Teks</label>
-            <div className="flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-xl px-3 py-1.5">
-              <input type="color" value={textColor} onChange={e => setTextColor(e.target.value)} className="w-8 h-8 rounded cursor-pointer border-0 p-0 bg-transparent" />
-              <input type="text" value={textColor} onChange={e => setTextColor(e.target.value)} className="w-full bg-transparent text-sm font-mono uppercase focus:outline-none" />
-            </div>
-          </div>
-        </div>
+
 
         <div>
           <label className="block text-sm font-bold text-slate-700 mb-1.5">Gambar Overlay (PNG Transparan)</label>
