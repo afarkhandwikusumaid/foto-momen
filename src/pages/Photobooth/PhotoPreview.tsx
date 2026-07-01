@@ -225,6 +225,25 @@ export default function PhotoPreview({
         const ctx = canvas.getContext('2d');
         if (!ctx) return;
 
+        const loadImage = (src: string): Promise<HTMLImageElement> => {
+          return new Promise((resolve, reject) => {
+            const img = new Image();
+            img.crossOrigin = 'anonymous'; // Wajib untuk Supabase Storage URL
+            img.src = src;
+            img.onload = () => resolve(img);
+            img.onerror = reject;
+          });
+        };
+
+        let frameImgOverlay: HTMLImageElement | null = null;
+        if (frameColor.imageUrl) {
+          try {
+            frameImgOverlay = await loadImage(frameColor.imageUrl);
+          } catch (err) {
+            console.error('Gagal memuat gambar frame kustom:', err);
+          }
+        }
+
         let width = 0;
         let height = 0;
         
@@ -232,21 +251,27 @@ export default function PhotoPreview({
         if (borderStyle === 'thin') borderPadding = 20;
         if (borderStyle === 'thick') borderPadding = 55;
 
-        // Determine Canvas dimensions
-        if (layout === 'vertical-strip') {
-          width = 600;
-          const photoW = width - (borderPadding * 2);
-          const photoH = (photoW * 3) / 4;
-          height = (borderPadding * 2) + (photoCount * photoH) + ((photoCount - 1) * 20) + 120;
-        } else if (layout === 'triple-strip') {
-          width = 600;
-          height = 1420;
-        } else if (layout === 'grid-2x2') {
-          width = 800;
-          height = 960;
-        } else { // single-polar
-          width = 600;
-          height = borderPadding * 2 + 450 + 150 + 150;
+        // Use custom frame dimensions if available
+        if (frameImgOverlay) {
+          width = frameImgOverlay.width;
+          height = frameImgOverlay.height;
+        } else {
+          // Fallback to legacy layout dimensions
+          if (layout === 'vertical-strip') {
+            width = 600;
+            const photoW = width - (borderPadding * 2);
+            const photoH = (photoW * 3) / 4;
+            height = (borderPadding * 2) + (photoCount * photoH) + ((photoCount - 1) * 20) + 120;
+          } else if (layout === 'triple-strip') {
+            width = 600;
+            height = 1420;
+          } else if (layout === 'grid-2x2') {
+            width = 800;
+            height = 960;
+          } else { // single-polar
+            width = 600;
+            height = borderPadding * 2 + 450 + 150 + 150;
+          }
         }
 
         canvas.width = width;
@@ -275,26 +300,7 @@ export default function PhotoPreview({
         // Draw Frame Texture Pattern Overlay (Polka, Stars, Grid, etc.)
         drawPattern(ctx, selectedPattern, width, height, frameColor);
 
-        const loadImage = (src: string): Promise<HTMLImageElement> => {
-          return new Promise((resolve, reject) => {
-            const img = new Image();
-            img.crossOrigin = 'anonymous'; // Wajib untuk Supabase Storage URL
-            img.src = src;
-            img.onload = () => resolve(img);
-            img.onerror = reject;
-          });
-        };
-
         const loadedImages = await Promise.all(capturedPhotos.slice(0, photoCount).map(loadImage));
-        
-        let frameImgOverlay: HTMLImageElement | null = null;
-        if (frameColor.imageUrl) {
-          try {
-            frameImgOverlay = await loadImage(frameColor.imageUrl);
-          } catch (err) {
-            console.error('Gagal memuat gambar frame kustom:', err);
-          }
-        }
 
         // Save context and apply combined CSS filter adjustments (Static filter + custom beauty sliders)
         ctx.save();
@@ -303,7 +309,22 @@ export default function PhotoPreview({
         const beautyAdjustments = `brightness(${brightness}%) contrast(${contrast}%) saturate(${saturation}%) blur(${smoothing}px)`;
         ctx.filter = filterBase ? `${filterBase} ${beautyAdjustments}` : beautyAdjustments;
 
-        if (layout === 'vertical-strip') {
+        if (frameColor.photoAreas && frameColor.photoAreas.length > 0) {
+           // Dynamic positioning based on detected transparent holes
+           loadedImages.slice(0, frameColor.photoAreas.length).forEach((img, index) => {
+             const area = frameColor.photoAreas![index];
+             if (area) {
+               // Calculate exact pixel values based on canvas width/height and percentages
+               const dx = (area.x / 100) * width;
+               const dy = (area.y / 100) * height;
+               const dw = (area.width / 100) * width;
+               const dh = (area.height / 100) * height;
+               
+               // Draw the image filling the area, stretching if necessary (usually they match camera aspect ratio)
+               ctx.drawImage(img, dx, dy, dw, dh);
+             }
+           });
+        } else if (layout === 'vertical-strip') {
           const padding = borderPadding;
           const spacing = 20;
           const photoW = width - (padding * 2);

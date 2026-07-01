@@ -269,17 +269,28 @@ export async function getFrameTemplates(): Promise<any[]> {
       .order('created_at', { ascending: false });
     if (error || !data) return [];
     
-    return data.map((t: any) => ({
-      id: t.id,
-      name: t.name,
-      hex: t.hex,
-      textColor: t.text_color,
-      borderClass: t.border_class,
-      imageUrl: t.image_url,
-      layout: t.layout,
-      active: t.active,
-      photoCount: t.photo_count || 4,
-    }));
+    return data.map((t: any) => {
+      let parsedPhotoAreas = undefined;
+      if (t.layout && t.layout.startsWith('[')) {
+        try {
+          parsedPhotoAreas = JSON.parse(t.layout);
+        } catch(e) {
+          console.error('Failed to parse photoAreas', e);
+        }
+      }
+      return {
+        id: t.id,
+        name: t.name,
+        hex: t.hex,
+        textColor: t.text_color,
+        borderClass: t.border_class,
+        imageUrl: t.image_url,
+        layout: t.layout,
+        active: t.active,
+        photoCount: t.photo_count || 4,
+        photoAreas: parsedPhotoAreas
+      };
+    });
   } catch (err) {
     console.error('Supabase get templates failed:', err);
     return [];

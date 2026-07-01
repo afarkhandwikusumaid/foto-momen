@@ -1,6 +1,6 @@
 import React from 'react';
 import { Edit2, Plus, RefreshCw, UploadCloud } from 'lucide-react';
-import { FrameLayout } from '../../../types';
+import { FrameLayout, PhotoArea } from '../../../types';
 
 interface TemplateFormProps {
   editingId: string | null;
@@ -10,6 +10,8 @@ interface TemplateFormProps {
   setLayout: (layout: FrameLayout) => void;
   photoCount: number;
   setPhotoCount: (count: number) => void;
+  photoAreas?: PhotoArea[];
+  isDetecting?: boolean;
   hex: string;
   setHex: (hex: string) => void;
   textColor: string;
@@ -28,6 +30,7 @@ export default function TemplateForm({
   name, setName,
   layout, setLayout,
   photoCount, setPhotoCount,
+  photoAreas, isDetecting,
   hex, setHex,
   textColor, setTextColor,
   isActive, setIsActive,
@@ -86,15 +89,26 @@ export default function TemplateForm({
 
 
 
-        <div>
+        <div className="bg-blue-50/50 p-4 rounded-xl border border-blue-100">
           <label className="block text-sm font-bold text-slate-700 mb-1.5">Gambar Overlay (PNG Transparan)</label>
-          <div className="relative">
+          <div className="relative mb-3">
             <input 
               type="file" accept="image/png" onChange={onFileChange} required={!editingId}
               className="w-full text-sm text-slate-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-bold file:bg-[#1d90ff]/10 file:text-[#1d90ff] hover:file:bg-[#1d90ff]/20 cursor-pointer"
             />
           </div>
-          {editingId && !file && <p className="text-xs text-slate-400 mt-1">Kosongkan jika tidak ingin mengubah gambar.</p>}
+          {isDetecting ? (
+            <div className="flex items-center gap-2 text-sm text-blue-600">
+              <RefreshCw className="w-4 h-4 animate-spin" /> Menganalisis lubang transparan...
+            </div>
+          ) : (
+            photoAreas && photoAreas.length > 0 && (
+              <div className="bg-white p-3 rounded-lg border border-blue-100 text-sm">
+                <span className="font-bold text-slate-800">✅ Deteksi Otomatis:</span> Terdeteksi <span className="font-bold text-blue-600">{photoAreas.length} lubang foto</span> pada frame ini. Tata letak akan otomatis menyesuaikan lubang tersebut!
+              </div>
+            )
+          )}
+          {editingId && !file && <p className="text-xs text-slate-400 mt-2">Kosongkan jika tidak ingin mengubah gambar.</p>}
         </div>
 
         <div className="flex items-center justify-between p-4 bg-slate-50 rounded-xl border border-slate-200">

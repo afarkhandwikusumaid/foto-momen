@@ -137,6 +137,35 @@ export default function FrameSelector({
     const paddingClass = getBorderPaddingClass();
     const textColor = selectedColor.textColor;
 
+    if (selectedColor.photoAreas && selectedColor.photoAreas.length > 0) {
+      return (
+        <div 
+          className={`w-[210px] ${paddingClass} flex flex-col items-center border rounded-none bg-white relative aspect-[2/3]`}
+          style={{ backgroundColor: selectedColor.hex, borderColor: selectedColor.textColor + '22' }}
+        >
+          {selectedColor.imageUrl && (
+            <img src={selectedColor.imageUrl} alt="Frame" className="absolute inset-0 w-full h-full object-fill z-20 pointer-events-none" />
+          )}
+          <div className="absolute inset-0 z-10 pointer-events-none">
+            {selectedColor.photoAreas.map((area, idx) => (
+              <div 
+                key={idx} 
+                className="absolute bg-white/30 rounded overflow-hidden flex items-center justify-center shadow-inner"
+                style={{
+                  left: `${area.x}%`,
+                  top: `${area.y}%`,
+                  width: `${area.width}%`,
+                  height: `${area.height}%`
+                }}
+              >
+                {getPosePlaceholder(idx, "w-full h-full p-1 opacity-50", textColor)}
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+    }
+
     switch (selectedLayout) {
       case 'vertical-strip':
         return (

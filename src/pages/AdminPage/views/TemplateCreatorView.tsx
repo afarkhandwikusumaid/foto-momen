@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import TemplateForm from '../components/TemplateForm';
 import LiveSimulator from '../components/LiveSimulator';
-import { FrameLayout } from '../../../types';
+import { FrameLayout, PhotoArea } from '../../../types';
 import { saveTemplate, uploadTemplateImage } from '../../../services/dbService';
+import { detectTransparentHoles } from '../../../utils/imageAnalyzer';
 
 interface TemplateCreatorViewProps {
   initialData?: any;
@@ -15,13 +16,15 @@ export default function TemplateCreatorView({ initialData, onSuccess, onCancel }
   const [editingId, setEditingId] = useState<string | null>(null);
   const [file, setFile] = useState<File | null>(null);
   const [name, setName] = useState('');
-  const [layout, setLayout] = useState<FrameLayout>('vertical-strip');
+  const [layout, setLayout] = useState<FrameLayout | string>('vertical-strip');
   const [hex, setHex] = useState('#ffffff');
   const [textColor, setTextColor] = useState('#000000');
   const [photoCount, setPhotoCount] = useState<number>(4);
+  const [photoAreas, setPhotoAreas] = useState<PhotoArea[]>([]);
   const [isActive, setIsActive] = useState(true);
   
   const [isUploading, setIsUploading] = useState(false);
+  const [isDetecting, setIsDetecting] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
   useEffect(() => {
@@ -32,6 +35,17 @@ export default function TemplateCreatorView({ initialData, onSuccess, onCancel }
       setHex(initialData.hex || '#ffffff');
       setTextColor(initialData.textColor || '#000000');
       setPhotoCount(initialData.photoCount || 4);
+      
+      // Parse photoAreas dari layout jika formatnya JSON
+      if (initialData.layout && initialData.layout.startsWith('[')) {
+        try {
+          const parsed = JSON.parse(initialData.layout);
+          setPhotoAreas(parsed);
+        } catch (e) {
+          console.error('Failed to parse layout as photoAreas', e);
+        }
+      }
+      
       setIsActive(initialData.active !== false);
       setPreviewUrl(initialData.imageUrl);
       setFile(null);
@@ -40,11 +54,30 @@ export default function TemplateCreatorView({ initialData, onSuccess, onCancel }
     }
   }, [initialData]);
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
-      setFile(e.target.files[0]);
-      const objectUrl = URL.createObjectURL(e.target.files[0]);
+      const selectedFile = e.target.files[0];
+      setFile(selectedFile);
+      const objectUrl = URL.createObjectURL(selectedFile);
       setPreviewUrl(objectUrl);
+      
+      // Deteksi area transparan otomatis
+      setIsDetecting(true);
+      try {
+        const detectedHoles = await detectTransparentHoles(objectUrl);
+        if (detectedHoles.length > 0) {
+          setPhotoAreas(detectedHoles);
+          setPhotoCount(detectedHoles.length);
+          setLayout(JSON.stringify(detectedHoles));
+        } else {
+          alert('Peringatan: Tidak ada area lubang transparan (bolong) yang terdeteksi pada gambar ini.');
+          setPhotoAreas([]);
+        }
+      } catch (err) {
+        console.error('Error mendeteksi frame:', err);
+      } finally {
+        setIsDetecting(false);
+      }
     }
   };
 
@@ -57,6 +90,7 @@ export default function TemplateCreatorView({ initialData, onSuccess, onCancel }
     setHex('#ffffff');
     setTextColor('#000000');
     setPhotoCount(4);
+    setPhotoAreas([]);
     setIsActive(true);
   };
 
@@ -103,8 +137,10 @@ export default function TemplateCreatorView({ initialData, onSuccess, onCancel }
         <TemplateForm 
           editingId={editingId}
           name={name} setName={setName}
-          layout={layout} setLayout={setLayout}
+          layout={layout as any} setLayout={setLayout as any}
           photoCount={photoCount} setPhotoCount={setPhotoCount}
+          photoAreas={photoAreas}
+          isDetecting={isDetecting}
           hex={hex} setHex={setHex}
           textColor={textColor} setTextColor={setTextColor}
           isActive={isActive} setIsActive={setIsActive}
@@ -121,8 +157,9 @@ export default function TemplateCreatorView({ initialData, onSuccess, onCancel }
           previewUrl={previewUrl}
           hex={hex}
           textColor={textColor}
-          layout={layout}
+          layout={layout as any}
           photoCount={photoCount}
+          photoAreas={photoAreas}
           name={name}
         />
       </div>

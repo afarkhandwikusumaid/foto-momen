@@ -1,6 +1,7 @@
 import React from 'react';
 import { Sparkles } from 'lucide-react';
 import { getPosePlaceholder } from '../../Photobooth/PosePlaceholders';
+import { PhotoArea } from '../../../types';
 
 interface LiveSimulatorProps {
   previewUrl: string | null;
@@ -8,6 +9,7 @@ interface LiveSimulatorProps {
   textColor: string;
   layout: string;
   photoCount: number;
+  photoAreas?: PhotoArea[];
   name: string;
 }
 
@@ -17,6 +19,7 @@ export default function LiveSimulator({
   textColor,
   layout,
   photoCount,
+  photoAreas,
   name
 }: LiveSimulatorProps) {
   return (
@@ -45,18 +48,39 @@ export default function LiveSimulator({
           )}
 
           {/* Photos (Underneath) */}
-          <div className={`flex flex-col gap-2 w-full p-3 z-10 pt-4 ${layout === 'grid-2x2' ? 'grid grid-cols-2' : ''}`}>
-            {Array.from({ length: photoCount }).map((_, idx) => (
-              <div key={idx} className="aspect-[4/3] bg-white/30 rounded overflow-hidden flex items-center justify-center border border-white/40 shadow-inner">
-                 {getPosePlaceholder(idx, "w-full h-full p-1", textColor)}
-              </div>
-            ))}
-          </div>
+          {photoAreas && photoAreas.length > 0 ? (
+            <div className="absolute inset-0 z-10 pointer-events-none">
+              {photoAreas.map((area, idx) => (
+                <div 
+                  key={idx} 
+                  className="absolute bg-white/30 rounded overflow-hidden flex items-center justify-center shadow-inner"
+                  style={{
+                    left: `${area.x}%`,
+                    top: `${area.y}%`,
+                    width: `${area.width}%`,
+                    height: `${area.height}%`
+                  }}
+                >
+                  {getPosePlaceholder(idx, "w-full h-full p-1 opacity-50", textColor)}
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className={`flex flex-col gap-2 w-full p-3 z-10 pt-4 ${layout === 'grid-2x2' ? 'grid grid-cols-2' : ''}`}>
+              {Array.from({ length: photoCount }).map((_, idx) => (
+                <div key={idx} className="aspect-[4/3] bg-white/30 rounded overflow-hidden flex items-center justify-center border border-white/40 shadow-inner">
+                   {getPosePlaceholder(idx, "w-full h-full p-1 opacity-50", textColor)}
+                </div>
+              ))}
+            </div>
+          )}
           
-          {/* Footer text simulated */}
-          <div className="z-10 text-center font-display font-black text-[9px] mt-2 mb-3 tracking-widest uppercase" style={{ color: textColor }}>
-            {name || 'Foto Momen'}
-          </div>
+          {/* Footer text simulated (only if using fallback layout, else PNG handles it) */}
+          {(!photoAreas || photoAreas.length === 0) && (
+            <div className="z-10 text-center font-display font-black text-[9px] mt-2 mb-3 tracking-widest uppercase" style={{ color: textColor }}>
+              {name || 'Foto Momen'}
+            </div>
+          )}
         </div>
       </div>
     </div>
