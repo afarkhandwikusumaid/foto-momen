@@ -311,14 +311,33 @@ export default function PhotoPreview({
            loadedImages.slice(0, frameColor.photoAreas.length).forEach((img, index) => {
              const area = frameColor.photoAreas![index];
              if (area) {
-               // Calculate exact pixel values based on canvas width/height and percentages
                const dx = (area.x / 100) * width;
                const dy = (area.y / 100) * height;
                const dw = (area.width / 100) * width;
                const dh = (area.height / 100) * height;
                
-               // Draw the image filling the area, stretching if necessary (usually they match camera aspect ratio)
-               ctx.drawImage(img, dx, dy, dw, dh);
+               // Implement object-cover logic to prevent squishing
+               const imgAspect = img.width / img.height;
+               const destAspect = dw / dh;
+               
+               let sx, sy, sw, sh;
+               
+               if (imgAspect > destAspect) {
+                 // Image is too wide, crop horizontally
+                 sh = img.height;
+                 sw = img.height * destAspect;
+                 sx = (img.width - sw) / 2;
+                 sy = 0;
+               } else {
+                 // Image is too tall, crop vertically
+                 sw = img.width;
+                 sh = img.width / destAspect;
+                 sx = 0;
+                 sy = (img.height - sh) / 2;
+               }
+               
+               // Draw the image with cropping (object-cover)
+               ctx.drawImage(img, sx, sy, sw, sh, dx, dy, dw, dh);
              }
            });
         } else if (layout === 'vertical-strip') {

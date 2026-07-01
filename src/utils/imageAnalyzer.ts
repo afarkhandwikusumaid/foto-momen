@@ -12,11 +12,8 @@ function isTargetPixel(r: number, g: number, b: number, a: number): boolean {
   // Transparan (Alpha sangat rendah)
   if (a <= 20) return true;
   
-  // Putih Bersih (R, G, B > 245)
-  if (r > 245 && g > 245 && b > 245) return true;
-  
-  // Hijau Terang / Green Screen (G tinggi, R dan B rendah)
-  if (r < 60 && g > 180 && b < 60) return true;
+  // Khusus warna #00FF00 (Pure Green / Chroma Key) dengan toleransi anti-aliasing/kompresi
+  if (r < 20 && g > 230 && b < 20) return true;
   
   return false;
 }
