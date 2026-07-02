@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { RefreshCw, Menu, X } from 'lucide-react';
+import { Camera, RefreshCw, Menu, X } from 'lucide-react';
 import { ActivePhase } from '../../types';
 
 interface NavbarProps {
