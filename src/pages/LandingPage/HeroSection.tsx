@@ -35,7 +35,7 @@ export default function HeroSection({ onStart }: HeroSectionProps) {
           </h1>
 
           <p className="text-slate-500 text-sm sm:text-base max-w-xl mx-auto lg:mx-0 leading-relaxed font-medium">
-            Foto Momen menghadirkan pengalaman photobooth interaktif langsung dari browser Anda. Poles dengan <strong>AI Beauty Retouch</strong>, stiker lucu, dan bagikan cetakan digital secara instan!
+            Foto Momen menghadirkan pengalaman photobooth interaktif langsung dari browser Anda. Poles dengan <strong>Live Filters</strong> yang estetik, dan bagikan cetakan foto serta <strong>Live Video</strong> Anda secara instan!
           </p>
 
           <div className="pt-4 flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4">

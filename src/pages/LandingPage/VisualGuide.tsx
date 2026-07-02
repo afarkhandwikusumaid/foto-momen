@@ -46,9 +46,9 @@ export default function VisualGuide() {
             <Download className="h-5 w-5" />
           </div>
           <div className="space-y-2">
-            <h3 className="font-bold text-lg text-slate-850">3. Unduh & Cetak</h3>
+            <h3 className="font-bold text-lg text-slate-850">3. Unduh & Bagikan</h3>
             <p className="text-xs text-slate-500 leading-relaxed">
-              Terapkan filter retro, tempel stiker emoji, lalu unduh berkas atau bagikan cetakan via QR Code.
+              Terapkan live filter, unduh hasil fotomu dalam format gambar atau video, dan bagikan dengan praktis via QR Code.
             </p>
           </div>
         </div>
