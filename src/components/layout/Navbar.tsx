@@ -42,7 +42,7 @@ export default function Navbar({ currentPhase, onReset, activeTab, setActiveTab,
             className="flex items-center gap-2 cursor-pointer group"
           >
             <img src="/favicon/fm-icon.png" alt="Foto Momen Icon" className="h-9 w-auto shrink-0 object-contain" />
-            <img src="/fm-logo-text.png" alt="Foto Momen" className="h-7 w-auto hidden sm:inline-block object-contain ml-1" />
+            <img src="/fm-logo-text.png" alt="Foto Momen" className="h-9 w-auto hidden sm:inline-block object-contain ml-1" />
           </div>
 
           {/* Center: Desktop Navigation Tabs (Only in Landing) */}
