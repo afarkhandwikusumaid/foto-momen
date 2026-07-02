@@ -41,7 +41,7 @@ export default function CameraBooth({ photoCount, onPhotosCaptured, onBack }: Ca
   const [countdown, setCountdown] = useState<number | null>(null);
   const [showFlash, setShowFlash] = useState(false);
   const [cameraPermissionError, setCameraPermissionError] = useState(false);
-  const [statusMessage, setStatusMessage] = useState('Siap berfoto? Klik tombol Mulai di bawah!');
+  const [statusMessage, setStatusMessage] = useState('Siap berfoto? Klik tombol Mulai di atas!');
   
   const [selectedLiveFilter, setSelectedLiveFilter] = useState(LIVE_FILTERS[0]);
   const [countdownDuration, setCountdownDuration] = useState(3);
@@ -61,7 +61,7 @@ export default function CameraBooth({ photoCount, onPhotosCaptured, onBack }: Ca
     setCurrentPoseIndex(0);
     setCountdown(null);
     setShowFlash(false);
-    setStatusMessage('Siap berfoto? Klik tombol Mulai di bawah!');
+    setStatusMessage('Siap berfoto? Klik tombol Mulai di atas!');
   };
 
   const handleUserMediaError = (error: string | DOMException) => {
