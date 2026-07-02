@@ -235,7 +235,7 @@ export default function CameraBooth({ photoCount, onPhotosCaptured, onBack }: Ca
                   screenshotFormat="image/png"
                   videoConstraints={videoConstraints}
                   onUserMediaError={handleUserMediaError}
-                  className="w-full h-full object-cover" 
+                  className="w-full h-full object-cover scale-x-[-1]" 
                   style={{ filter: selectedLiveFilter.css }}
                 />
 
