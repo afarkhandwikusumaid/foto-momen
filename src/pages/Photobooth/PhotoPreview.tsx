@@ -145,6 +145,7 @@ export default function PhotoPreview({
     imageUrl: string;
     qrDataUrl: string;
     videoUrl?: string;
+    liveQrDataUrl?: string;
   } | null>(null);
   const [isUploading, setIsUploading] = useState(false);
 

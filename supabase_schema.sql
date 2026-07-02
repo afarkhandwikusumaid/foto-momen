@@ -1,41 +1,46 @@
 -- ==========================================
--- SUPABASE SCHEMA SETUP FOR FOTO MOMEN
--- Clean version: only tables that are actively used.
+-- SUPABASE FULL RESET SCRIPT FOR FOTO MOMEN
+-- WARNING: This will delete ALL existing data!
 -- Run this in your Supabase SQL Editor.
 -- ==========================================
 
--- Drop unused legacy tables (if they exist from previous schema)
-DROP TABLE IF EXISTS public.backdrops CASCADE;
-DROP TABLE IF EXISTS public.stickers CASCADE;
-DROP TABLE IF EXISTS public.fonts CASCADE;
+-- ==========================================
+-- STEP 1: DROP ALL LEGACY & EXISTING TABLES
+-- ==========================================
+DROP TABLE IF EXISTS public.photo_sessions CASCADE;
+DROP TABLE IF EXISTS public.templates      CASCADE;
+DROP TABLE IF EXISTS public.backdrops      CASCADE;
+DROP TABLE IF EXISTS public.stickers       CASCADE;
+DROP TABLE IF EXISTS public.fonts          CASCADE;
+DROP TABLE IF EXISTS public.booking        CASCADE;
 
 -- ==========================================
--- 1. Table: templates
--- Frame templates created by admin (with custom image overlay and photo areas)
+-- STEP 2: RECREATE TABLE templates
+-- Frame templates created by admin
 -- ==========================================
-CREATE TABLE IF NOT EXISTS public.templates (
+CREATE TABLE public.templates (
     id           TEXT PRIMARY KEY,
-    name         TEXT NOT NULL,
-    hex          TEXT NOT NULL DEFAULT '#ffffff',
-    text_color   TEXT NOT NULL DEFAULT '#000000',
-    border_class TEXT NOT NULL DEFAULT 'border-slate-200',
+    name         TEXT    NOT NULL,
+    hex          TEXT    NOT NULL DEFAULT '#ffffff',
+    text_color   TEXT    NOT NULL DEFAULT '#000000',
+    border_class TEXT    NOT NULL DEFAULT 'border-slate-200',
     image_url    TEXT,
-    layout       TEXT NOT NULL DEFAULT 'vertical-strip',
+    layout       TEXT    NOT NULL DEFAULT 'vertical-strip',
     photo_count  INTEGER NOT NULL DEFAULT 4,
     active       BOOLEAN NOT NULL DEFAULT true,
     created_at   TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
 -- ==========================================
--- 2. Table: photo_sessions
--- Records each completed photobooth session (image upload + metadata)
+-- STEP 3: RECREATE TABLE photo_sessions
+-- Records each completed photobooth session
 -- ==========================================
-CREATE TABLE IF NOT EXISTS public.photo_sessions (
+CREATE TABLE public.photo_sessions (
     id             BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    session_id     TEXT UNIQUE NOT NULL,
+    session_id     TEXT    UNIQUE NOT NULL,
     user_id        UUID,
-    image_url      TEXT NOT NULL,
-    layout         TEXT NOT NULL,
+    image_url      TEXT    NOT NULL,
+    layout         TEXT    NOT NULL,
     frame_color_id TEXT,
     filter         TEXT,
     sticker_text   TEXT,
@@ -44,38 +49,44 @@ CREATE TABLE IF NOT EXISTS public.photo_sessions (
 );
 
 -- ==========================================
--- ROW LEVEL SECURITY (RLS) POLICIES
+-- STEP 4: ENABLE ROW LEVEL SECURITY
 -- ==========================================
-
 ALTER TABLE public.templates      ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.photo_sessions ENABLE ROW LEVEL SECURITY;
 
--- Templates: public read, admin full access
-DROP POLICY IF EXISTS "Allow public read templates"      ON public.templates;
-DROP POLICY IF EXISTS "Allow admin operations templates" ON public.templates;
-CREATE POLICY "Allow public read templates"      ON public.templates FOR SELECT USING (true);
-CREATE POLICY "Allow admin operations templates" ON public.templates FOR ALL    USING (true);
+-- ==========================================
+-- STEP 5: RLS POLICIES — templates
+-- ==========================================
+CREATE POLICY "Allow public read templates"
+    ON public.templates FOR SELECT USING (true);
 
--- Photo Sessions: public insert + select, admin full access
-DROP POLICY IF EXISTS "Allow public insert sessions"     ON public.photo_sessions;
-DROP POLICY IF EXISTS "Allow public select own sessions" ON public.photo_sessions;
-DROP POLICY IF EXISTS "Allow admin operations sessions"  ON public.photo_sessions;
-CREATE POLICY "Allow public insert sessions"     ON public.photo_sessions FOR INSERT WITH CHECK (true);
-CREATE POLICY "Allow public select own sessions" ON public.photo_sessions FOR SELECT USING (true);
-CREATE POLICY "Allow admin operations sessions"  ON public.photo_sessions FOR ALL    USING (true);
+CREATE POLICY "Allow admin operations templates"
+    ON public.templates FOR ALL USING (true);
 
 -- ==========================================
--- STORAGE BUCKET
--- Create a bucket named 'photobooth' in the Storage panel
--- and set it to PUBLIC access, then run these policies:
+-- STEP 6: RLS POLICIES — photo_sessions
 -- ==========================================
+CREATE POLICY "Allow public insert sessions"
+    ON public.photo_sessions FOR INSERT WITH CHECK (true);
 
--- Storage RLS: allow anyone to read & upload to photobooth bucket
+CREATE POLICY "Allow public select sessions"
+    ON public.photo_sessions FOR SELECT USING (true);
+
+CREATE POLICY "Allow admin operations sessions"
+    ON public.photo_sessions FOR ALL USING (true);
+
+-- ==========================================
+-- STEP 7: STORAGE RLS — photobooth bucket
+-- Run AFTER creating the 'photobooth' bucket manually in Storage panel
+-- ==========================================
 DROP POLICY IF EXISTS "Public read photobooth"   ON storage.objects;
 DROP POLICY IF EXISTS "Public upload photobooth" ON storage.objects;
+
 CREATE POLICY "Public read photobooth"
     ON storage.objects FOR SELECT
     USING (bucket_id = 'photobooth');
+
 CREATE POLICY "Public upload photobooth"
     ON storage.objects FOR INSERT
     WITH CHECK (bucket_id = 'photobooth');
+
