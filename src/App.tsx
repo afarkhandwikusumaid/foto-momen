@@ -79,7 +79,7 @@ export default function App() {
           if (session) {
             setSharedSession(session);
             // Check if corresponding webm exists
-            const imgUrl = session.image_url || session.imageUrl;
+            const imgUrl = (session as any).image_url || session.imageUrl;
             if (imgUrl) {
               const vUrl = imgUrl.replace('.png', '.webm');
               try {
@@ -190,7 +190,7 @@ export default function App() {
                      />
                   ) : (
                     <img
-                      src={sharedSession.image_url || sharedSession.imageUrl}
+                      src={(sharedSession as any).image_url || sharedSession.imageUrl}
                       alt="Foto Momen Shared"
                       className="max-h-[55vh] object-contain rounded-xl"
                     />
