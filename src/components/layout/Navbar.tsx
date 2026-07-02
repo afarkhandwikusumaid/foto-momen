@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Camera, RefreshCw, Menu, X } from 'lucide-react';
+import { RefreshCw, Menu, X } from 'lucide-react';
 import { ActivePhase } from '../../types';
 
 interface NavbarProps {
@@ -42,7 +42,7 @@ export default function Navbar({ currentPhase, onReset, activeTab, setActiveTab,
             className="flex items-center gap-2 cursor-pointer group"
           >
             <img src="/favicon/fm-icon.png" alt="Foto Momen Icon" className="h-9 w-auto shrink-0 object-contain" />
-            <img src="/fm-logo-text.png" alt="Foto Momen" className="h-5 w-auto hidden sm:inline-block object-contain ml-1" />
+            <img src="/fm-logo-text.png" alt="Foto Momen" className="h-7 w-auto hidden sm:inline-block object-contain ml-1" />
           </div>
 
           {/* Center: Desktop Navigation Tabs (Only in Landing) */}
@@ -89,7 +89,7 @@ export default function Navbar({ currentPhase, onReset, activeTab, setActiveTab,
                 onClick={onStartBooth}
                 className="hidden sm:flex items-center gap-1.5 rounded-full bg-[#1d90ff] hover:bg-blue-600 text-white px-5 py-2.5 text-xs font-extrabold shadow-md shadow-blue-500/20 cursor-pointer transition-all active:scale-95"
               >
-                <Camera className="h-3.5 w-3.5" />
+                <img src="/favicon/fm-icon.png" alt="" className="h-3.5 w-3.5 object-contain" />
                 <span>Mulai Foto</span>
               </button>
             )}
@@ -133,7 +133,7 @@ export default function Navbar({ currentPhase, onReset, activeTab, setActiveTab,
                 onClick={() => { onStartBooth(); setMobileMenuOpen(false); }}
                 className="mt-2 flex items-center justify-center gap-1.5 rounded-xl bg-[#1d90ff] text-white px-4 py-3.5 text-sm font-bold shadow-md shadow-blue-500/20 active:scale-95 transition-all w-full"
               >
-                <Camera className="h-4 w-4" />
+                <img src="/favicon/fm-icon.png" alt="" className="h-4 w-4 object-contain" />
                 <span>Mulai Foto Sekarang</span>
               </button>
           </div>
