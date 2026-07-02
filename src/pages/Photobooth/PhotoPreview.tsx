@@ -12,7 +12,7 @@ import {
 } from '../../services/dbService';
 import confetti from 'canvas-confetti';
 import BeautySliders from './BeautySliders';
-import LiveGifPreview from './LiveGifPreview';
+import LiveGifPreview, { LiveGifPreviewRef } from './LiveGifPreview';
 import PhotoPreviewControls from './PhotoPreviewControls';
 import ShareSuccessPanel from './ShareSuccessPanel';
 
@@ -20,6 +20,7 @@ interface PhotoPreviewProps {
   frameColor: FrameColor;
   photoCount: PhotoCount;
   capturedPhotos: string[];
+  capturedVideos: Blob[];
   onBackToSelector: () => void;
 }
 
@@ -124,6 +125,7 @@ export default function PhotoPreview({
   frameColor,
   photoCount,
   capturedPhotos,
+  capturedVideos,
   onBackToSelector,
 }: PhotoPreviewProps) {
   // Derive layout and borderStyle from frameColor (since they are no longer props)
@@ -139,6 +141,7 @@ export default function PhotoPreview({
   const [finalImageBase64, setFinalImageBase64] = useState<string>('');
   const [isProcessing, setIsProcessing] = useState(true);
   const [activePreviewTab, setActivePreviewTab] = useState<'print' | 'live'>('print');
+  const liveGifRef = useRef<LiveGifPreviewRef>(null);
 
   // Dynamic Lists from Database/Local fallbacks
   const [dbBackdrops, setDbBackdrops] = useState<CustomBackdrop[]>([]);
@@ -442,6 +445,15 @@ export default function PhotoPreview({
     if (!finalImageBase64 || isUploading) return;
     setIsUploading(true);
     try {
+      let videoBlob: Blob | undefined;
+      if (capturedVideos && capturedVideos.length > 0 && liveGifRef.current) {
+        try {
+          videoBlob = await liveGifRef.current.generateVideoBlob();
+        } catch (e) {
+          console.error("Gagal men-generate video blob:", e);
+        }
+      }
+
       // 4. Upload to Supabase
       const result = await uploadPhotoSession(finalImageBase64, {
         layout,
@@ -449,7 +461,7 @@ export default function PhotoPreview({
         filter: selectedFilter,
         stickerText: stickerText,
         showDate: showDate
-      });
+      }, videoBlob);
 
 
       const QRCode = await import('qrcode');
@@ -545,10 +557,11 @@ export default function PhotoPreview({
               )
             ) : (
               <LiveGifPreview
+                ref={liveGifRef}
                 photos={capturedPhotos}
+                videos={capturedVideos}
                 filterCss={FILTERS.find(f => f.id === selectedFilter)?.css || 'none'}
-                frameColor={frameColor.hex}
-                textColor={frameColor.textColor}
+                frame={frameColor}
                 caption={stickerText}
               />
             )}

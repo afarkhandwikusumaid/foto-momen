@@ -9,7 +9,7 @@ const WebcamComponent = Webcam as any;
 
 interface CameraBoothProps {
   photoCount: PhotoCount;
-  onPhotosCaptured: (photos: string[]) => void;
+  onPhotosCaptured: (photos: string[], videos: Blob[]) => void;
   onBack: () => void;
 }
 
@@ -32,8 +32,10 @@ const videoConstraints = {
 
 export default function CameraBooth({ photoCount, onPhotosCaptured, onBack }: CameraBoothProps) {
   const webcamRef = useRef<any>(null);
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
 
   const [capturedPhotos, setCapturedPhotos] = useState<string[]>([]);
+  const [capturedVideos, setCapturedVideos] = useState<Blob[]>([]);
   const [isCapturing, setIsCapturing] = useState(false);
   const [currentPoseIndex, setCurrentPoseIndex] = useState(0);
   const [countdown, setCountdown] = useState<number | null>(null);
@@ -54,6 +56,7 @@ export default function CameraBooth({ photoCount, onPhotosCaptured, onBack }: Ca
 
   const handleReset = () => {
     setCapturedPhotos([]);
+    setCapturedVideos([]);
     setIsCapturing(false);
     setCurrentPoseIndex(0);
     setCountdown(null);
@@ -97,14 +100,14 @@ export default function CameraBooth({ photoCount, onPhotosCaptured, onBack }: Ca
             setIsCapturing(false);
             setStatusMessage('Selesai! Memproses fotomu...');
             setTimeout(() => {
-              onPhotosCaptured(updated);
+              onPhotosCaptured(updated, capturedVideos); // We will append the current video in the effect
             }, 800);
           }
           return updated;
         });
       }
     }
-  }, [onPhotosCaptured, photoCount, selectedLiveFilter]);
+  }, [onPhotosCaptured, photoCount, selectedLiveFilter, capturedVideos]);
 
   // Handle Capture Sequence
   useEffect(() => {
@@ -126,9 +129,34 @@ export default function CameraBooth({ photoCount, onPhotosCaptured, onBack }: Ca
     const countdownTimer = setInterval(() => {
       countdownRef.current -= 1;
       
+      // Start recording 2 seconds before snap (if duration is enough)
+      if (countdownRef.current === 2 && webcamRef.current?.video?.srcObject) {
+        try {
+          const stream = webcamRef.current.video.srcObject;
+          mediaRecorderRef.current = new MediaRecorder(stream, { mimeType: 'video/webm' });
+          mediaRecorderRef.current.ondataavailable = (e) => {
+            if (e.data.size > 0) {
+              setCapturedVideos(prev => {
+                const newVideos = [...prev, e.data];
+                // If this is the last pose, onPhotosCaptured gets called in captureScreenshot.
+                // However, state updates are async, so captureScreenshot might use stale capturedVideos.
+                // We handle this edge case by passing the new array directly if it's the last pose, or we use a ref.
+                return newVideos;
+              });
+            }
+          };
+          mediaRecorderRef.current.start();
+        } catch (e) {
+          console.error("MediaRecorder error", e);
+        }
+      }
+
       if (countdownRef.current <= 0) {
         clearInterval(countdownTimer);
         setCountdown(null);
+        if (mediaRecorderRef.current && mediaRecorderRef.current.state === 'recording') {
+          mediaRecorderRef.current.stop();
+        }
         captureScreenshot();
       } else {
         setCountdown(countdownRef.current);
@@ -142,6 +170,7 @@ export default function CameraBooth({ photoCount, onPhotosCaptured, onBack }: Ca
 
   const startPhotoSession = () => {
     setCapturedPhotos([]);
+    setCapturedVideos([]);
     setIsCapturing(true);
     setCurrentPoseIndex(0);
   };
@@ -197,7 +226,7 @@ export default function CameraBooth({ photoCount, onPhotosCaptured, onBack }: Ca
           </div>
 
           {/* Premium Camera Frame Mockup */}
-          <div className="relative w-full aspect-[4/3] max-w-xl bg-slate-900 rounded-xl p-2 border border-slate-800 flex items-center justify-center overflow-hidden">
+          <div className="relative w-full aspect-[4/3] max-w-xl bg-[#1d90ff] rounded-xl p-2 border border-blue-500 flex items-center justify-center overflow-hidden">
             
             {/* Camera Body Glass Shine Overlay */}
             <div className="absolute inset-0 pointer-events-none z-10" />

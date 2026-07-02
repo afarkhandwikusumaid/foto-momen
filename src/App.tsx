@@ -31,10 +31,13 @@ export default function App() {
   const [selectedColor, setSelectedColor] = useState<FrameColor>(EMPTY_FRAME);
   const [activeTab, setActiveTab] = useState<'home' | 'catalog'>('home');
   const [capturedPhotos, setCapturedPhotos] = useState<string[]>([]);
+  const [capturedVideos, setCapturedVideos] = useState<Blob[]>([]);
   const [photoCount, setPhotoCount] = useState<PhotoCount>(4);
   const [photoAreas, setPhotoAreas] = useState<PhotoArea[]>([]);
 
   const [sharedSession, setSharedSession] = useState<any>(null);
+  const [hasVideo, setHasVideo] = useState(false);
+  const [videoUrl, setVideoUrl] = useState<string | null>(null);
   const [isLoadingShare, setIsLoadingShare] = useState(false);
 
   // Initialize Anonymous Auth and check share parameter
@@ -46,8 +49,24 @@ export default function App() {
     if (shareId) {
       setIsLoadingShare(true);
       getPhotoSession(shareId)
-        .then((session) => {
-          if (session) setSharedSession(session);
+        .then(async (session) => {
+          if (session) {
+            setSharedSession(session);
+            // Check if corresponding webm exists
+            const imgUrl = session.image_url || session.imageUrl;
+            if (imgUrl) {
+              const vUrl = imgUrl.replace('.png', '.webm');
+              try {
+                const res = await fetch(vUrl, { method: 'HEAD' });
+                if (res.ok) {
+                  setHasVideo(true);
+                  setVideoUrl(vUrl);
+                }
+              } catch (e) {
+                console.error("Video not found:", e);
+              }
+            }
+          }
         })
         .catch(console.error)
         .finally(() => setIsLoadingShare(false));
@@ -74,14 +93,16 @@ export default function App() {
 
   const handleResetToHome = () => {
     setCapturedPhotos([]);
+    setCapturedVideos([]);
     setCurrentPhase('landing');
     if (window.location.search.includes('share')) {
       window.history.replaceState({}, document.title, window.location.pathname);
     }
   };
 
-  const handlePhotosCaptured = (photos: string[]) => {
+  const handlePhotosCaptured = (photos: string[], videos: Blob[]) => {
     setCapturedPhotos(photos);
+    setCapturedVideos(videos);
     setCurrentPhase('live-preview');
   };
 
@@ -134,21 +155,53 @@ export default function App() {
                 <p className="text-slate-500 text-sm mb-6">Seseorang membagikan momen bahagianya denganmu!</p>
 
                 <div className="bg-slate-50 p-2 rounded-2xl border border-slate-100 inline-block mb-6 max-w-full">
-                  <img
-                    src={sharedSession.imageUrl}
-                    alt="Foto Momen Shared"
-                    className="max-h-[55vh] object-contain rounded-xl"
-                  />
+                  {hasVideo && videoUrl ? (
+                     <video
+                       src={videoUrl}
+                       autoPlay muted loop playsInline
+                       className="max-h-[55vh] object-contain rounded-xl"
+                     />
+                  ) : (
+                    <img
+                      src={sharedSession.image_url || sharedSession.imageUrl}
+                      alt="Foto Momen Shared"
+                      className="max-h-[55vh] object-contain rounded-xl"
+                    />
+                  )}
                 </div>
 
                 <div className="flex flex-col gap-3 w-full">
-                  <button
-                    onClick={handleDownloadShared}
-                    className="w-full flex items-center justify-center gap-2 py-4 bg-slate-800 hover:bg-slate-900 text-white rounded-full font-bold shadow-md transition duration-200 cursor-pointer"
-                  >
-                    <Download className="w-5 h-5" />
-                    Download Foto
-                  </button>
+                  <div className="flex gap-3 w-full">
+                    <button
+                      onClick={handleDownloadShared}
+                      className="w-full flex items-center justify-center gap-2 py-4 bg-slate-800 hover:bg-slate-900 text-white rounded-full font-bold shadow-md transition duration-200 cursor-pointer"
+                    >
+                      <Download className="w-5 h-5" />
+                      Foto
+                    </button>
+                    {hasVideo && videoUrl && (
+                      <button
+                        onClick={async () => {
+                           try {
+                             const response = await fetch(videoUrl);
+                             const blob = await response.blob();
+                             const url = window.URL.createObjectURL(blob);
+                             const a = document.createElement('a');
+                             a.href = url;
+                             a.download = `Live_FotoMomen_${Date.now()}.webm`;
+                             document.body.appendChild(a);
+                             a.click();
+                             window.URL.revokeObjectURL(url);
+                             a.remove();
+                           } catch(e) { console.error(e); }
+                        }}
+                        className="w-full flex items-center justify-center gap-2 py-4 bg-[#ff007f] hover:bg-[#d6006a] text-white rounded-full font-bold shadow-md transition duration-200 cursor-pointer"
+                      >
+                        <Download className="w-5 h-5" />
+                        Live Video
+                      </button>
+                    )}
+                  </div>
                   <button
                     onClick={() => {
                       window.history.replaceState({}, document.title, window.location.pathname);
@@ -210,6 +263,7 @@ export default function App() {
                   frameColor={selectedColor}
                   photoCount={photoCount}
                   capturedPhotos={capturedPhotos}
+                  capturedVideos={capturedVideos}
                   onBackToSelector={() => setCurrentPhase('select-frame')}
                 />
               )}

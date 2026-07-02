@@ -58,78 +58,7 @@ export default function PhotoPreviewControls({
 }: PhotoPreviewControlsProps) {
   return (
     <>
-      {/* 1. Warna Frame Row (Circles) */}
-      <div className="bg-white border border-slate-200 p-6 rounded-xl space-y-3">
-        <h3 className="text-xs font-bold text-slate-800 uppercase tracking-wider mb-2">
-          Warna Frame
-        </h3>
-        
-        <div className="flex items-center gap-3 overflow-x-auto pb-2 scrollbar-thin select-none">
-          <button
-            onClick={() => {
-              if (dbBackdrops.length > 0) {
-                setSelectedBackdrop(dbBackdrops[0]);
-              }
-            }}
-            className={`h-9 w-9 rounded-full bg-gradient-to-tr from-pink-400 via-purple-500 to-indigo-500 border transition cursor-pointer flex-shrink-0 ${
-              selectedBackdrop !== null ? 'ring-2 ring-offset-2 ring-blue-500 scale-105' : 'border-slate-200'
-            }`}
-            title="Ganti Background Gradasi"
-          />
-
-          {allFrameColors.map(color => {
-            const isSelected = frameColor.id === color.id && selectedBackdrop === null;
-            return (
-              <button
-                key={color.id}
-                onClick={() => {
-                  setSelectedBackdrop(null);
-                  onColorSelect(color);
-                }}
-                style={{ backgroundColor: color.hex }}
-                className={`h-9 w-9 rounded-full border transition-all cursor-pointer flex-shrink-0 ${
-                  isSelected
-                    ? 'ring-2 ring-offset-2 ring-[#1d90ff] border-[#1d90ff]'
-                    : 'border-slate-300'
-                }`}
-                title={color.name}
-              />
-            );
-          })}
-        </div>
-      </div>
-
-      {/* 2. Stiker / Pola Frame Grid */}
-      <div className="bg-white border border-slate-200 p-6 rounded-xl space-y-3 mt-4">
-        <h3 className="text-xs font-bold text-slate-800 uppercase tracking-wider mb-2">
-          Stiker (Motif Frame)
-        </h3>
-        <div className="grid grid-cols-3 sm:grid-cols-6 gap-3">
-          {FRAME_PATTERNS.map(pattern => {
-            const isSelected = selectedPattern === pattern.id;
-            return (
-              <button
-                key={pattern.id}
-                onClick={() => setSelectedPattern(pattern.id)}
-                className={`flex flex-col items-center justify-center p-2 h-16 rounded-lg border transition-colors cursor-pointer overflow-hidden ${
-                  isSelected
-                    ? 'border-[#1d90ff] bg-blue-50 text-[#1d90ff] font-bold'
-                    : 'border-slate-200 bg-white hover:border-slate-300 text-slate-500'
-                }`}
-              >
-                <div className={`w-8 h-8 rounded-lg mb-1 shadow-inner border border-slate-100 ${pattern.previewClass}`}>
-                  {pattern.id === 'dots' || pattern.id === 'grid' ? null : pattern.icon}
-                </div>
-                <span className="text-[9px] font-black text-slate-500 truncate w-full text-center">
-                  {pattern.name}
-                </span>
-              </button>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* 3. Latar Belakang Gradasi (Gradients) */}
+      {/* 1. Latar Belakang Gradasi (Gradients) */}
       {selectedBackdrop !== null && (
         <div className="bg-white border border-slate-200 p-6 rounded-3xl shadow-sm animate-fade-in">
           <h3 className="text-xs font-extrabold text-slate-800 uppercase tracking-wider mb-3">

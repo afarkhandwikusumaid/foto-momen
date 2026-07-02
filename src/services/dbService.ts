@@ -125,8 +125,9 @@ export async function uploadTemplateImage(file: File): Promise<string> {
  */
 export async function uploadPhotoSession(
   finalBase64: string,
-  metadata: PhotoSessionMetadata
-): Promise<{ sessionId: string; shareUrl: string; imageUrl: string }> {
+  metadata: PhotoSessionMetadata,
+  videoBlob?: Blob
+): Promise<{ sessionId: string; shareUrl: string; imageUrl: string; videoUrl?: string }> {
 
   if (!isSupabaseReady) {
     throw new Error('Supabase belum dikonfigurasi.');
@@ -135,6 +136,7 @@ export async function uploadPhotoSession(
   const uid = await ensureAuth();
   const sessionId = `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
   const filename = `${uid}/${sessionId}.png`;
+  const videoFilename = `${uid}/${sessionId}.webm`;
 
   // Convert base64 to Blob
   let response = await fetch(finalBase64);
@@ -161,6 +163,7 @@ export async function uploadPhotoSession(
     }
   }
 
+  // Upload image
   const { error: uploadError } = await supabase.storage
     .from('photobooth')
     .upload(filename, blob, { contentType: blob.type, upsert: true });
@@ -169,6 +172,19 @@ export async function uploadPhotoSession(
 
   const { data: urlData } = supabase.storage.from('photobooth').getPublicUrl(filename);
   const imageUrl = urlData.publicUrl;
+
+  // Upload video if present
+  let videoUrl: string | undefined = undefined;
+  if (videoBlob) {
+    const { error: videoUploadError } = await supabase.storage
+      .from('photobooth')
+      .upload(videoFilename, videoBlob, { contentType: 'video/webm', upsert: true });
+    
+    if (!videoUploadError) {
+      const { data: videoUrlData } = supabase.storage.from('photobooth').getPublicUrl(videoFilename);
+      videoUrl = videoUrlData.publicUrl;
+    }
+  }
 
   const { data: dbData, error: dbError } = await supabase
     .from('photo_sessions')
@@ -190,7 +206,7 @@ export async function uploadPhotoSession(
   const recordId = dbData && dbData.length > 0 ? dbData[0].id : sessionId;
   const shareUrl = `${window.location.origin}?share=${recordId}`;
 
-  return { sessionId: recordId.toString(), shareUrl, imageUrl };
+  return { sessionId: recordId.toString(), shareUrl, imageUrl, videoUrl };
 }
 
 // ============================================================
