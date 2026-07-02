@@ -1,15 +1,8 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { Download, Palette, Sparkles, Wand2, ArrowLeft, Type, Calendar, Cloud, Check, QrCode, X } from 'lucide-react';
-import { FrameLayout, FrameColor, PhotoFilter, PhotoCount, BorderStyle } from '../../types';
+import { Sparkles } from 'lucide-react';
+import { FrameLayout, FrameColor, PhotoFilter, PhotoCount } from '../../types';
 import Swal from 'sweetalert2';
-import { 
-  uploadPhotoSession, 
-  getBackdrops, 
-  getFonts,
-  getFrameTemplates,
-  CustomBackdrop, 
-  CustomFont 
-} from '../../services/dbService';
+import { uploadPhotoSession, getFrameTemplates } from '../../services/dbService';
 import confetti from 'canvas-confetti';
 import BeautySliders from './BeautySliders';
 import LiveGifPreview, { LiveGifPreviewRef } from './LiveGifPreview';
@@ -128,9 +121,7 @@ export default function PhotoPreview({
   capturedVideos,
   onBackToSelector,
 }: PhotoPreviewProps) {
-  // Derive layout and borderStyle from frameColor (since they are no longer props)
   const layout: FrameLayout = (frameColor.layout as FrameLayout) || 'vertical-strip';
-  const borderStyle = 'classic' as string;
   // onColorSelect is no longer needed (frame is fixed once selected)
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -143,13 +134,6 @@ export default function PhotoPreview({
   const [activePreviewTab, setActivePreviewTab] = useState<'print' | 'live'>('print');
   const liveGifRef = useRef<LiveGifPreviewRef>(null);
 
-  // Dynamic Lists from Database/Local fallbacks
-  const [dbBackdrops, setDbBackdrops] = useState<CustomBackdrop[]>([]);
-  const [selectedBackdrop, setSelectedBackdrop] = useState<CustomBackdrop | null>(null);
-  const [dbFonts, setDbFonts] = useState<CustomFont[]>([]);
-  const [selectedFont, setSelectedFont] = useState('Playfair Display');
-  const [customTemplates, setCustomTemplates] = useState<FrameColor[]>([]);
-
   // Beauty Retouch sliders states
   const [brightness, setBrightness] = useState(100);
   const [contrast, setContrast] = useState(100);
@@ -160,59 +144,27 @@ export default function PhotoPreview({
     shareUrl: string;
     imageUrl: string;
     qrDataUrl: string;
+    videoUrl?: string;
   } | null>(null);
   const [isUploading, setIsUploading] = useState(false);
-  const [copied, setCopied] = useState(false);
-  const [sessionRecorded, setSessionRecorded] = useState(false);
 
-  // Load customizations on mount
+  // Load admin custom templates for color reference only
+  const [customTemplates, setCustomTemplates] = useState<FrameColor[]>([]);
   useEffect(() => {
-    getBackdrops().then(data => {
-      setDbBackdrops(data.filter(b => b.active));
-    }).catch(console.error);
-
-    getFonts().then(data => {
-      const active = data.filter(f => f.active);
-      if (active.length > 0) {
-        setDbFonts(active);
-        setSelectedFont(active[0].name);
-      }
-    }).catch(console.error);
-
     getFrameTemplates().then(data => {
       if (data && data.length > 0) {
-        const mapped = data.map((t: any) => ({
+        setCustomTemplates(data.map(t => ({
           id: t.id,
           name: t.name,
           bgClass: 'bg-custom',
           hex: t.hex,
-          textColor: t.text_color || t.textColor || '#ffffff',
-          borderClass: t.border_class || t.borderClass || 'border-slate-200'
-        }));
-        setCustomTemplates(mapped);
+          textColor: t.textColor || '#ffffff',
+          borderClass: t.borderClass || 'border-slate-200'
+        })));
       }
     }).catch(console.error);
   }, []);
 
-  // Dynamically load selected fonts link
-  useEffect(() => {
-    if (dbFonts.length > 0) {
-      const fontFamilies = dbFonts.map(f => f.name.replace(/\s+/g, '+')).join('|');
-      const href = `https://fonts.googleapis.com/css2?family=${fontFamilies}&display=swap`;
-      const id = 'dynamic-google-fonts';
-      
-      let link = document.getElementById(id) as HTMLLinkElement;
-      if (!link) {
-        link = document.createElement('link');
-        link.id = id;
-        link.rel = 'stylesheet';
-        document.head.appendChild(link);
-      }
-      link.href = href;
-    }
-  }, [dbFonts]);
-
-  // Only use admin custom templates (no default color swatches)
   const allFrameColors = [...customTemplates];
 
   useEffect(() => {
@@ -247,10 +199,7 @@ export default function PhotoPreview({
 
         let width = 0;
         let height = 0;
-        
-        let borderPadding = 35;
-        if (borderStyle === 'thin') borderPadding = 20;
-        if (borderStyle === 'thick') borderPadding = 55;
+        const borderPadding = 35;
 
         // Use custom frame dimensions if available
         if (frameImgOverlay) {
@@ -278,24 +227,8 @@ export default function PhotoPreview({
         canvas.width = width;
         canvas.height = height;
 
-        // Draw card frame background (solid color or linear-gradient digital backdrop)
-        if (selectedBackdrop) {
-          if (selectedBackdrop.value.includes('gradient')) {
-            const hexes = selectedBackdrop.value.match(/#[0-9a-fA-F]{6}/g);
-            if (hexes && hexes.length >= 2) {
-              const grad = ctx.createLinearGradient(0, 0, width, height);
-              grad.addColorStop(0, hexes[0]);
-              grad.addColorStop(1, hexes[1]);
-              ctx.fillStyle = grad;
-            } else {
-              ctx.fillStyle = selectedBackdrop.value;
-            }
-          } else {
-            ctx.fillStyle = selectedBackdrop.value;
-          }
-        } else {
-          ctx.fillStyle = frameColor.hex;
-        }
+        // Draw card frame background
+        ctx.fillStyle = frameColor.hex;
         ctx.fillRect(0, 0, width, height);
 
         // Draw Frame Texture Pattern Overlay (Polka, Stars, Grid, etc.)
@@ -425,8 +358,8 @@ export default function PhotoPreview({
 
     renderCanvas();
   }, [
-    layout, frameColor, photoCount, borderStyle, capturedPhotos, selectedFilter, selectedPattern,
-    stickerText, showDate, selectedBackdrop, selectedFont, customTemplates,
+    layout, frameColor, photoCount, capturedPhotos, selectedFilter, selectedPattern,
+    stickerText, showDate, customTemplates,
     brightness, contrast, saturation, smoothing
   ]);
 
@@ -450,28 +383,37 @@ export default function PhotoPreview({
         try {
           videoBlob = await liveGifRef.current.generateVideoBlob();
         } catch (e) {
-          console.error("Gagal men-generate video blob:", e);
+          console.error('Gagal men-generate video blob:', e);
         }
       }
 
-      // 4. Upload to Supabase
       const result = await uploadPhotoSession(finalImageBase64, {
         layout,
         frameColorId: frameColor.id,
         filter: selectedFilter,
-        stickerText: stickerText,
-        showDate: showDate
+        stickerText,
+        showDate
       }, videoBlob);
 
-
+      // Generate QR code for share URL
       const QRCode = await import('qrcode');
       const qrDataUrl = await QRCode.default.toDataURL(result.shareUrl, {
-        width: 256,
+        width: 300,
         margin: 2,
         color: { dark: '#0f2342', light: '#ffffff' },
       });
 
-      setShareResult({ ...result, qrDataUrl });
+      // Generate separate QR for live video if available
+      let liveQrDataUrl: string | undefined;
+      if (result.videoUrl) {
+        liveQrDataUrl = await QRCode.default.toDataURL(result.videoUrl, {
+          width: 300,
+          margin: 2,
+          color: { dark: '#6d28d9', light: '#ffffff' },
+        });
+      }
+
+      setShareResult({ ...result, qrDataUrl, liveQrDataUrl });
       confetti({ particleCount: 120, spread: 80, origin: { y: 0.6 } });
     } catch (err: any) {
       console.error('Upload gagal:', err);
@@ -487,12 +429,7 @@ export default function PhotoPreview({
     }
   };
 
-  const handleCopyLink = () => {
-    if (!shareResult) return;
-    navigator.clipboard.writeText(shareResult.shareUrl);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
+
 
   return (
     <div className="w-full max-w-5xl mx-auto px-2 sm:px-4 py-4 sm:py-8 relative animate-fade-in text-slate-800">
@@ -568,11 +505,12 @@ export default function PhotoPreview({
           </div>
         </div>
 
-        {/* Right Column: Edit Options (Swapped to Right) */}
+        {/* Right Column: Edit Options */}
         <div className="lg:col-span-7 order-2 space-y-6">
           {shareResult ? (
             <ShareSuccessPanel 
               qrDataUrl={shareResult.qrDataUrl}
+              liveQrDataUrl={shareResult.liveQrDataUrl}
               onDownload={handleDownloadImage}
               onNewSession={() => {
                 setShareResult(null);
@@ -581,12 +519,8 @@ export default function PhotoPreview({
             />
           ) : (
             <PhotoPreviewControls 
-              dbBackdrops={dbBackdrops}
-              selectedBackdrop={selectedBackdrop}
-              setSelectedBackdrop={setSelectedBackdrop}
               allFrameColors={allFrameColors}
               frameColor={frameColor}
-              onColorSelect={() => {}} // Frame is fixed after selection
               selectedPattern={selectedPattern}
               setSelectedPattern={setSelectedPattern}
               selectedFilter={selectedFilter}
@@ -602,9 +536,6 @@ export default function PhotoPreview({
               setSmoothing={setSmoothing}
               stickerText={stickerText}
               setStickerText={setStickerText}
-              dbFonts={dbFonts}
-              selectedFont={selectedFont}
-              setSelectedFont={setSelectedFont}
               showDate={showDate}
               setShowDate={setShowDate}
               handleDownloadImage={handleDownloadImage}

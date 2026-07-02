@@ -1,17 +1,12 @@
 import React from 'react';
-import { Download, Wand2, Type, Calendar, QrCode, ArrowLeft } from 'lucide-react';
+import { Download, Wand2, QrCode, ArrowLeft } from 'lucide-react';
 import { FrameColor, PhotoFilter } from '../../types';
-import { CustomBackdrop, CustomFont } from '../../services/dbService';
 import BeautySliders from './BeautySliders';
 import { FILTERS, FRAME_PATTERNS } from './PhotoPreview';
 
 interface PhotoPreviewControlsProps {
-  dbBackdrops: CustomBackdrop[];
-  selectedBackdrop: CustomBackdrop | null;
-  setSelectedBackdrop: (bd: CustomBackdrop | null) => void;
   allFrameColors: FrameColor[];
   frameColor: FrameColor;
-  onColorSelect: (color: FrameColor) => void;
   selectedPattern: string;
   setSelectedPattern: (p: string) => void;
   selectedFilter: PhotoFilter;
@@ -27,9 +22,6 @@ interface PhotoPreviewControlsProps {
   setSmoothing: (v: number) => void;
   stickerText: string;
   setStickerText: (t: string) => void;
-  dbFonts: CustomFont[];
-  selectedFont: string;
-  setSelectedFont: (f: string) => void;
   showDate: boolean;
   setShowDate: (d: boolean) => void;
   handleDownloadImage: () => void;
@@ -40,8 +32,6 @@ interface PhotoPreviewControlsProps {
 }
 
 export default function PhotoPreviewControls({
-  dbBackdrops, selectedBackdrop, setSelectedBackdrop,
-  allFrameColors, frameColor, onColorSelect,
   selectedPattern, setSelectedPattern,
   selectedFilter, setSelectedFilter,
   capturedPhotos,
@@ -50,7 +40,6 @@ export default function PhotoPreviewControls({
   saturation, setSaturation,
   smoothing, setSmoothing,
   stickerText, setStickerText,
-  dbFonts, selectedFont, setSelectedFont,
   showDate, setShowDate,
   handleDownloadImage, handleUploadAndShare,
   isProcessing, isUploading,
@@ -58,32 +47,8 @@ export default function PhotoPreviewControls({
 }: PhotoPreviewControlsProps) {
   return (
     <>
-      {/* 1. Latar Belakang Gradasi (Gradients) */}
-      {selectedBackdrop !== null && (
-        <div className="bg-white border border-slate-200 p-6 rounded-3xl shadow-sm animate-fade-in">
-          <h3 className="text-xs font-extrabold text-slate-800 uppercase tracking-wider mb-3">
-            Latar Belakang Gradasi Premium
-          </h3>
-          <div className="flex flex-wrap gap-2">
-            {dbBackdrops.map(bd => (
-              <button
-                key={bd.id}
-                onClick={() => setSelectedBackdrop(bd)}
-                className={`px-3 py-1.5 rounded-xl text-[10px] font-bold border transition ${
-                  selectedBackdrop?.id === bd.id
-                    ? 'border-blue-600 bg-blue-50/10 text-blue-800 shadow-sm ring-1 ring-blue-500/10'
-                    : 'border-slate-200 hover:scale-[1.01]'
-                } bg-gradient-to-r from-pink-100 to-blue-100 text-slate-800`}
-              >
-                {bd.name}
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* 4. Pilih Filter Estetik */}
-      <div className="bg-white border border-slate-200 p-6 rounded-xl mt-4">
+      {/* Filter Estetik */}
+      <div className="bg-white border border-slate-200 p-6 rounded-xl">
         <h3 className="flex items-center gap-2 font-display text-xs font-bold text-slate-800 uppercase tracking-wider mb-4">
           <Wand2 className="h-4 w-4 text-slate-800" /> Pilih Filter Estetik
         </h3>
@@ -102,9 +67,9 @@ export default function PhotoPreviewControls({
               >
                 <div className="w-10 h-10 rounded overflow-hidden bg-slate-100 mb-1.5">
                   {capturedPhotos[0] && (
-                    <img 
-                      src={capturedPhotos[0]} 
-                      alt="thumbnail" 
+                    <img
+                      src={capturedPhotos[0]}
+                      alt="thumbnail"
                       className="w-full h-full object-cover"
                       style={{ filter: filter.css }}
                     />
@@ -119,7 +84,7 @@ export default function PhotoPreviewControls({
         </div>
       </div>
 
-      {/* 5. AI Beauty & Retouch Sliders */}
+      {/* Beauty & Retouch Sliders */}
       <BeautySliders
         brightness={brightness}
         setBrightness={setBrightness}
@@ -130,8 +95,6 @@ export default function PhotoPreviewControls({
         smoothing={smoothing}
         setSmoothing={setSmoothing}
       />
-
-
 
       {/* Action Buttons */}
       <div className="flex flex-col gap-3 pt-6">
@@ -144,7 +107,7 @@ export default function PhotoPreviewControls({
             <Download className="h-4.5 w-4.5" />
             <span>Download</span>
           </button>
-          
+
           <button
             onClick={handleUploadAndShare}
             disabled={isProcessing || isUploading}
@@ -158,7 +121,7 @@ export default function PhotoPreviewControls({
             <span>{isUploading ? 'Menyimpan...' : 'QR Code Cloud'}</span>
           </button>
         </div>
-        
+
         <button
           onClick={onBackToSelector}
           className="flex items-center justify-center gap-1.5 py-2 text-xs font-bold text-slate-400 hover:text-slate-650 transition mt-2 cursor-pointer"

@@ -1,5 +1,4 @@
 import React from 'react';
-import { Lock } from 'lucide-react';
 
 interface AdminLoginFormProps {
   onLogin: (email: string, password: string) => void;
