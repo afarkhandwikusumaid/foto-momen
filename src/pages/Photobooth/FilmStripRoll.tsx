@@ -19,7 +19,7 @@ export default function FilmStripRoll({ capturedPhotos, photoCount }: FilmStripR
       </div>
 
       {/* Film Strip Outer Frame */}
-      <div className="border-x-2 border-dashed border-slate-300 px-3 py-1 space-y-4 bg-slate-50/40 rounded-xl">
+      <div className="border-x-2 border-dashed border-slate-300 px-3 py-3 space-y-4 bg-slate-50/40 rounded-xl max-h-[520px] overflow-y-auto hide-scrollbar">
         {Array.from({ length: photoCount }).map((_, index) => {
           const photo = capturedPhotos[index];
           return (
