@@ -5,6 +5,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Download } from 'lucide-react';
+import { AnimatePresence } from 'framer-motion';
 import Navbar from './components/layout/Navbar';
 import Footer from './components/layout/Footer';
 import LandingPage from './pages/LandingPage/LandingPage';
@@ -13,6 +14,7 @@ import CameraBooth from './pages/Photobooth/CameraBooth';
 import LivePreview from './pages/Photobooth/LivePreview';
 import PhotoPreview from './pages/Photobooth/PhotoPreview';
 import AdminPage from './pages/AdminPage/AdminPage';
+import PageTransition from './components/layout/PageTransition';
 import { ActivePhase, FrameColor, PhotoCount, PhotoArea } from './types';
 import { ensureAuth, getPhotoSession } from './services/dbService';
 
@@ -26,14 +28,38 @@ const EMPTY_FRAME: FrameColor = {
   borderClass: 'border-slate-200',
 };
 
+// Custom hook to sync state with sessionStorage
+function useSessionState<T>(key: string, initialValue: T): [T, (val: T | ((prev: T) => T)) => void] {
+  const [state, setState] = useState<T>(() => {
+    try {
+      const item = window.sessionStorage.getItem(key);
+      return item ? JSON.parse(item) : initialValue;
+    } catch (error) {
+      console.warn('Error reading sessionStorage', error);
+      return initialValue;
+    }
+  });
+
+  useEffect(() => {
+    try {
+      window.sessionStorage.setItem(key, JSON.stringify(state));
+    } catch (error) {
+      console.warn('Error setting sessionStorage', error);
+    }
+  }, [key, state]);
+
+  return [state, setState];
+}
+
 export default function App() {
-  const [currentPhase, setCurrentPhase] = useState<ActivePhase>('landing');
-  const [selectedColor, setSelectedColor] = useState<FrameColor>(EMPTY_FRAME);
-  const [activeTab, setActiveTab] = useState<'home' | 'catalog'>('home');
-  const [capturedPhotos, setCapturedPhotos] = useState<string[]>([]);
+  const [currentPhase, setCurrentPhase] = useSessionState<ActivePhase>('fm_phase', 'landing');
+  const [selectedColor, setSelectedColor] = useSessionState<FrameColor>('fm_color', EMPTY_FRAME);
+  const [activeTab, setActiveTab] = useSessionState<'home' | 'catalog'>('fm_tab', 'home');
+  const [capturedPhotos, setCapturedPhotos] = useSessionState<string[]>('fm_photos', []);
+  // Blobs cannot be stringified, so they reset on refresh
   const [capturedVideos, setCapturedVideos] = useState<Blob[]>([]);
-  const [photoCount, setPhotoCount] = useState<PhotoCount>(4);
-  const [photoAreas, setPhotoAreas] = useState<PhotoArea[]>([]);
+  const [photoCount, setPhotoCount] = useSessionState<PhotoCount>('fm_count', 4);
+  const [photoAreas, setPhotoAreas] = useSessionState<PhotoArea[]>('fm_areas', []);
 
   const [sharedSession, setSharedSession] = useState<any>(null);
   const [hasVideo, setHasVideo] = useState(false);
@@ -94,6 +120,7 @@ export default function App() {
   const handleResetToHome = () => {
     setCapturedPhotos([]);
     setCapturedVideos([]);
+    setSelectedColor(EMPTY_FRAME);
     setCurrentPhase('landing');
     if (window.location.search.includes('share')) {
       window.history.replaceState({}, document.title, window.location.pathname);
@@ -221,53 +248,63 @@ export default function App() {
               <p className="text-slate-400">Memuat foto momen...</p>
             </div>
           ) : (
-            <>
+            <AnimatePresence mode="wait">
               {currentPhase === 'landing' && (
-                <LandingPage
-                  onStart={() => setCurrentPhase('select-frame')}
-                  onStartWithTemplate={handleStartWithTemplate}
-                  activeTab={activeTab}
-                />
+                <PageTransition key="landing">
+                  <LandingPage
+                    onStart={() => setCurrentPhase('select-frame')}
+                    onStartWithTemplate={handleStartWithTemplate}
+                    activeTab={activeTab}
+                  />
+                </PageTransition>
               )}
 
               {currentPhase === 'select-frame' && (
-                <FrameSelector
-                  selectedColor={selectedColor}
-                  onColorSelect={handleColorSelect}
-                  onPhotoCountSelect={setPhotoCount}
-                  onNext={() => setCurrentPhase('camera')}
-                  onPrev={handleResetToHome}
-                />
+                <PageTransition key="select-frame">
+                  <FrameSelector
+                    selectedColor={selectedColor}
+                    onColorSelect={handleColorSelect}
+                    onPhotoCountSelect={setPhotoCount}
+                    onNext={() => setCurrentPhase('camera')}
+                    onPrev={handleResetToHome}
+                  />
+                </PageTransition>
               )}
 
               {currentPhase === 'camera' && (
-                <CameraBooth
-                  photoCount={photoCount}
-                  onPhotosCaptured={handlePhotosCaptured}
-                  onBack={() => setCurrentPhase('select-frame')}
-                />
+                <PageTransition key="camera">
+                  <CameraBooth
+                    photoCount={photoCount}
+                    onPhotosCaptured={handlePhotosCaptured}
+                    onBack={() => setCurrentPhase('select-frame')}
+                  />
+                </PageTransition>
               )}
 
               {currentPhase === 'live-preview' && (
-                <LivePreview
-                  capturedPhotos={capturedPhotos}
-                  frameColor={selectedColor}
-                  photoAreas={photoAreas}
-                  onContinue={() => setCurrentPhase('preview')}
-                  onRetake={() => setCurrentPhase('camera')}
-                />
+                <PageTransition key="live-preview">
+                  <LivePreview
+                    capturedPhotos={capturedPhotos}
+                    frameColor={selectedColor}
+                    photoAreas={photoAreas}
+                    onContinue={() => setCurrentPhase('preview')}
+                    onRetake={() => setCurrentPhase('camera')}
+                  />
+                </PageTransition>
               )}
 
               {currentPhase === 'preview' && (
-                <PhotoPreview
-                  frameColor={selectedColor}
-                  photoCount={photoCount}
-                  capturedPhotos={capturedPhotos}
-                  capturedVideos={capturedVideos}
-                  onBackToSelector={() => setCurrentPhase('select-frame')}
-                />
+                <PageTransition key="preview">
+                  <PhotoPreview
+                    frameColor={selectedColor}
+                    photoCount={photoCount}
+                    capturedPhotos={capturedPhotos}
+                    capturedVideos={capturedVideos}
+                    onBackToSelector={() => setCurrentPhase('select-frame')}
+                  />
+                </PageTransition>
               )}
-            </>
+            </AnimatePresence>
           )}
         </div>
       </main>
