@@ -14,7 +14,7 @@ interface LandingPageProps {
 
 export default function LandingPage({ onStart, onStartWithTemplate, activeTab }: LandingPageProps) {
   return (
-    <div className="w-full max-w-5xl mx-auto px-2 sm:px-4 py-4 sm:py-8">
+    <div className="w-full max-w-5xl mx-auto px-2 sm:px-4 pt-2 pb-8 sm:py-8">
 
       {activeTab === 'home' && (
         <div className="space-y-12 animate-fade-in">

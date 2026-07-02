@@ -63,7 +63,7 @@ export default function TemplatesCatalog({ onStartWithTemplate }: TemplatesCatal
   };
 
   return (
-    <div className="w-full py-12 px-4 select-none bg-gradient-to-b from-blue-50/20 via-white to-white rounded-[40px] border border-slate-100 shadow-sm relative overflow-hidden">
+    <div className="w-full py-6 sm:py-12 px-4 select-none bg-gradient-to-b from-blue-50/20 via-white to-white rounded-[40px] border border-slate-100 shadow-sm relative overflow-hidden">
 
       {/* Decorative Blob */}
       <div className="absolute -top-24 left-1/2 -translate-x-1/2 w-96 h-96 rounded-full bg-blue-300/10 blur-3xl pointer-events-none" />
