@@ -27,7 +27,7 @@ export default function AdminPage() {
     const checkSession = async () => {
       if (supabase) {
         const { data: { session } } = await supabase.auth.getSession();
-        if (session && session.user) {
+        if (session && session.user && !session.user.is_anonymous) {
           setIsLoggedIn(true);
         }
       }
