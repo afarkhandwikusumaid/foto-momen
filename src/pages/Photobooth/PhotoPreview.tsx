@@ -514,7 +514,7 @@ export default function PhotoPreview({
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         
         {/* Left Column: Live Render Preview Canvas (Swapped to Left) */}
-        <div className="lg:col-span-5 order-1 flex flex-col items-center sticky top-24 space-y-4">
+        <div className="lg:col-span-5 order-1 flex flex-col items-center lg:sticky lg:top-24 space-y-4">
           
           {/* View Switcher Tabs */}
           <div className="flex bg-slate-200/60 p-1 rounded-2xl w-full max-w-[280px] shadow-inner select-none font-bold border border-slate-200">

@@ -113,13 +113,13 @@ export default function Navbar({ currentPhase, onReset, activeTab, setActiveTab,
         {/* Mobile Menu Dropdown (Only in Landing) */}
         {isLanding && mobileMenuOpen && (
           <div className="md:hidden mt-3 pt-3 border-t border-slate-100 flex flex-col gap-2">
-            <div className="flex gap-1 md:gap-4 ml-8 border-l border-slate-200 pl-4 md:pl-8 flex-1 md:flex-none justify-center">
+            <div className="flex flex-col gap-2 border-slate-200">
               <button 
                 onClick={() => {
                   onReset();
                   if(setActiveTab) setActiveTab('home');
                 }}
-                className={`px-3 md:px-5 py-2 md:py-2.5 rounded-full text-xs md:text-sm font-bold transition-all duration-300 ${activeTab === 'home' ? 'bg-[#1d90ff] text-white shadow-md shadow-blue-500/30' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'}`}
+                className={`w-full px-5 py-3 rounded-xl text-sm font-bold transition-all duration-300 ${activeTab === 'home' ? 'bg-blue-50 text-[#1d90ff] shadow-sm border border-blue-100' : 'text-slate-600 bg-slate-50 border border-slate-100 hover:bg-slate-100'}`}
               >
                 Beranda
               </button>
@@ -128,9 +128,9 @@ export default function Navbar({ currentPhase, onReset, activeTab, setActiveTab,
                   onReset();
                   if(setActiveTab) setActiveTab('catalog');
                 }}
-                className={`px-3 md:px-5 py-2 md:py-2.5 rounded-full text-xs md:text-sm font-bold transition-all duration-300 ${activeTab === 'catalog' ? 'bg-[#1d90ff] text-white shadow-md shadow-blue-500/30' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'}`}
+                className={`w-full px-5 py-3 rounded-xl text-sm font-bold transition-all duration-300 ${activeTab === 'catalog' ? 'bg-blue-50 text-[#1d90ff] shadow-sm border border-blue-100' : 'text-slate-600 bg-slate-50 border border-slate-100 hover:bg-slate-100'}`}
               >
-                Katalog
+                Katalog Tema
               </button>
             </div>
               <button
