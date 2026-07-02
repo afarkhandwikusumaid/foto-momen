@@ -78,10 +78,6 @@ export default function CameraBooth({ photoCount, onPhotosCaptured, onBack }: Ca
       canvas.height = video.videoHeight;
       const ctx = canvas.getContext('2d');
       if (ctx) {
-        // Draw the image flipped/mirrored since the webcam feed is mirrored
-        ctx.translate(canvas.width, 0);
-        ctx.scale(-1, 1);
-        
         ctx.filter = selectedLiveFilter.css;
         ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
         
@@ -239,7 +235,7 @@ export default function CameraBooth({ photoCount, onPhotosCaptured, onBack }: Ca
                   screenshotFormat="image/png"
                   videoConstraints={videoConstraints}
                   onUserMediaError={handleUserMediaError}
-                  className="w-full h-full object-cover scale-x-[-1]" 
+                  className="w-full h-full object-cover" 
                   style={{ filter: selectedLiveFilter.css }}
                 />
 
