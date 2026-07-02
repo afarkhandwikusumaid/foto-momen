@@ -35,9 +35,10 @@ export default function AdminLayout({ children, activeTab, onTabChange, onLogout
         } flex flex-col`}
       >
         <div className="p-6 border-b border-slate-100 flex items-center justify-between">
-          <div className="font-display font-black text-xl text-slate-800 tracking-tight">
-            Foto<span className="text-[#1d90ff]">Momen</span>
-            <span className="ml-2 text-[10px] uppercase bg-slate-100 px-2 py-0.5 rounded-full text-slate-500">Admin</span>
+          <div className="flex items-center gap-2">
+            <img src="/favicon/fm-icon.png" alt="Foto Momen Icon" className="h-8 w-auto shrink-0 object-contain" />
+            <img src="/fm-logo-text.png" alt="Foto Momen" className="h-5 w-auto object-contain" />
+            <span className="ml-1 text-[10px] uppercase bg-slate-100 px-2 py-0.5 rounded-full text-slate-500 font-bold">Admin</span>
           </div>
         </div>
 

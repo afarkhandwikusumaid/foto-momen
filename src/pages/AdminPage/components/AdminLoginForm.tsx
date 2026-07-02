@@ -19,8 +19,8 @@ export default function AdminLoginForm({ onLogin, loginError, isLoggingIn }: Adm
   return (
     <div className="max-w-md mx-auto py-24 px-4 w-full animate-fade-in flex flex-col items-center justify-center min-h-[70vh]">
       <div className="bg-white p-8 rounded-3xl border border-slate-200 shadow-sm w-full text-center">
-        <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">
-          <Lock className="w-8 h-8 text-slate-500" />
+        <div className="mx-auto mb-6 flex justify-center">
+          <img src="/favicon/fm-icon.png" alt="Foto Momen Logo" className="w-16 h-16 object-contain" />
         </div>
         <h2 className="text-2xl font-black text-slate-800 mb-2">Login Admin</h2>
         <p className="text-slate-500 text-sm mb-6">Masuk menggunakan akun Supabase Anda.</p>

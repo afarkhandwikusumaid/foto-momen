@@ -41,12 +41,8 @@ export default function Navbar({ currentPhase, onReset, activeTab, setActiveTab,
             }}
             className="flex items-center gap-2 cursor-pointer group"
           >
-            <div className="h-9 w-9 rounded-full bg-[#1d90ff] flex items-center justify-center shadow-md shadow-blue-500/20 shrink-0">
-              <Camera className="h-4.5 w-4.5 text-white" />
-            </div>
-            <span className="font-extrabold text-slate-800 text-sm tracking-tight hover:text-[#1d90ff] transition hidden sm:inline-block">
-              Foto Momen
-            </span>
+            <img src="/favicon/fm-icon.png" alt="Foto Momen Icon" className="h-9 w-auto shrink-0 object-contain" />
+            <img src="/fm-logo-text.png" alt="Foto Momen" className="h-5 w-auto hidden sm:inline-block object-contain ml-1" />
           </div>
 
           {/* Center: Desktop Navigation Tabs (Only in Landing) */}
