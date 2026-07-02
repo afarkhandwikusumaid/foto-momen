@@ -93,12 +93,13 @@ export async function uploadTemplateImage(file: File): Promise<string> {
 export async function uploadPhotoSession(
   finalBase64: string,
   metadata: PhotoSessionMetadata,
-  videoBlob?: Blob
+  videoBlob?: Blob,
+  existingSessionId?: string
 ): Promise<{ sessionId: string; shareUrl: string; imageUrl: string; videoUrl?: string }> {
   if (!isSupabaseReady) throw new Error('Supabase belum dikonfigurasi.');
 
   const uid = await ensureAuth();
-  const sessionId = `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+  const sessionId = existingSessionId || `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
   const filename = `${uid}/${sessionId}.png`;
   const videoFilename = `${uid}/${sessionId}.webm`;
 
@@ -162,7 +163,7 @@ export async function uploadPhotoSession(
       sticker_text: metadata.stickerText,
       show_date: metadata.showDate,
       created_at: new Date().toISOString()
-    }])
+    }], { onConflict: 'session_id' })
     .select();
 
   if (dbError) throw dbError;

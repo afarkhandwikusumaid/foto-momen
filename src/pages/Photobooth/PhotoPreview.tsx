@@ -131,6 +131,7 @@ export default function PhotoPreview({
   const [showDate, setShowDate] = useState(true);
   const [finalImageBase64, setFinalImageBase64] = useState<string>('');
   const [isProcessing, setIsProcessing] = useState(true);
+  const [currentSessionId, setCurrentSessionId] = useState<string | null>(null);
   const [activePreviewTab, setActivePreviewTab] = useState<'print' | 'live'>('print');
   const liveGifRef = useRef<LiveGifPreviewRef>(null);
 
@@ -394,7 +395,9 @@ export default function PhotoPreview({
         filter: selectedFilter,
         stickerText,
         showDate
-      }, videoBlob);
+      }, videoBlob, currentSessionId || undefined);
+      
+      setCurrentSessionId(result.sessionId);
 
       // Generate QR code for share URL
       const QRCode = await import('qrcode');
