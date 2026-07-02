@@ -107,7 +107,7 @@ export default function Navbar({ currentPhase, onReset, activeTab, setActiveTab,
 
         {/* Mobile Menu Dropdown (Only in Landing) */}
         {isLanding && mobileMenuOpen && (
-          <div className="md:hidden mt-3 pt-3 border-t border-slate-100 flex flex-col gap-2">
+          <div className="md:hidden absolute top-[calc(100%+8px)] left-0 right-0 mx-4 bg-white/95 backdrop-blur-xl border border-slate-200/80 rounded-[24px] p-4 shadow-xl flex flex-col gap-2 animate-fade-in z-50">
             <div className="flex flex-col gap-2 border-slate-200">
               <button 
                 onClick={() => {

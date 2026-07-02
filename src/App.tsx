@@ -172,7 +172,7 @@ export default function App() {
         onStartBooth={() => setCurrentPhase('select-frame')}
       />
 
-      <main className="flex-grow flex items-center justify-center py-6 px-4">
+      <main className="flex-grow w-full flex flex-col py-2 sm:py-6 px-2 sm:px-4">
         <div className="w-full transition-all duration-300">
           {sharedSession ? (
             <div className="max-w-md w-full mx-auto p-2 text-center animate-fade-in">
