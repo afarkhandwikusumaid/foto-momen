@@ -477,9 +477,9 @@ export default function PhotoPreview({
           <div className="w-full bg-slate-100/50 border border-slate-200 p-2 sm:p-4 md:p-6 rounded-3xl flex flex-col items-center justify-center shadow-inner relative min-h-[400px] md:min-h-[480px]">
             
             {isProcessing && (
-              <div className="absolute inset-0 z-10 bg-white/95 backdrop-blur-sm flex flex-col items-center justify-center rounded-3xl">
-                  <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mb-3"></div>
-                  <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest font-mono">Rendering Canvas...</span>
+              <div className="absolute top-4 right-4 z-20 bg-slate-900/80 backdrop-blur-md px-3 py-1.5 rounded-full flex items-center gap-2 shadow-lg animate-fade-in">
+                  <div className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                  <span className="text-[9px] font-bold text-white uppercase tracking-widest font-mono">Rendering</span>
               </div>
             )}
 
