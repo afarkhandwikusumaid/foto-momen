@@ -4,6 +4,7 @@
  */
 
 import React, { useState, useEffect } from 'react';
+import { Download } from 'lucide-react';
 import Navbar from './components/layout/Navbar';
 import Footer from './components/layout/Footer';
 import LandingPage from './pages/LandingPage/LandingPage';
@@ -52,6 +53,24 @@ export default function App() {
         .finally(() => setIsLoadingShare(false));
     }
   }, []);
+
+  const handleDownloadShared = async () => {
+    if (!sharedSession?.imageUrl) return;
+    try {
+      const response = await fetch(sharedSession.imageUrl);
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `foto-momen-${sharedSession.id}.jpg`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error('Failed to download image:', err);
+    }
+  };
 
   const handleResetToHome = () => {
     setCapturedPhotos([]);
@@ -122,16 +141,25 @@ export default function App() {
                   />
                 </div>
 
-                <button
-                  onClick={() => {
-                    window.history.replaceState({}, document.title, window.location.pathname);
-                    setSharedSession(null);
-                    setCurrentPhase('select-frame');
-                  }}
-                  className="w-full py-4 bg-[#1d90ff] hover:bg-blue-600 text-white rounded-full font-bold shadow-md transition duration-200 cursor-pointer"
-                >
-                  Mulai Ambil Foto Kamu Sendiri
-                </button>
+                <div className="flex flex-col gap-3 w-full">
+                  <button
+                    onClick={handleDownloadShared}
+                    className="w-full flex items-center justify-center gap-2 py-4 bg-slate-800 hover:bg-slate-900 text-white rounded-full font-bold shadow-md transition duration-200 cursor-pointer"
+                  >
+                    <Download className="w-5 h-5" />
+                    Download Foto
+                  </button>
+                  <button
+                    onClick={() => {
+                      window.history.replaceState({}, document.title, window.location.pathname);
+                      setSharedSession(null);
+                      setCurrentPhase('select-frame');
+                    }}
+                    className="w-full py-4 bg-[#1d90ff] hover:bg-blue-600 text-white rounded-full font-bold shadow-md transition duration-200 cursor-pointer"
+                  >
+                    Mulai Ambil Foto Kamu Sendiri
+                  </button>
+                </div>
               </div>
             </div>
           ) : isLoadingShare ? (

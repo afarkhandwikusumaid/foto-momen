@@ -3,7 +3,6 @@ import { FrameColor } from '../../types';
 
 // Modular Component Imports (1 Feature = 1 File)
 import HeroSection from './HeroSection';
-import ShowcaseWidget from './ShowcaseWidget';
 import VisualGuide from './VisualGuide';
 import TemplatesCatalog from './TemplatesCatalog';
 
@@ -20,7 +19,6 @@ export default function LandingPage({ onStart, onStartWithTemplate, activeTab }:
       {activeTab === 'home' && (
         <div className="space-y-12 animate-fade-in">
           <HeroSection onStart={onStart} />
-          <ShowcaseWidget />
           <VisualGuide />
         </div>
       )}

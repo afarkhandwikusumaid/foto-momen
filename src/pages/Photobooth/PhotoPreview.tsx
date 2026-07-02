@@ -414,22 +414,6 @@ export default function PhotoPreview({
           ctx.drawImage(frameImgOverlay, 0, 0, width, height);
         }
 
-        // Footer Text Styling (Hanya Tanggal)
-        ctx.fillStyle = frameColor.textColor || '#000000';
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-
-        let textY = height - 70;
-        if (layout === 'grid-2x2') textY = height - 85;
-        if (layout === 'single-polar') textY = height - 80;
-
-        if (showDate) {
-          const dateStr = new Date().toLocaleDateString('id-ID', { 
-            day: 'numeric', month: 'long', year: 'numeric' 
-          });
-          ctx.font = `bold 20px "${selectedFont}", sans-serif`;
-          ctx.fillText(dateStr, width / 2, textY + 20); // Ditarik sedikit ke atas
-        }
         const dataUrl = canvas.toDataURL('image/png', 0.95);
         setFinalImageBase64(dataUrl);
         setIsProcessing(false);

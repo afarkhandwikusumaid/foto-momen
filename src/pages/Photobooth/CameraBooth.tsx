@@ -247,20 +247,11 @@ export default function CameraBooth({ photoCount, onPhotosCaptured, onBack }: Ca
               </div>
             )}
 
-            {/* Circular Glassmorphic Countdown Overlay */}
+            {/* Countdown Number (No background) */}
             {countdown !== null && (
-              <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm flex flex-col items-center justify-center z-25">
-                <div className="relative h-32 w-32 flex items-center justify-center rounded-full border border-slate-700/50 bg-slate-900">
-                  
-                  <div className="w-full h-full rounded-full flex items-center justify-center">
-                    <span className="text-6xl font-bold font-display text-white leading-none">
-                      {countdown}
-                    </span>
-                  </div>
-                </div>
-                
-                <span className="text-white text-xs font-bold uppercase tracking-widest mt-6 px-4 py-2 rounded-lg bg-slate-800 border border-slate-700 z-10">
-                  Pose Ke {currentPoseIndex + 1}
+              <div className="absolute inset-0 flex flex-col items-center justify-center z-25 pointer-events-none">
+                <span className="text-3xl sm:text-6xl font-bold font-sans text-[#1d90ff] leading-none drop-shadow-[0_0_10px_rgba(255,255,255,0.8)]">
+                  {countdown}
                 </span>
               </div>
             )}

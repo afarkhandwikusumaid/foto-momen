@@ -181,15 +181,6 @@ export default function TemplatesCatalog({ onStartWithTemplate }: TemplatesCatal
                     </p>
                   </div>
                 </div>
-
-                {/* CTA Button */}
-                <button
-                  onClick={() => onStartWithTemplate(template)}
-                  className="w-full flex items-center justify-center gap-2 py-2.5 bg-[#1d90ff] hover:bg-blue-600 text-white text-xs font-bold rounded-xl transition shadow-sm shadow-blue-500/20 active:scale-95"
-                >
-                  <Sparkles className="w-3.5 h-3.5" />
-                  Mulai dengan Frame Ini
-                </button>
               </div>
             ))}
           </div>
