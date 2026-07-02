@@ -147,7 +147,7 @@ export default function CameraBooth({ photoCount, onPhotosCaptured, onBack }: Ca
   };
 
   return (
-    <div className="w-full max-w-5xl mx-auto px-4 py-8 relative animate-fade-in text-slate-800">
+    <div className="w-full max-w-5xl mx-auto px-2 sm:px-4 py-4 sm:py-8 relative animate-fade-in text-slate-800">
       
       {/* Visual Camera Shutter Flash Overlay */}
       {showFlash && (
@@ -171,7 +171,7 @@ export default function CameraBooth({ photoCount, onPhotosCaptured, onBack }: Ca
         {/* Main Camera View */}
         <div className="lg:col-span-8 flex flex-col items-center">
           
-          <div className="w-full flex justify-between items-center mb-4 px-2">
+          <div className="w-full flex flex-wrap justify-between items-center mb-4 px-2 gap-2">
             <div className="flex items-center gap-2.5">
                <Timer className="w-4.5 h-4.5 text-slate-450" />
                <div className="flex bg-slate-100 border border-slate-200 p-1 rounded-xl shadow-inner">

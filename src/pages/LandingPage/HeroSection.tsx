@@ -26,7 +26,7 @@ export default function HeroSection({ onStart }: HeroSectionProps) {
             </span>
           </div>
 
-          <h1 className="text-[2.75rem] sm:text-6xl lg:text-7xl font-black leading-[1.05] tracking-tight">
+          <h1 className="text-4xl sm:text-6xl lg:text-7xl font-black leading-[1.05] tracking-tight">
             <span className="block text-slate-900">Abadikan Momen</span>
             <span className="block bg-gradient-to-r from-blue-600 via-[#1d90ff] to-purple-600 bg-clip-text text-transparent pb-2 pt-1 animate-gradient">
               Virtual Estetik
@@ -55,27 +55,27 @@ export default function HeroSection({ onStart }: HeroSectionProps) {
         {/* Right Side: Round-Backdrop Character Illustration */}
         <div className="lg:col-span-5 flex justify-center items-center relative mt-8 lg:mt-0">
           
-          <div className="relative w-full max-w-[380px] aspect-square bg-[#1d90ff] border border-white rounded-[60px] flex items-center justify-center p-6 shadow-2xl shadow-blue-900/10 ">
+          <div className="relative w-[90%] max-w-[380px] aspect-square bg-[#1d90ff] border border-white rounded-[60px] flex items-center justify-center p-6 shadow-2xl shadow-blue-900/10 ">
             
             {/* Background Decorative Rings */}
             <div className="absolute inset-4 border border-white/60 rounded-[50px] pointer-events-none" />
 
             {/* Minimalist Floating Polaroid 1 */}
-            <div className="absolute bg-white/90 backdrop-blur-md p-4 rounded-[28px] shadow-2xl border border-white rotate-[-8deg] w-[160px] left-2 sm:left-4 top-10 hover:rotate-[-4deg] hover:-translate-y-2 transition-all duration-500">
+            <div className="absolute bg-white/90 backdrop-blur-md p-3 sm:p-4 rounded-[28px] shadow-2xl border border-white rotate-[-8deg] w-[40%] max-w-[160px] left-0 sm:left-4 top-8 sm:top-10 hover:rotate-[-4deg] hover:-translate-y-2 transition-all duration-500">
               <div className="w-full aspect-[4/3] bg-gradient-to-tr from-slate-100 to-slate-50 rounded-2xl flex items-center justify-center overflow-hidden border border-slate-100 shadow-inner">
-                {getPosePlaceholder(0, "w-full h-full p-2 text-blue-500", "#1d90ff")}
+                {getPosePlaceholder(0, "w-full h-full p-1.5 sm:p-2 text-blue-500", "#1d90ff")}
               </div>
-              <div className="text-center font-black text-[10px] text-slate-800 mt-4 tracking-widest font-sans uppercase">
+              <div className="text-center font-black text-[8px] sm:text-[10px] text-slate-800 mt-2 sm:mt-4 tracking-widest font-sans uppercase">
                 Happy
               </div>
             </div>
 
             {/* Minimalist Floating Polaroid 2 */}
-            <div className="absolute bg-white/90 backdrop-blur-md p-4 rounded-[28px] shadow-2xl border border-white rotate-[12deg] w-[160px] right-2 sm:right-4 bottom-10 hover:rotate-[8deg] hover:-translate-y-2 transition-all duration-500 z-10">
+            <div className="absolute bg-white/90 backdrop-blur-md p-3 sm:p-4 rounded-[28px] shadow-2xl border border-white rotate-[12deg] w-[40%] max-w-[160px] right-0 sm:right-4 bottom-8 sm:bottom-10 hover:rotate-[8deg] hover:-translate-y-2 transition-all duration-500 z-10">
               <div className="w-full aspect-[4/3] bg-gradient-to-tr from-blue-50 to-purple-50 rounded-2xl flex items-center justify-center overflow-hidden border border-slate-100 shadow-inner">
-                {getPosePlaceholder(1, "w-full h-full p-2 text-purple-500", "#a855f7")}
+                {getPosePlaceholder(1, "w-full h-full p-1.5 sm:p-2 text-purple-500", "#a855f7")}
               </div>
-              <div className="text-center font-black text-[10px] text-slate-800 mt-4 tracking-widest font-sans uppercase">
+              <div className="text-center font-black text-[8px] sm:text-[10px] text-slate-800 mt-2 sm:mt-4 tracking-widest font-sans uppercase">
                 Memories
               </div>
             </div>

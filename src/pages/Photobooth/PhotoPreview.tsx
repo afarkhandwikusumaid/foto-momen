@@ -499,7 +499,7 @@ export default function PhotoPreview({
   };
 
   return (
-    <div className="w-full max-w-6xl mx-auto px-4 py-6 animate-fade-in text-slate-800">
+    <div className="w-full max-w-5xl mx-auto px-2 sm:px-4 py-4 sm:py-8 relative animate-fade-in text-slate-800">
       
       {/* Title */}
       <div className="mb-6 select-none">
@@ -540,7 +540,7 @@ export default function PhotoPreview({
             </button>
           </div>
 
-          <div className="w-full bg-slate-100/50 border border-slate-200 p-4 md:p-6 rounded-3xl flex flex-col items-center justify-center shadow-inner relative min-h-[480px]">
+          <div className="w-full bg-slate-100/50 border border-slate-200 p-2 sm:p-4 md:p-6 rounded-3xl flex flex-col items-center justify-center shadow-inner relative min-h-[400px] md:min-h-[480px]">
             
             {isProcessing && (
               <div className="absolute inset-0 z-10 bg-white/95 backdrop-blur-sm flex flex-col items-center justify-center rounded-3xl">
@@ -556,7 +556,7 @@ export default function PhotoPreview({
                 <img
                   src={finalImageBase64}
                   alt="Foto Momen Render Final"
-                  className="max-w-full rounded-2xl border border-slate-200/50 shadow-2xl transition-all duration-300 ease-out max-h-[500px] md:max-h-[650px] w-auto object-contain bg-white"
+                  className="max-w-full rounded-2xl border border-slate-200/50 shadow-2xl transition-all duration-300 ease-out max-h-[55vh] sm:max-h-[500px] md:max-h-[650px] w-auto object-contain bg-white"
                 />
               )
             ) : (

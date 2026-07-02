@@ -83,7 +83,7 @@ export default function FrameSelector({
   const isSelected = (t: FrameColor) => selectedColor.id === t.id;
 
   return (
-    <div className="w-full max-w-5xl mx-auto px-4 py-8 animate-fade-in text-slate-800">
+    <div className="w-full max-w-5xl mx-auto px-2 sm:px-4 py-4 sm:py-8 animate-fade-in text-slate-800">
 
       {/* Header */}
       <div className="text-center mb-10">
