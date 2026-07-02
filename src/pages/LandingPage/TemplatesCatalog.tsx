@@ -124,7 +124,7 @@ export default function TemplatesCatalog({ onStartWithTemplate }: TemplatesCatal
           {/* Left Arrow */}
           <button
             onClick={scrollLeft}
-            className="h-11 w-11 rounded-full border border-slate-200 bg-white hover:bg-slate-50 flex items-center justify-center text-slate-600 cursor-pointer shadow-sm active:scale-95 transition flex-shrink-0"
+            className="hidden sm:flex h-11 w-11 rounded-full border border-slate-200 bg-white hover:bg-slate-50 items-center justify-center text-slate-600 cursor-pointer shadow-sm active:scale-95 transition flex-shrink-0 z-10"
           >
             <ChevronLeft className="w-5 h-5 stroke-[2.5]" />
           </button>
@@ -132,12 +132,12 @@ export default function TemplatesCatalog({ onStartWithTemplate }: TemplatesCatal
           {/* Scroll Container */}
           <div
             ref={scrollContainerRef}
-            className="flex-1 flex gap-5 overflow-x-auto snap-x snap-mandatory py-4 px-2 hide-scrollbar scroll-smooth"
+            className="flex-1 flex gap-4 sm:gap-5 overflow-x-auto snap-x snap-mandatory py-6 px-4 sm:px-2 hide-scrollbar scroll-smooth"
           >
             {filteredTemplates.map((template) => (
               <div
                 key={template.id}
-                className="flex-shrink-0 w-[200px] sm:w-[220px] snap-start flex flex-col items-center gap-3"
+                className="flex-shrink-0 w-[180px] sm:w-[220px] snap-start flex flex-col items-center gap-3"
               >
                 {/* Frame Card */}
                 <div
@@ -146,7 +146,7 @@ export default function TemplatesCatalog({ onStartWithTemplate }: TemplatesCatal
                 >
                   {/* Frame image (Fixed height, object-contain) */}
                   <div
-                    className="w-full h-44 relative flex items-center justify-center p-2"
+                    className="w-full h-36 sm:h-44 relative flex items-center justify-center p-2"
                     style={{ backgroundColor: template.hex }}
                   >
                     {/* Subtle grid pattern background */}
@@ -188,7 +188,7 @@ export default function TemplatesCatalog({ onStartWithTemplate }: TemplatesCatal
           {/* Right Arrow */}
           <button
             onClick={scrollRight}
-            className="h-11 w-11 rounded-full border border-slate-200 bg-white hover:bg-slate-50 flex items-center justify-center text-slate-600 cursor-pointer shadow-sm active:scale-95 transition flex-shrink-0"
+            className="hidden sm:flex h-11 w-11 rounded-full border border-slate-200 bg-white hover:bg-slate-50 items-center justify-center text-slate-600 cursor-pointer shadow-sm active:scale-95 transition flex-shrink-0 z-10"
           >
             <ChevronRight className="w-5 h-5 stroke-[2.5]" />
           </button>
