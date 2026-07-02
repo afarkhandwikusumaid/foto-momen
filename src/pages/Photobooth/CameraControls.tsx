@@ -36,44 +36,12 @@ export default function CameraControls({
 }: CameraControlsProps) {
   return (
     <>
-      {/* Live Filters Strip */}
-      <div className="w-full max-w-xl mt-6">
-         <div className="flex items-center gap-2 mb-3">
-            <Palette className="w-4 h-4 text-blue-600" />
-            <span className="text-xs font-bold text-slate-500 uppercase tracking-widest font-mono">Live Filters</span>
-         </div>
-         <div className="flex overflow-x-auto pb-2 gap-2 snap-x hide-scrollbar">
-            {liveFilters.map(f => (
-              <button
-                key={f.id}
-                disabled={isCapturing}
-                onClick={() => setSelectedLiveFilter(f)}
-                className={`flex-shrink-0 px-4 py-2.5 rounded-2xl text-xs font-bold transition snap-center whitespace-nowrap cursor-pointer ${
-                  selectedLiveFilter.id === f.id
-                    ? 'bg-blue-600 text-white shadow-md shadow-blue-600/10'
-                    : 'bg-white border border-slate-200 text-slate-650 hover:border-slate-350'
-                }`}
-              >
-                {f.label}
-              </button>
-            ))}
-         </div>
-      </div>
-
-      {/* Status Message */}
-      <div className="w-full text-center mt-5">
-        <p className="text-sm font-bold text-slate-700 flex items-center justify-center gap-2">
-          <span className={`inline-block h-2 w-2 rounded-full ${isCapturing ? 'bg-blue-600 animate-ping' : 'bg-emerald-500'}`} />
-          <span>{statusMessage}</span>
-        </p>
-      </div>
-
-      {/* Control Buttons */}
-      <div className="flex flex-col sm:flex-row w-full max-w-xl mx-auto items-stretch sm:items-center justify-center gap-3 mt-6 px-4 sm:px-0">
+      {/* Control Buttons (Moved Up directly below camera) */}
+      <div className="flex flex-col sm:flex-row w-full max-w-xl mx-auto items-stretch sm:items-center justify-center gap-3 mt-5 px-4 sm:px-0">
         <button
           onClick={onBack}
           disabled={isCapturing}
-          className="w-full sm:w-auto px-6 py-3.5 rounded-lg border border-slate-300 text-sm font-bold text-slate-700 bg-white hover:bg-slate-50 disabled:opacity-50 transition-colors"
+          className="w-full sm:w-auto px-6 py-3.5 rounded-lg border border-slate-300 text-sm font-bold text-slate-700 bg-white hover:bg-slate-50 disabled:opacity-50 transition-colors shadow-sm"
         >
           Ganti Layout / Frame
         </button>
@@ -96,6 +64,38 @@ export default function CameraControls({
             <span>Hentikan & Reset</span>
           </button>
         )}
+      </div>
+
+      {/* Status Message */}
+      <div className="w-full text-center mt-4">
+        <p className="text-sm font-bold text-slate-700 flex items-center justify-center gap-2">
+          <span className={`inline-block h-2 w-2 rounded-full ${isCapturing ? 'bg-blue-600 animate-ping' : 'bg-emerald-500'}`} />
+          <span>{statusMessage}</span>
+        </p>
+      </div>
+
+      {/* Live Filters Strip (Moved down) */}
+      <div className="w-full max-w-xl mt-5 px-4 sm:px-0">
+         <div className="flex items-center gap-2 mb-3">
+            <Palette className="w-4 h-4 text-blue-600" />
+            <span className="text-xs font-bold text-slate-500 uppercase tracking-widest font-mono">Live Filters</span>
+         </div>
+         <div className="flex overflow-x-auto pb-2 gap-2 snap-x hide-scrollbar">
+            {liveFilters.map(f => (
+              <button
+                key={f.id}
+                disabled={isCapturing}
+                onClick={() => setSelectedLiveFilter(f)}
+                className={`flex-shrink-0 px-4 py-2.5 rounded-2xl text-xs font-bold transition snap-center whitespace-nowrap cursor-pointer ${
+                  selectedLiveFilter.id === f.id
+                    ? 'bg-blue-600 text-white shadow-md shadow-blue-600/10'
+                    : 'bg-white border border-slate-200 text-slate-650 hover:border-slate-350'
+                }`}
+              >
+                {f.label}
+              </button>
+            ))}
+         </div>
       </div>
     </>
   );
