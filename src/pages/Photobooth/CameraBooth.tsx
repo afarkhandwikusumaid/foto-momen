@@ -78,6 +78,10 @@ export default function CameraBooth({ photoCount, onPhotosCaptured, onBack }: Ca
       canvas.height = video.videoHeight;
       const ctx = canvas.getContext('2d');
       if (ctx) {
+        // Mirror the canvas horizontally to match the preview (scale-x-[-1])
+        ctx.translate(canvas.width, 0);
+        ctx.scale(-1, 1);
+
         ctx.filter = selectedLiveFilter.css;
         ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
         
