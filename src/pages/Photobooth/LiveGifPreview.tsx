@@ -115,7 +115,9 @@ const LiveGifPreview = forwardRef<LiveGifPreviewRef, LiveGifPreviewProps>(({
              
              ctx.save();
              ctx.filter = filterCss;
-             ctx.drawImage(vid, sx, sy, sw, sh, dx, dy, dw, dh);
+             ctx.translate(dx + dw / 2, dy + dh / 2);
+             ctx.scale(-1, 1);
+             ctx.drawImage(vid, sx, sy, sw, sh, -dw / 2, -dh / 2, dw, dh);
              ctx.restore();
           }
         });
@@ -213,7 +215,7 @@ const LiveGifPreview = forwardRef<LiveGifPreviewRef, LiveGifPreviewProps>(({
                        ref={el => { videoRefs.current[idx] = el; }}
                        src={vUrl}
                        autoPlay muted loop playsInline
-                       className="w-full h-full object-cover"
+                       className="w-full h-full object-cover scale-x-[-1]"
                        style={{ filter: filterCss }}
                      />
                    ) : (
@@ -234,7 +236,7 @@ const LiveGifPreview = forwardRef<LiveGifPreviewRef, LiveGifPreviewProps>(({
                        ref={el => { videoRefs.current[idx] = el; }}
                        src={videoUrls[idx]}
                        autoPlay muted loop playsInline
-                       className="w-full h-full object-cover"
+                       className="w-full h-full object-cover scale-x-[-1]"
                        style={{ filter: filterCss }}
                      />
                    ) : (
