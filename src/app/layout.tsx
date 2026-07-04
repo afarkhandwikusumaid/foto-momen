@@ -28,7 +28,7 @@ export const metadata: Metadata = {
     google: 'HoYNbrFTf7y_BJHhcT8oArHnM7mO9_PXYpTrO6GI_xA',
   },
   metadataBase: new URL(
-    process.env.NEXT_PUBLIC_BASE_URL || 'https://foto-momen.vercel.app'
+    process.env.NEXT_PUBLIC_BASE_URL || 'https://fotomomen.studio'
   ),
   openGraph: {
     type: 'website',
@@ -84,7 +84,7 @@ export default function RootLayout({
               '@type': 'WebApplication',
               name: 'Foto Momen',
               description: 'Virtual Photobooth Indonesia - Buat foto strip digital bersama teman!',
-              url: process.env.NEXT_PUBLIC_BASE_URL || 'https://foto-momen.vercel.app',
+              url: process.env.NEXT_PUBLIC_BASE_URL || 'https://fotomomen.studio',
               applicationCategory: 'Photography, Entertainment',
               operatingSystem: 'Any',
               offers: {
