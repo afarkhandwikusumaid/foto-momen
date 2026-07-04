@@ -67,7 +67,7 @@ export default function Navbar({ currentPhase, onReset, activeTab, setActiveTab,
                     : 'text-slate-500 hover:text-slate-700 hover:bg-slate-50'
                 }`}
               >
-                Katalog Tema
+                Katalog Tema TES
               </a>
             </div>
           )}
