@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * @license
  * SPDX-License-Identifier: Apache-2.0
@@ -8,12 +10,11 @@ import { Download } from 'lucide-react';
 import { AnimatePresence } from 'framer-motion';
 import Navbar from './components/layout/Navbar';
 import Footer from './components/layout/Footer';
-import LandingPage from './pages/LandingPage/LandingPage';
-import FrameSelector from './pages/Photobooth/FrameSelector';
-import CameraBooth from './pages/Photobooth/CameraBooth';
-import LivePreview from './pages/Photobooth/LivePreview';
-import PhotoPreview from './pages/Photobooth/PhotoPreview';
-import AdminPage from './pages/AdminPage/AdminPage';
+import LandingPage from './views/LandingPage';
+import FrameSelector from './views/Photobooth/FrameSelector';
+import CameraBooth from './views/Photobooth/CameraBooth';
+import LivePreview from './views/Photobooth/LivePreview';
+import PhotoPreview from './views/Photobooth/PhotoPreview';
 import PageTransition from './components/layout/PageTransition';
 import { ActivePhase, FrameColor, PhotoCount, PhotoArea } from './types';
 import { ensureAuth, getPhotoSession } from './services/dbService';
@@ -157,10 +158,7 @@ export default function App() {
     }
   };
 
-  const isAdminRoute = window.location.pathname === '/admin';
-  if (isAdminRoute) {
-    return <AdminPage />;
-  }
+  // Routing /admin sekarang ditangani oleh Next.js: app/admin/page.tsx
 
   return (
     <div className="min-h-screen flex flex-col premium-bg text-slate-900 antialiased font-sans">
