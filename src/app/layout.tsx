@@ -24,6 +24,9 @@ export const metadata: Metadata = {
   ],
   authors: [{ name: 'Foto Momen' }],
   creator: 'Foto Momen',
+  verification: {
+    google: 'HoYNbrFTf7y_BJHhcT8oArHnM7mO9_PXYpTrO6GI_xA',
+  },
   metadataBase: new URL(
     process.env.NEXT_PUBLIC_BASE_URL || 'https://foto-momen.vercel.app'
   ),
