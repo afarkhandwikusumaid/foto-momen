@@ -15,8 +15,33 @@ export default function AdminPage() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isLoggingIn, setIsLoggingIn] = useState(false);
   const [loginError, setLoginError] = useState(false);
-  const [activeTab, setActiveTab] = useState('dashboard');
+  const [activeTab, _setActiveTab] = useState('dashboard');
   const [editingTemplateData, setEditingTemplateData] = useState<any>(null);
+
+  const setActiveTab = (tab: string) => {
+    _setActiveTab(tab);
+    if (typeof window !== 'undefined') {
+      window.location.hash = tab;
+    }
+  };
+
+  useEffect(() => {
+    const handleHashChange = () => {
+      const hash = window.location.hash.replace('#', '');
+      if (['dashboard', 'templates_add', 'templates_catalog'].includes(hash)) {
+        _setActiveTab(hash);
+      } else if (!hash) {
+        _setActiveTab('dashboard');
+      }
+    };
+    
+    if (typeof window !== 'undefined') {
+      handleHashChange();
+      window.addEventListener('hashchange', handleHashChange);
+      return () => window.removeEventListener('hashchange', handleHashChange);
+    }
+  }, []);
+
 
   const [templates, setTemplates] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
