@@ -33,8 +33,11 @@ const EMPTY_FRAME: FrameColor = {
 function useSessionState<T>(key: string, initialValue: T): [T, (val: T | ((prev: T) => T)) => void] {
   const [state, setState] = useState<T>(() => {
     try {
-      const item = window.sessionStorage.getItem(key);
-      return item ? JSON.parse(item) : initialValue;
+      if (typeof window !== 'undefined') {
+        const item = window.sessionStorage.getItem(key);
+        return item ? JSON.parse(item) : initialValue;
+      }
+      return initialValue;
     } catch (error) {
       console.warn('Error reading sessionStorage', error);
       return initialValue;
@@ -55,7 +58,7 @@ function useSessionState<T>(key: string, initialValue: T): [T, (val: T | ((prev:
 export default function App() {
   const [currentPhase, setCurrentPhase] = useSessionState<ActivePhase>('fm_phase', 'landing');
   const [selectedColor, setSelectedColor] = useSessionState<FrameColor>('fm_color', EMPTY_FRAME);
-  const [activeTab, setActiveTab] = useSessionState<'home' | 'catalog'>('fm_tab', 'home');
+  const [activeTab, setActiveTab] = useSessionState<'home' | 'catalog' | 'studio'>('fm_tab', 'home');
   const [capturedPhotos, setCapturedPhotos] = useSessionState<string[]>('fm_photos', []);
   // Blobs cannot be stringified, so they reset on refresh
   const [capturedVideos, setCapturedVideos] = useState<Blob[]>([]);
@@ -276,7 +279,7 @@ export default function App() {
                   <LandingPage
                     onStart={() => setCurrentPhase('select-frame')}
                     onStartWithTemplate={handleStartWithTemplate}
-                    activeTab={activeTab}
+                    activeTab={activeTab as any}
                   />
                 </PageTransition>
               )}

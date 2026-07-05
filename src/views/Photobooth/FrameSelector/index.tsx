@@ -11,6 +11,8 @@ interface FrameSelectorProps {
   onPhotoCountSelect: (count: PhotoCount) => void;
   onNext: () => void;
   onPrev: () => void;
+  nextButtonText?: string;
+  nextButtonIcon?: React.ReactNode;
 }
 
 export default function FrameSelector({
@@ -19,6 +21,8 @@ export default function FrameSelector({
   onPhotoCountSelect,
   onNext,
   onPrev,
+  nextButtonText = 'Lanjut Ke Kamera',
+  nextButtonIcon = <Camera className="h-4 w-4" />,
 }: FrameSelectorProps) {
 
   const [templates, setTemplates] = useState<FrameColor[]>([]);
@@ -250,8 +254,8 @@ export default function FrameSelector({
             disabled={!selectedColor.imageUrl && templates.length > 0}
             className="flex-1 sm:flex-none sm:min-w-[280px] flex items-center justify-center gap-3 rounded-lg bg-[#1d90ff] hover:bg-blue-600 disabled:bg-slate-300 disabled:cursor-not-allowed text-white py-3 px-8 text-sm font-bold transition-all shadow-md shadow-blue-500/20 active:scale-95"
           >
-            <Camera className="h-4 w-4" />
-            <span>Lanjut Ke Kamera</span>
+            {nextButtonIcon}
+            <span>{nextButtonText}</span>
             <ArrowRight className="h-4 w-4" />
           </button>
         </div>

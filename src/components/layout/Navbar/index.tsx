@@ -5,16 +5,20 @@ import { ActivePhase } from '../../../types';
 interface NavbarProps {
   currentPhase: ActivePhase;
   onReset: () => void;
-  activeTab: 'home' | 'catalog';
-  setActiveTab: (tab: 'home' | 'catalog') => void;
+  activeTab: 'home' | 'catalog' | 'studio';
+  setActiveTab: (tab: 'home' | 'catalog' | 'studio') => void;
   onStartBooth: () => void;
 }
 
 export default function Navbar({ currentPhase, onReset, activeTab, setActiveTab, onStartBooth }: NavbarProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  const handleNavClick = (tab: 'home' | 'catalog', e: React.MouseEvent) => {
+  const handleNavClick = (tab: 'home' | 'catalog' | 'studio', e: React.MouseEvent) => {
     e.preventDefault();
+    if (tab === 'studio') {
+      window.location.href = '/studio';
+      return;
+    }
     setActiveTab(tab);
     setMobileMenuOpen(false);
     if (currentPhase !== 'landing') {
@@ -68,6 +72,17 @@ export default function Navbar({ currentPhase, onReset, activeTab, setActiveTab,
                 }`}
               >
                 Katalog Frame
+              </a>
+              <a 
+                href="/studio"
+                onClick={(e) => handleNavClick('studio', e)}
+                className={`px-3.5 py-2 rounded-full transition-all duration-200 ${
+                  activeTab === 'studio' 
+                    ? 'bg-blue-50 border border-blue-100 text-[#1d90ff]' 
+                    : 'text-slate-500 hover:text-slate-700 hover:bg-slate-50'
+                }`}
+              >
+                Upload Foto
               </a>
             </div>
           )}
@@ -126,6 +141,12 @@ export default function Navbar({ currentPhase, onReset, activeTab, setActiveTab,
                 className={`w-full px-5 py-3 rounded-xl text-sm font-bold transition-all duration-300 ${activeTab === 'catalog' ? 'bg-blue-50 text-[#1d90ff] shadow-sm border border-blue-100' : 'text-slate-600 bg-slate-50 border border-slate-100 hover:bg-slate-100'}`}
               >
                 Katalog Tema
+              </button>
+              <button 
+                onClick={() => window.location.href = '/studio'}
+                className={`w-full px-5 py-3 rounded-xl text-sm font-bold transition-all duration-300 ${activeTab === 'studio' ? 'bg-blue-50 text-[#1d90ff] shadow-sm border border-blue-100' : 'text-slate-600 bg-slate-50 border border-slate-100 hover:bg-slate-100'}`}
+              >
+                Upload Foto
               </button>
             </div>
               <button
