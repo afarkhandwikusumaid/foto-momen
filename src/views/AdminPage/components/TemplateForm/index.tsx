@@ -90,10 +90,10 @@ export default function TemplateForm({
 
 
         <div className="bg-blue-50/50 p-4 rounded-xl border border-blue-100">
-          <label className="block text-sm font-bold text-slate-700 mb-1.5">Gambar Overlay (PNG Transparan)</label>
+          <label className="block text-sm font-bold text-slate-700 mb-1.5">Gambar Overlay (PNG/WebP Transparan)</label>
           <div className="relative mb-3">
             <input 
-              type="file" accept="image/png" onChange={onFileChange} required={!editingId}
+              type="file" accept="image/png, image/webp" onChange={onFileChange} required={!editingId}
               className="w-full text-sm text-slate-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-bold file:bg-[#1d90ff]/10 file:text-[#1d90ff] hover:file:bg-[#1d90ff]/20 cursor-pointer"
             />
           </div>

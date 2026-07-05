@@ -71,7 +71,7 @@ export async function uploadTemplateImage(file: File): Promise<string> {
 
   const { error: uploadError } = await supabase.storage
     .from('photobooth')
-    .upload(filePath, file, { contentType: 'image/png', upsert: true });
+    .upload(filePath, file, { contentType: file.type || 'image/png', upsert: true });
 
   if (uploadError) {
     console.error('Storage upload error:', uploadError);

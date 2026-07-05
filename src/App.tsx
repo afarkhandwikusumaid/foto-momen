@@ -78,6 +78,23 @@ export default function App() {
       getPhotoSession(shareId)
         .then(async (session) => {
           if (session) {
+            const ONE_HOUR = 60 * 60 * 1000;
+            if (Date.now() - session.createdAt > ONE_HOUR) {
+              import('sweetalert2').then((Swal) => {
+                Swal.default.fire({
+                  title: 'Link Kedaluwarsa',
+                  text: 'Maaf, link foto ini sudah kedaluwarsa (berlaku hanya 1 jam).',
+                  icon: 'warning',
+                  confirmButtonText: 'Tutup',
+                  confirmButtonColor: '#3085d6'
+                }).then(() => {
+                  window.history.replaceState({}, document.title, window.location.pathname);
+                  setSharedSession(null);
+                });
+              });
+              return;
+            }
+
             setSharedSession(session);
             // Check if corresponding webm exists
             const imgUrl = (session as any).image_url || session.imageUrl;

@@ -26,7 +26,7 @@ function isTargetPixel(r: number, g: number, b: number, a: number): boolean {
  * kotak-kotak lubang foto. Mendeteksi area transparan, putih bersih, atau hijau terang.
  * Area yang memenuhi syarat akan diubah menjadi transparan (Alpha = 0).
  */
-export async function detectTransparentHoles(imageUrl: string): Promise<DetectionResult> {
+export async function detectTransparentHoles(imageUrl: string, fileType: string = 'image/png'): Promise<DetectionResult> {
   return new Promise((resolve, reject) => {
     const img = new Image();
     img.crossOrigin = 'anonymous'; // Jika dari external URL
@@ -183,7 +183,7 @@ export async function detectTransparentHoles(imageUrl: string): Promise<Detectio
           } else {
             resolve({ holes, processedImageUrl: null });
           }
-        }, 'image/png');
+        }, fileType);
       } else {
         resolve({ holes, processedImageUrl: null });
       }

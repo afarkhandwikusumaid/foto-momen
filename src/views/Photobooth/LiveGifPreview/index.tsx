@@ -166,8 +166,8 @@ const LiveGifPreview = forwardRef<LiveGifPreviewRef, LiveGifPreviewProps>(({
   return (
     <div className="bg-slate-900 text-white p-5 rounded-[28px] shadow-xl border border-slate-800 space-y-4 select-none w-full max-w-sm">
       <div className="flex items-center justify-between">
-        <h3 className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-wider text-pink-400">
-          <Sparkles className="h-4 w-4 text-[#ff007f] animate-pulse" /> Live Photo Strip
+        <h3 className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-wider text-[#1d90ff]">
+          <Sparkles className="h-4 w-4 text-[#1d90ff] animate-pulse" /> Live Photo Strip
         </h3>
         
         <div className="flex gap-2">

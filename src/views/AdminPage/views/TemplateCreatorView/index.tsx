@@ -65,7 +65,7 @@ export default function TemplateCreatorView({ initialData, onSuccess, onCancel }
       // Deteksi area transparan otomatis
       setIsDetecting(true);
       try {
-        const { holes, processedImageUrl } = await detectTransparentHoles(objectUrl);
+        const { holes, processedImageUrl } = await detectTransparentHoles(objectUrl, selectedFile.type);
         if (holes.length > 0) {
           setPhotoAreas(holes);
           setPhotoCount(holes.length);
@@ -76,7 +76,7 @@ export default function TemplateCreatorView({ initialData, onSuccess, onCancel }
             try {
               const res = await fetch(processedImageUrl);
               const blob = await res.blob();
-              setFile(new File([blob], selectedFile.name, { type: 'image/png' }));
+              setFile(new File([blob], selectedFile.name, { type: selectedFile.type }));
             } catch(e) {
               console.error("Gagal memproses file chroma key", e);
             }
