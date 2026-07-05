@@ -24,6 +24,8 @@ export default function Navbar({ currentPhase, onReset, activeTab, setActiveTab,
     if (currentPhase !== 'landing') {
       onReset();
     }
+    // Smooth scroll to top when switching tabs
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const isLanding = currentPhase === 'landing';
@@ -42,6 +44,7 @@ export default function Navbar({ currentPhase, onReset, activeTab, setActiveTab,
               onReset(); 
               if (setActiveTab) setActiveTab('home'); 
               setMobileMenuOpen(false); 
+              window.scrollTo({ top: 0, behavior: 'smooth' });
             }}
             className="flex items-center gap-2 cursor-pointer group"
           >
@@ -54,10 +57,10 @@ export default function Navbar({ currentPhase, onReset, activeTab, setActiveTab,
               <a 
                 href="#" 
                 onClick={(e) => handleNavClick('home', e)} 
-                className={`px-3.5 py-2 rounded-full transition-all duration-200 ${
+                className={`px-3.5 py-2 rounded-full transition-all duration-200 border ${
                   activeTab === 'home' 
-                    ? 'bg-blue-50 border border-blue-100 text-[#1d90ff]' 
-                    : 'text-slate-500 hover:text-slate-700 hover:bg-slate-50'
+                    ? 'bg-blue-50 border-blue-100 text-[#1d90ff]' 
+                    : 'border-transparent text-slate-500 hover:text-slate-700 hover:bg-slate-50'
                 }`}
               >
                 Beranda
@@ -65,10 +68,10 @@ export default function Navbar({ currentPhase, onReset, activeTab, setActiveTab,
               <a 
                 href="#" 
                 onClick={(e) => handleNavClick('catalog', e)} 
-                className={`px-3.5 py-2 rounded-full transition-all duration-200 ${
+                className={`px-3.5 py-2 rounded-full transition-all duration-200 border ${
                   activeTab === 'catalog' 
-                    ? 'bg-blue-50 border border-blue-100 text-[#1d90ff]' 
-                    : 'text-slate-500 hover:text-slate-700 hover:bg-slate-50'
+                    ? 'bg-blue-50 border-blue-100 text-[#1d90ff]' 
+                    : 'border-transparent text-slate-500 hover:text-slate-700 hover:bg-slate-50'
                 }`}
               >
                 Katalog Frame
@@ -76,10 +79,10 @@ export default function Navbar({ currentPhase, onReset, activeTab, setActiveTab,
               <a 
                 href="/studio"
                 onClick={(e) => handleNavClick('studio', e)}
-                className={`px-3.5 py-2 rounded-full transition-all duration-200 ${
+                className={`px-3.5 py-2 rounded-full transition-all duration-200 border ${
                   activeTab === 'studio' 
-                    ? 'bg-blue-50 border border-blue-100 text-[#1d90ff]' 
-                    : 'text-slate-500 hover:text-slate-700 hover:bg-slate-50'
+                    ? 'bg-blue-50 border-blue-100 text-[#1d90ff]' 
+                    : 'border-transparent text-slate-500 hover:text-slate-700 hover:bg-slate-50'
                 }`}
               >
                 Upload Foto
