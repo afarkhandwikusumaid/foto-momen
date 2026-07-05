@@ -12,7 +12,7 @@ interface LiveGifPreviewProps {
 }
 
 export interface LiveGifPreviewRef {
-  generateVideoBlob: () => Promise<Blob>;
+  generateGifBlob: () => Promise<Blob>;
 }
 
 const LiveGifPreview = forwardRef<LiveGifPreviewRef, LiveGifPreviewProps>(({
@@ -48,9 +48,9 @@ const LiveGifPreview = forwardRef<LiveGifPreviewRef, LiveGifPreviewProps>(({
     });
   }, [isPlaying, videoUrls]);
 
-  const generateVideoBlob = async (): Promise<Blob> => {
+  const generateGifBlob = async (): Promise<Blob> => {
     if (!frame.imageUrl || !videos || videos.length === 0) {
-      throw new Error("Cannot generate video: missing frame or videos");
+      throw new Error("Cannot generate gif: missing frame or videos");
     }
 
     const canvas = document.createElement('canvas');
@@ -63,9 +63,13 @@ const LiveGifPreview = forwardRef<LiveGifPreviewRef, LiveGifPreviewProps>(({
       imgOverlay.src = frame.imageUrl!;
     });
 
-    canvas.width = imgOverlay.width;
-    canvas.height = imgOverlay.height;
-    const ctx = canvas.getContext('2d');
+    // Limit size for reasonable GIF performance and file size
+    const MAX_WIDTH = 400; 
+    const scale = Math.min(1, MAX_WIDTH / imgOverlay.width);
+    canvas.width = imgOverlay.width * scale;
+    canvas.height = imgOverlay.height * scale;
+    
+    const ctx = canvas.getContext('2d', { willReadFrequently: true });
     if (!ctx) throw new Error("No context");
 
     const vids = videoRefs.current.filter(v => v !== null) as HTMLVideoElement[];
@@ -74,72 +78,78 @@ const LiveGifPreview = forwardRef<LiveGifPreviewRef, LiveGifPreviewProps>(({
       v.play();
     });
 
-    const stream = canvas.captureStream(30);
-    const recorder = new MediaRecorder(stream, { mimeType: 'video/webm' });
-    const chunks: Blob[] = [];
+    return new Promise(async (resolve, reject) => {
+      try {
+        const { GIFEncoder, quantize, applyPalette } = await import('gifenc');
+        const gif = GIFEncoder();
+        
+        const fps = 12;
+        const delay = 1000 / fps;
+        const durationMs = 2500;
+        const totalFrames = Math.floor(durationMs / delay);
+        let currentFrame = 0;
 
-    recorder.ondataavailable = e => chunks.push(e.data);
+        const drawFrame = () => {
+          ctx.fillStyle = frame.hex || '#ffffff';
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    return new Promise((resolve, reject) => {
-      recorder.onstop = () => {
-        const blob = new Blob(chunks, { type: 'video/webm' });
-        resolve(blob);
-      };
-      
-      recorder.onerror = reject;
-      recorder.start();
+          frame.photoAreas?.forEach((area, idx) => {
+            const vid = videoRefs.current[idx];
+            if (vid && vid.readyState >= 2) {
+               const dx = (area.x / 100) * canvas.width;
+               const dy = (area.y / 100) * canvas.height;
+               const dw = (area.width / 100) * canvas.width;
+               const dh = (area.height / 100) * canvas.height;
+               
+               const vidAspect = vid.videoWidth / vid.videoHeight;
+               const destAspect = dw / dh;
+               let sx = 0, sy = 0, sw = vid.videoWidth, sh = vid.videoHeight;
+               if (vidAspect > destAspect) {
+                 sw = vid.videoHeight * destAspect;
+                 sx = (vid.videoWidth - sw) / 2;
+               } else {
+                 sh = vid.videoWidth / destAspect;
+                 sy = (vid.videoHeight - sh) / 2;
+               }
+               
+               ctx.save();
+               ctx.filter = filterCss;
+               ctx.translate(dx + dw / 2, dy + dh / 2);
+               ctx.scale(-1, 1);
+               ctx.drawImage(vid, sx, sy, sw, sh, -dw / 2, -dh / 2, dw, dh);
+               ctx.restore();
+            }
+          });
 
-      let animationFrame: number;
-      const draw = () => {
-        ctx.fillStyle = frame.hex || '#ffffff';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
+          ctx.drawImage(imgOverlay, 0, 0, canvas.width, canvas.height);
 
-        frame.photoAreas?.forEach((area, idx) => {
-          const vid = videoRefs.current[idx];
-          if (vid && vid.readyState >= 2) {
-             const dx = (area.x / 100) * canvas.width;
-             const dy = (area.y / 100) * canvas.height;
-             const dw = (area.width / 100) * canvas.width;
-             const dh = (area.height / 100) * canvas.height;
-             
-             const vidAspect = vid.videoWidth / vid.videoHeight;
-             const destAspect = dw / dh;
-             let sx = 0, sy = 0, sw = vid.videoWidth, sh = vid.videoHeight;
-             if (vidAspect > destAspect) {
-               sw = vid.videoHeight * destAspect;
-               sx = (vid.videoWidth - sw) / 2;
-             } else {
-               sh = vid.videoWidth / destAspect;
-               sy = (vid.videoHeight - sh) / 2;
-             }
-             
-             ctx.save();
-             ctx.filter = filterCss;
-             ctx.translate(dx + dw / 2, dy + dh / 2);
-             ctx.scale(-1, 1);
-             ctx.drawImage(vid, sx, sy, sw, sh, -dw / 2, -dh / 2, dw, dh);
-             ctx.restore();
+          const { data, width, height } = ctx.getImageData(0, 0, canvas.width, canvas.height);
+          const palette = quantize(data, 256);
+          const index = applyPalette(data, palette);
+          
+          gif.writeFrame(index, width, height, { palette, delay });
+          
+          currentFrame++;
+          
+          if (currentFrame < totalFrames) {
+            setTimeout(drawFrame, delay);
+          } else {
+            gif.finish();
+            const buffer = gif.bytes();
+            resolve(new Blob([buffer], { type: 'image/gif' }));
           }
-        });
+        };
 
-        ctx.drawImage(imgOverlay, 0, 0, canvas.width, canvas.height);
-
-        if (recorder.state === 'recording') {
-          animationFrame = requestAnimationFrame(draw);
-        }
-      };
-      
-      draw();
-
-      setTimeout(() => {
-        if (recorder.state === 'recording') recorder.stop();
-        cancelAnimationFrame(animationFrame);
-      }, 2000);
+        // Start capture loop
+        drawFrame();
+      } catch (e) {
+        reject(e);
+      }
     });
   };
 
   useImperativeHandle(ref, () => ({
-    generateVideoBlob
+    generateGifBlob
   }));
 
   const handleDownload = async () => {
@@ -147,11 +157,11 @@ const LiveGifPreview = forwardRef<LiveGifPreviewRef, LiveGifPreviewProps>(({
     setIsDownloading(true);
 
     try {
-      const blob = await generateVideoBlob();
+      const blob = await generateGifBlob();
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `Live_FotoMomen_${Date.now()}.webm`;
+      a.download = `Live_FotoMomen_${Date.now()}.gif`;
       a.click();
       URL.revokeObjectURL(url);
     } catch (err) {

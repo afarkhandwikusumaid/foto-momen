@@ -101,7 +101,10 @@ export async function uploadPhotoSession(
   const uid = await ensureAuth();
   const sessionId = existingSessionId || `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
   const filename = `${uid}/${sessionId}.png`;
-  const videoFilename = `${uid}/${sessionId}.webm`;
+  
+  const isGif = videoBlob?.type === 'image/gif';
+  const videoExt = isGif ? 'gif' : 'webm';
+  const videoFilename = `${uid}/${sessionId}.${videoExt}`;
 
   // Convert base64 to Blob
   let response = await fetch(finalBase64);
@@ -142,7 +145,7 @@ export async function uploadPhotoSession(
   if (videoBlob) {
     const { error: videoUploadError } = await supabase.storage
       .from('photobooth')
-      .upload(videoFilename, videoBlob, { contentType: 'video/webm' });
+      .upload(videoFilename, videoBlob, { contentType: videoBlob.type || 'video/webm' });
 
     if (!videoUploadError) {
       const { data: videoUrlData } = supabase.storage.from('photobooth').getPublicUrl(videoFilename);

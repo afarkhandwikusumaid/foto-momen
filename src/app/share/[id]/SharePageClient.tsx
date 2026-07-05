@@ -17,17 +17,29 @@ export default function SharePageClient({ id, initialSession }: SharePageClientP
   const [isLoading, setIsLoading] = useState(!initialSession);
 
   useEffect(() => {
-    // Jika session sudah di-fetch dari server, langsung cek video-nya
     if (session?.image_url) {
-      const vUrl = session.image_url.replace('.png', '.webm');
-      fetch(vUrl, { method: 'HEAD' })
-        .then((res) => {
-          if (res.ok) {
-            setHasVideo(true);
-            setVideoUrl(vUrl);
-          }
-        })
-        .catch(() => {});
+      const checkExt = async (ext: string) => {
+        const vUrl = session.image_url.replace('.png', ext);
+        try {
+          const res = await fetch(vUrl, { method: 'HEAD' });
+          if (res.ok) return vUrl;
+        } catch (e) {}
+        return null;
+      };
+
+      checkExt('.gif').then(url => {
+        if (url) {
+          setHasVideo(true);
+          setVideoUrl(url);
+        } else {
+          checkExt('.webm').then(url2 => {
+            if (url2) {
+              setHasVideo(true);
+              setVideoUrl(url2);
+            }
+          });
+        }
+      });
     }
     setIsLoading(false);
   }, [session]);
@@ -57,8 +69,8 @@ export default function SharePageClient({ id, initialSession }: SharePageClientP
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
-      a.href = url;
-      a.download = `Live_FotoMomen_${Date.now()}.webm`;
+      const ext = videoUrl.endsWith('.webm') ? '.webm' : '.gif';
+      a.download = `Live_FotoMomen_${Date.now()}${ext}`;
       document.body.appendChild(a);
       a.click();
       window.URL.revokeObjectURL(url);
@@ -109,14 +121,22 @@ export default function SharePageClient({ id, initialSession }: SharePageClientP
 
           <div className="bg-slate-50 p-2 rounded-2xl border border-slate-100 inline-block mb-6 max-w-full">
             {hasVideo && videoUrl ? (
-              <video
-                src={videoUrl}
-                autoPlay
-                muted
-                loop
-                playsInline
-                className="max-h-[55vh] object-contain rounded-xl"
-              />
+              videoUrl.endsWith('.webm') ? (
+                <video
+                  src={videoUrl}
+                  autoPlay
+                  muted
+                  loop
+                  playsInline
+                  className="max-h-[55vh] object-contain rounded-xl"
+                />
+              ) : (
+                <img
+                  src={videoUrl}
+                  alt="Foto Momen Live GIF"
+                  className="max-h-[55vh] object-contain rounded-xl"
+                />
+              )
             ) : (
               <img
                 src={session.image_url}
@@ -141,7 +161,7 @@ export default function SharePageClient({ id, initialSession }: SharePageClientP
                   className="w-full flex items-center justify-center gap-2 py-4 bg-[#ff007f] hover:bg-[#d6006a] text-white rounded-full font-bold shadow-md transition duration-200 cursor-pointer"
                 >
                   <Download className="w-5 h-5" />
-                  Live Video
+                  {videoUrl.endsWith('.webm') ? 'Live Video' : 'Live GIF'}
                 </button>
               )}
             </div>

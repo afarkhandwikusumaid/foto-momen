@@ -383,7 +383,7 @@ export default function PhotoPreview({
       let videoBlob: Blob | undefined;
       if (capturedVideos && capturedVideos.length > 0 && liveGifRef.current) {
         try {
-          videoBlob = await liveGifRef.current.generateVideoBlob();
+          videoBlob = await liveGifRef.current.generateGifBlob();
         } catch (e) {
           console.error('Gagal men-generate video blob:', e);
         }
