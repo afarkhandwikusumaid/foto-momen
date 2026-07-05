@@ -8,7 +8,7 @@ interface HeroSectionProps {
 
 export default function HeroSection({ onStart }: HeroSectionProps) {
   return (
-    <section className="relative overflow-hidden bg-transparent py-8 sm:py-16 md:py-24 select-none">
+    <section className="relative overflow-hidden bg-transparent pt-4 sm:pt-8 md:pt-12 pb-8 sm:pb-16 md:pb-24 select-none">
       
       {/* Decorative Glow Blob Background */}
       <div className="absolute top-1/2 right-1/4 w-96 h-96 bg-blue-500/10 blur-[100px] rounded-full pointer-events-none -translate-y-1/2" />
