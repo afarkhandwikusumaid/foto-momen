@@ -31,26 +31,30 @@ const EMPTY_FRAME: FrameColor = {
 
 // Custom hook to sync state with sessionStorage
 function useSessionState<T>(key: string, initialValue: T): [T, (val: T | ((prev: T) => T)) => void] {
-  const [state, setState] = useState<T>(() => {
-    try {
-      if (typeof window !== 'undefined') {
-        const item = window.sessionStorage.getItem(key);
-        return item ? JSON.parse(item) : initialValue;
-      }
-      return initialValue;
-    } catch (error) {
-      console.warn('Error reading sessionStorage', error);
-      return initialValue;
-    }
-  });
+  const [state, setState] = useState<T>(initialValue);
+  const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
+    setIsMounted(true);
     try {
-      window.sessionStorage.setItem(key, JSON.stringify(state));
+      const item = window.sessionStorage.getItem(key);
+      if (item) {
+        setState(JSON.parse(item));
+      }
     } catch (error) {
-      console.warn('Error setting sessionStorage', error);
+      console.warn('Error reading sessionStorage', error);
     }
-  }, [key, state]);
+  }, [key]);
+
+  useEffect(() => {
+    if (isMounted) {
+      try {
+        window.sessionStorage.setItem(key, JSON.stringify(state));
+      } catch (error) {
+        console.warn('Error setting sessionStorage', error);
+      }
+    }
+  }, [key, state, isMounted]);
 
   return [state, setState];
 }
