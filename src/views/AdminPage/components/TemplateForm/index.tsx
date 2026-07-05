@@ -61,31 +61,6 @@ export default function TemplateForm({
           />
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <label className="block text-sm font-bold text-slate-700 mb-1.5">Layout (Ukuran)</label>
-            <select 
-              value={layout} onChange={e => setLayout(e.target.value as FrameLayout)}
-              className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-[#1d90ff]"
-            >
-              <option value="vertical-strip">Vertical Strip (2x6)</option>
-              <option value="grid-2x2">Grid 2x2</option>
-              <option value="single-polar">Single Polaroid</option>
-              <option value="triple-strip">Triple Strip</option>
-            </select>
-          </div>
-          <div>
-            <label className="block text-sm font-bold text-slate-700 mb-1.5">Jumlah Foto</label>
-            <select 
-              value={photoCount} onChange={e => setPhotoCount(Number(e.target.value))}
-              className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-[#1d90ff]"
-            >
-              <option value={2}>2 Foto</option>
-              <option value={3}>3 Foto</option>
-              <option value={4}>4 Foto</option>
-            </select>
-          </div>
-        </div>
 
 
 
