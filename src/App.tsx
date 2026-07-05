@@ -78,12 +78,12 @@ export default function App() {
       getPhotoSession(shareId)
         .then(async (session) => {
           if (session) {
-            const ONE_HOUR = 60 * 60 * 1000;
-            if (Date.now() - session.createdAt > ONE_HOUR) {
+            const FIFTEEN_MINUTES = 15 * 60 * 1000;
+            if (Date.now() - session.createdAt > FIFTEEN_MINUTES) {
               import('sweetalert2').then((Swal) => {
                 Swal.default.fire({
                   title: 'Link Kedaluwarsa',
-                  text: 'Maaf, link foto ini sudah kedaluwarsa (berlaku hanya 1 jam).',
+                  text: 'Maaf, link foto ini sudah kedaluwarsa (berlaku hanya 15 menit).',
                   icon: 'warning',
                   confirmButtonText: 'Tutup',
                   confirmButtonColor: '#3085d6'
@@ -194,7 +194,10 @@ export default function App() {
               <div className="bg-white border border-slate-200 rounded-[32px] p-8 shadow-md">
                 <span className="text-4xl">📸</span>
                 <h2 className="text-2xl font-bold text-slate-900 mt-3 mb-2">Foto Momen Bersama</h2>
-                <p className="text-slate-500 text-sm mb-6">Seseorang membagikan momen bahagianya denganmu!</p>
+                <p className="text-slate-500 text-sm mb-2">Seseorang membagikan momen bahagianya denganmu!</p>
+                <div className="bg-rose-50 text-rose-600 text-[11px] font-bold py-1.5 px-3 rounded-full inline-block mb-6 border border-rose-100">
+                  ⚠️ Halaman ini hanya bisa diakses selama 15 menit
+                </div>
 
                 <div className="bg-slate-50 p-2 rounded-2xl border border-slate-100 inline-block mb-6 max-w-full">
                   {hasVideo && videoUrl ? (

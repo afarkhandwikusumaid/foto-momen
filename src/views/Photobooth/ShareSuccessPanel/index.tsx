@@ -25,7 +25,7 @@ export default function ShareSuccessPanel({
         <p className="text-[12px] text-slate-500 font-bold leading-relaxed px-4">
           Scan QR Code di bawah untuk mengunduh foto dari handphone Anda.
           <br />
-          <span className="text-rose-500">*QR Code & Foto hanya berlaku selama 1 jam.</span>
+          <span className="text-rose-500">*QR Code & Foto hanya berlaku selama 15 menit.</span>
         </p>
       </div>
 
