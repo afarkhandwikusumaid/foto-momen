@@ -140,6 +140,7 @@ export default function App() {
     setCapturedVideos([]);
     setSelectedColor(EMPTY_FRAME);
     setCurrentPhase('landing');
+    setSharedSession(null);
     if (window.location.search.includes('share')) {
       window.history.replaceState({}, document.title, window.location.pathname);
     }
@@ -184,7 +185,10 @@ export default function App() {
         onReset={handleResetToHome}
         activeTab={activeTab}
         setActiveTab={setActiveTab}
-        onStartBooth={() => setCurrentPhase('select-frame')}
+        onStartBooth={() => {
+          setSharedSession(null);
+          setCurrentPhase('select-frame');
+        }}
       />
 
       <main className="flex-grow w-full flex flex-col py-2 sm:py-6 px-2 sm:px-4">
