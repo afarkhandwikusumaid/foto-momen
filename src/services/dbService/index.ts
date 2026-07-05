@@ -71,7 +71,7 @@ export async function uploadTemplateImage(file: File): Promise<string> {
 
   const { error: uploadError } = await supabase.storage
     .from('photobooth')
-    .upload(filePath, file, { contentType: file.type || 'image/png', upsert: true });
+    .upload(filePath, file, { contentType: file.type || 'image/png' });
 
   if (uploadError) {
     console.error('Storage upload error:', uploadError);
@@ -131,7 +131,7 @@ export async function uploadPhotoSession(
   // Upload image
   const { error: uploadError } = await supabase.storage
     .from('photobooth')
-    .upload(filename, blob, { contentType: blob.type, upsert: true });
+    .upload(filename, blob, { contentType: blob.type });
   if (uploadError) throw uploadError;
 
   const { data: urlData } = supabase.storage.from('photobooth').getPublicUrl(filename);
@@ -142,7 +142,7 @@ export async function uploadPhotoSession(
   if (videoBlob) {
     const { error: videoUploadError } = await supabase.storage
       .from('photobooth')
-      .upload(videoFilename, videoBlob, { contentType: 'video/webm', upsert: true });
+      .upload(videoFilename, videoBlob, { contentType: 'video/webm' });
 
     if (!videoUploadError) {
       const { data: videoUrlData } = supabase.storage.from('photobooth').getPublicUrl(videoFilename);
