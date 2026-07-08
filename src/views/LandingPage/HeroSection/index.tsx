@@ -29,7 +29,7 @@ export default function HeroSection({ onStart }: HeroSectionProps) {
           <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black leading-[1.1] tracking-tight text-slate-900">
             Abadikan <span className="text-brand-blue">Momen</span><br />
             <span className="bg-gradient-to-r from-blue-600 via-brand-blue to-purple-600 bg-clip-text text-transparent pb-1 pt-1 animate-gradient inline-block">
-              Virtual Estetik
+              Virtual Aesthetic
             </span><br />
             Di Sini.
           </h1>
