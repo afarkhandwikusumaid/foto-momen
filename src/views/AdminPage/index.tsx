@@ -106,7 +106,7 @@ export default function AdminPage() {
 
   const loadTemplates = async () => {
     setIsLoading(true);
-    const data = await getFrameTemplates();
+    const data = await getFrameTemplates({ includePrivate: true });
     setTemplates(data);
     setIsLoading(false);
   };

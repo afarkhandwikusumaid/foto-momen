@@ -35,6 +35,7 @@ export interface FrameTemplate {
   active: boolean;
   photoCount: number;
   photoAreas?: { x: number; y: number; width: number; height: number }[];
+  eventCode?: string;
 }
 
 // ============================================================
@@ -243,16 +244,21 @@ export async function getAllSessions(): Promise<PhotoSession[]> {
 // ============================================================
 
 /**
- * Fetches all frame templates from DB.
+ * Fetches frame templates from DB.
  */
-export async function getFrameTemplates(): Promise<FrameTemplate[]> {
+export async function getFrameTemplates(options?: { includePrivate?: boolean; eventCode?: string }): Promise<FrameTemplate[]> {
   if (!isSupabaseReady) return [];
 
   try {
-    const { data, error } = await supabase
-      .from('templates')
-      .select('*')
-      .order('created_at', { ascending: false });
+    let query = supabase.from('templates').select('*');
+    
+    if (options?.eventCode) {
+      query = query.eq('event_code', options.eventCode);
+    } else if (!options?.includePrivate) {
+      query = query.is('event_code', null);
+    }
+
+    const { data, error } = await query.order('created_at', { ascending: false });
 
     if (error || !data) return [];
 
@@ -275,7 +281,8 @@ export async function getFrameTemplates(): Promise<FrameTemplate[]> {
         layout: t.layout,
         active: t.active,
         photoCount: t.photo_count || 4,
-        photoAreas
+        photoAreas,
+        eventCode: t.event_code || undefined
       };
     });
   } catch (err) {
@@ -301,6 +308,7 @@ export async function saveTemplate(template: Partial<FrameTemplate> & { id: stri
       ? JSON.stringify(template.layout)
       : (template.layout || 'vertical-strip'),
     photo_count: (template as any).photoCount || 4,
+    event_code: template.eventCode || null,
     active: template.active !== undefined ? template.active : true
   };
 

@@ -27,6 +27,7 @@ CREATE TABLE public.templates (
     image_url    TEXT,
     layout       TEXT    NOT NULL DEFAULT 'vertical-strip',
     photo_count  INTEGER NOT NULL DEFAULT 4,
+    event_code   TEXT,
     active       BOOLEAN NOT NULL DEFAULT true,
     created_at   TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );

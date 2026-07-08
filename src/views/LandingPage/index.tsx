@@ -5,6 +5,7 @@ import { FrameColor } from '../../types';
 import HeroSection from './HeroSection';
 import VisualGuide from './VisualGuide';
 import TemplatesCatalog from './TemplatesCatalog';
+import PartnershipSection from './PartnershipSection';
 
 interface LandingPageProps {
   onStart: () => void;
@@ -14,12 +15,13 @@ interface LandingPageProps {
 
 export default function LandingPage({ onStart, onStartWithTemplate, activeTab }: LandingPageProps) {
   return (
-    <div className="w-full max-w-5xl mx-auto px-2 sm:px-4 pt-2 pb-8 sm:pt-4 sm:pb-8">
+    <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-2 pb-8 sm:pt-4 sm:pb-8">
 
       {activeTab === 'home' && (
-        <div className="space-y-12 animate-fade-in">
+        <div className="space-y-4 animate-fade-in">
           <HeroSection onStart={onStart} />
           <VisualGuide />
+          <PartnershipSection />
         </div>
       )}
 

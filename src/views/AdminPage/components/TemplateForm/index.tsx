@@ -11,6 +11,8 @@ interface TemplateFormProps {
   photoCount: number;
   setPhotoCount: (count: number) => void;
   photoAreas?: PhotoArea[];
+  eventCode: string;
+  setEventCode: (code: string) => void;
   isDetecting?: boolean;
   hex: string;
   setHex: (hex: string) => void;
@@ -31,6 +33,7 @@ export default function TemplateForm({
   layout, setLayout,
   photoCount, setPhotoCount,
   photoAreas, isDetecting,
+  eventCode, setEventCode,
   hex, setHex,
   textColor, setTextColor,
   isActive, setIsActive,
@@ -59,6 +62,16 @@ export default function TemplateForm({
             placeholder="Misal: Bunga Tropis 2x6"
             className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-[#1d90ff] focus:ring-1 focus:ring-[#1d90ff]"
           />
+        </div>
+
+        <div>
+          <label className="block text-sm font-bold text-slate-700 mb-1.5">Event Code / Class Code (Opsional)</label>
+          <input 
+            type="text" value={eventCode} onChange={e => setEventCode(e.target.value)}
+            placeholder="Misal: ipa-1 (Kosongkan jika template publik)"
+            className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-[#1d90ff] focus:ring-1 focus:ring-[#1d90ff]"
+          />
+          <p className="text-xs text-slate-500 mt-1">Jika diisi, template hanya bisa diakses via /c/kode-event dan tersembunyi dari publik.</p>
         </div>
 
 

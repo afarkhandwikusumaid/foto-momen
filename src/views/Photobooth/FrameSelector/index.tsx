@@ -6,6 +6,7 @@ import { getFrameTemplates } from '../../../services/dbService';
 export const FRAME_COLORS: FrameColor[] = [];
 
 interface FrameSelectorProps {
+  eventCode?: string;
   selectedColor: FrameColor;
   onColorSelect: (color: FrameColor) => void;
   onPhotoCountSelect: (count: PhotoCount) => void;
@@ -16,6 +17,7 @@ interface FrameSelectorProps {
 }
 
 export default function FrameSelector({
+  eventCode,
   selectedColor,
   onColorSelect,
   onPhotoCountSelect,
@@ -31,7 +33,7 @@ export default function FrameSelector({
 
   useEffect(() => {
     setIsLoading(true);
-    getFrameTemplates()
+    getFrameTemplates({ eventCode })
       .then(data => {
         const mapped: FrameColor[] = data
           .filter((t: any) => t.active !== false)
@@ -116,11 +118,12 @@ export default function FrameSelector({
                 <button
                   key={cat}
                   onClick={() => setSelectedCategory(cat)}
-                  className={`px-4 py-1.5 rounded-full text-xs font-bold whitespace-nowrap transition-all duration-200 border ${
+                  className={`px-5 py-2.5 rounded-full text-xs font-bold whitespace-nowrap transition-all duration-200 border cursor-pointer ${
                     selectedCategory === cat
-                      ? 'bg-blue-500 text-white border-blue-500 shadow-md shadow-blue-500/20'
+                      ? 'bg-brand-blue text-white border-brand-blue shadow-md shadow-brand-blue/20'
                       : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50 hover:border-slate-300'
                   }`}
+                  aria-pressed={selectedCategory === cat}
                 >
                   {cat}
                 </button>
@@ -153,9 +156,10 @@ export default function FrameSelector({
                 <button
                   key={template.id}
                   onClick={() => handleSelect(template)}
-                  className={`group relative rounded-2xl overflow-hidden border-2 transition-all duration-200 text-left focus:outline-none flex flex-col ${
+                  aria-pressed={isSelected(template)}
+                  className={`group relative rounded-2xl overflow-hidden border-2 transition-all duration-200 text-left focus:outline-none flex flex-col cursor-pointer ${
                     isSelected(template)
-                      ? 'border-blue-500 shadow-lg shadow-blue-500/20 scale-[1.02]'
+                      ? 'border-brand-blue shadow-lg shadow-brand-blue/20 scale-[1.02]'
                       : 'border-slate-200 hover:border-slate-300 hover:shadow-md'
                   }`}
                 >
@@ -210,8 +214,8 @@ export default function FrameSelector({
         </div>
 
         {/* Kanan: Preview Panel */}
-        <div className="lg:col-span-5 flex flex-col items-center sticky top-24">
-          <div className="w-full bg-slate-50 flex flex-col items-center justify-center p-6 border border-slate-200 min-h-[460px] rounded-xl gap-4">
+        <div className="w-full lg:col-span-5 flex flex-col items-center lg:sticky lg:top-24">
+          <div className="w-full premium-glass flex flex-col items-center justify-center p-6 min-h-[460px] rounded-2xl gap-4 shadow-xl">
             {selectedColor.imageUrl ? (
               <>
                 <img
@@ -252,7 +256,7 @@ export default function FrameSelector({
           <button
             onClick={onNext}
             disabled={!selectedColor.imageUrl && templates.length > 0}
-            className="flex-1 sm:flex-none sm:min-w-[280px] flex items-center justify-center gap-3 rounded-lg bg-[#1d90ff] hover:bg-blue-600 disabled:bg-slate-300 disabled:cursor-not-allowed text-white py-3 px-8 text-sm font-bold transition-all shadow-md shadow-blue-500/20 active:scale-95"
+            className="flex-1 sm:flex-none sm:min-w-[280px] flex items-center justify-center gap-3 rounded-full bg-brand-blue hover:bg-brand-blue/90 disabled:bg-slate-300 disabled:cursor-not-allowed text-white py-3.5 px-8 text-sm font-bold transition-all shadow-md shadow-brand-blue/20 active:scale-95 cursor-pointer"
           >
             {nextButtonIcon}
             <span>{nextButtonText}</span>

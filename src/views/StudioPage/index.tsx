@@ -20,7 +20,11 @@ const EMPTY_FRAME: FrameColor = {
   borderClass: 'border-slate-200',
 };
 
-export default function StudioPage() {
+interface StudioPageProps {
+  eventCode?: string;
+}
+
+export default function StudioPage({ eventCode }: StudioPageProps) {
   const [currentPhase, setCurrentPhase] = useState<StudioPhase>('select-frame');
   const [selectedColor, setSelectedColor] = useState<FrameColor>(EMPTY_FRAME);
   const [photoCount, setPhotoCount] = useState<PhotoCount>(4);
@@ -70,6 +74,7 @@ export default function StudioPage() {
             {currentPhase === 'select-frame' && (
               <PageTransition key="select-frame">
                 <FrameSelector
+                  eventCode={eventCode}
                   selectedColor={selectedColor}
                   onColorSelect={handleColorSelect}
                   onPhotoCountSelect={setPhotoCount}

@@ -17,6 +17,7 @@ export default function TemplateCreatorView({ initialData, onSuccess, onCancel }
   const [editingId, setEditingId] = useState<string | null>(null);
   const [file, setFile] = useState<File | null>(null);
   const [name, setName] = useState('');
+  const [eventCode, setEventCode] = useState('');
   const [layout, setLayout] = useState<FrameLayout | string>('vertical-strip');
   const [hex, setHex] = useState('#ffffff');
   const [textColor, setTextColor] = useState('#000000');
@@ -32,6 +33,7 @@ export default function TemplateCreatorView({ initialData, onSuccess, onCancel }
     if (initialData) {
       setEditingId(initialData.id);
       setName(initialData.name);
+      setEventCode(initialData.eventCode || '');
       setLayout(initialData.layout);
       setHex(initialData.hex || '#ffffff');
       setTextColor(initialData.textColor || '#000000');
@@ -103,6 +105,7 @@ export default function TemplateCreatorView({ initialData, onSuccess, onCancel }
     setFile(null);
     setPreviewUrl(null);
     setName('');
+    setEventCode('');
     setLayout('vertical-strip');
     setHex('#ffffff');
     setTextColor('#000000');
@@ -126,6 +129,7 @@ export default function TemplateCreatorView({ initialData, onSuccess, onCancel }
       const newTemplate = {
         id: editingId || `tpl_${Date.now()}`,
         name: name.trim(),
+        eventCode: eventCode.trim() || undefined,
         hex,
         textColor,
         borderClass: 'border-slate-200',
@@ -168,6 +172,7 @@ export default function TemplateCreatorView({ initialData, onSuccess, onCancel }
           layout={layout as any} setLayout={setLayout as any}
           photoCount={photoCount} setPhotoCount={setPhotoCount}
           photoAreas={photoAreas}
+          eventCode={eventCode} setEventCode={setEventCode}
           isDetecting={isDetecting}
           hex={hex} setHex={setHex}
           textColor={textColor} setTextColor={setTextColor}
