@@ -26,7 +26,7 @@ export default function AdminPage() {
   useEffect(() => {
     const handleHashChange = () => {
       const hash = window.location.hash.replace('#', '');
-      if (['dashboard', 'templates_add', 'templates_catalog', 'routes'].includes(hash)) {
+      if (['dashboard', 'templates_add_public', 'templates_add_private', 'templates_catalog_public', 'templates_catalog_private', 'routes'].includes(hash)) {
         _setActiveTab(hash);
       } else if (!hash) {
         _setActiveTab('dashboard');
@@ -122,35 +122,70 @@ export default function AdminPage() {
 
   const handleEditRequest = (template: any) => {
     setEditingTemplateData(template);
-    setActiveTab('templates_add');
+    if (template.eventCode) {
+      setActiveTab('templates_add_private');
+    } else {
+      setActiveTab('templates_add_public');
+    }
   };
 
   const handleCreatorSuccess = async () => {
     await loadTemplates();
+    const wasPrivate = editingTemplateData?.eventCode || activeTab === 'templates_add_private';
     setEditingTemplateData(null);
-    setActiveTab('templates_catalog');
+    if (wasPrivate) {
+      setActiveTab('templates_catalog_private');
+    } else {
+      setActiveTab('templates_catalog_public');
+    }
   };
 
   const handleCreatorCancel = () => {
+    const wasPrivate = editingTemplateData?.eventCode || activeTab === 'templates_add_private';
     setEditingTemplateData(null);
-    setActiveTab('templates_catalog');
+    if (wasPrivate) {
+      setActiveTab('templates_catalog_private');
+    } else {
+      setActiveTab('templates_catalog_public');
+    }
   };
 
   const renderActiveView = () => {
     switch (activeTab) {
       case 'dashboard':
         return <DashboardView templates={templates} />;
-      case 'templates_add':
+      case 'templates_add_public':
         return (
           <TemplateCreatorView 
+            isPrivate={false}
             initialData={editingTemplateData} 
             onSuccess={handleCreatorSuccess} 
             onCancel={handleCreatorCancel} 
           />
         );
-      case 'templates_catalog':
+      case 'templates_add_private':
+        return (
+          <TemplateCreatorView 
+            isPrivate={true}
+            initialData={editingTemplateData} 
+            onSuccess={handleCreatorSuccess} 
+            onCancel={handleCreatorCancel} 
+          />
+        );
+      case 'templates_catalog_public':
         return (
           <TemplateCatalogView 
+            isPrivate={false}
+            templates={templates} 
+            loadTemplates={loadTemplates} 
+            isLoading={isLoading}
+            onEditRequest={handleEditRequest}
+          />
+        );
+      case 'templates_catalog_private':
+        return (
+          <TemplateCatalogView 
+            isPrivate={true}
             templates={templates} 
             loadTemplates={loadTemplates} 
             isLoading={isLoading}

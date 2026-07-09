@@ -11,11 +11,33 @@ interface AdminLayoutProps {
 export default function AdminLayout({ children, activeTab, onTabChange, onLogout }: AdminLayoutProps) {
   const [isSidebarOpen, setIsSidebarOpen] = React.useState(false);
 
-  const navItems = [
-    { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
-    { id: 'templates_add', label: 'Tambah Template', icon: Plus },
-    { id: 'templates_catalog', label: 'Katalog Template', icon: Images },
-    { id: 'routes', label: 'Kelola Rute', icon: Link2 },
+  const menuSections = [
+    {
+      title: 'Utama',
+      items: [
+        { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard }
+      ]
+    },
+    {
+      title: 'Template Publik',
+      items: [
+        { id: 'templates_add_public', label: 'Tambah Template', icon: Plus },
+        { id: 'templates_catalog_public', label: 'Katalog Template', icon: Images }
+      ]
+    },
+    {
+      title: 'Template Privat / Event',
+      items: [
+        { id: 'templates_add_private', label: 'Tambah Template', icon: Plus },
+        { id: 'templates_catalog_private', label: 'Katalog Template', icon: Images }
+      ]
+    },
+    {
+      title: 'Kolaborasi',
+      items: [
+        { id: 'routes', label: 'Kelola Rute', icon: Link2 }
+      ]
+    }
   ];
 
   return (
@@ -43,29 +65,33 @@ export default function AdminLayout({ children, activeTab, onTabChange, onLogout
           </div>
         </div>
 
-        <nav className="flex-1 overflow-y-auto py-6 px-4 space-y-1.5">
-          <div className="text-xs font-bold text-slate-400 mb-4 px-2 uppercase tracking-wider">Menu Utama</div>
-          {navItems.map(item => {
-            const Icon = item.icon;
-            const isActive = activeTab === item.id;
-            return (
-              <button
-                key={item.id}
-                onClick={() => {
-                  onTabChange(item.id);
-                  setIsSidebarOpen(false);
-                }}
-                className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all ${
-                  isActive 
-                    ? 'bg-[#1d90ff]/10 text-[#1d90ff]' 
-                    : 'text-slate-500 hover:bg-slate-50 hover:text-slate-700'
-                }`}
-              >
-                <Icon className={`w-5 h-5 ${isActive ? 'text-[#1d90ff]' : 'text-slate-400'}`} />
-                {item.label}
-              </button>
-            );
-          })}
+        <nav className="flex-1 overflow-y-auto py-6 px-4 space-y-6">
+          {menuSections.map((section, idx) => (
+            <div key={idx} className="space-y-1">
+              <div className="text-[10px] font-bold text-slate-400 px-2 uppercase tracking-wider mb-2">{section.title}</div>
+              {section.items.map(item => {
+                const Icon = item.icon;
+                const isActive = activeTab === item.id;
+                return (
+                  <button
+                    key={item.id}
+                    onClick={() => {
+                      onTabChange(item.id);
+                      setIsSidebarOpen(false);
+                    }}
+                    className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-xs font-bold transition-all ${
+                      isActive 
+                        ? 'bg-[#1d90ff]/10 text-[#1d90ff]' 
+                        : 'text-slate-500 hover:bg-slate-50 hover:text-slate-700'
+                    }`}
+                  >
+                    <Icon className={`w-4 h-4 ${isActive ? 'text-[#1d90ff]' : 'text-slate-400'}`} />
+                    {item.label}
+                  </button>
+                );
+              })}
+            </div>
+          ))}
         </nav>
 
         <div className="p-4 border-t border-slate-100">
@@ -92,10 +118,14 @@ export default function AdminLayout({ children, activeTab, onTabChange, onLogout
               <Menu className="w-5 h-5" />
             </button>
             <h1 className="text-lg font-black text-slate-800 capitalize hidden sm:block">
-              {activeTab === 'templates_add' 
-                ? 'Tambah Template Baru' 
-                : activeTab === 'templates_catalog' 
-                ? 'Katalog Template' 
+              {activeTab === 'templates_add_public' 
+                ? 'Tambah Template Publik' 
+                : activeTab === 'templates_add_private'
+                ? 'Tambah Template Privat'
+                : activeTab === 'templates_catalog_public' 
+                ? 'Katalog Template Publik' 
+                : activeTab === 'templates_catalog_private'
+                ? 'Katalog Template Privat'
                 : activeTab === 'routes'
                 ? 'Kelola Rute Kolaborasi'
                 : 'Dashboard Overview'}

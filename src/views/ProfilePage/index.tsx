@@ -13,7 +13,7 @@ export default function ProfilePage({ slugPath }: ProfilePageProps) {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Ambil data custom route berdasarkan full slug (contoh: 'lentera' atau 'lentera/12a')
+    // Ambil data custom route berdasarkan full slug (contoh: 'namavendor/namasekolah')
     getCustomRoute(slugPath)
       .then((data) => {
         setRouteData(data);
@@ -54,9 +54,7 @@ export default function ProfilePage({ slugPath }: ProfilePageProps) {
   }
 
   // Menentukan URL Photobooth
-  const photoboothUrl = routeData.targetId 
-    ? `/?frame=${routeData.targetId}` 
-    : '/';
+  const photoboothUrl = `/?event=${routeData.slug}`;
 
   return (
     <div className="min-h-screen bg-[#f8fafc] relative overflow-hidden flex flex-col">
@@ -83,7 +81,7 @@ export default function ProfilePage({ slugPath }: ProfilePageProps) {
             <div className="inline-flex items-center gap-2 rounded-full bg-blue-50 border border-blue-100 px-4 py-2 text-xs font-bold text-[#1d90ff] shadow-sm mb-6">
               <Sparkles className="h-4 w-4" />
               <span className="uppercase tracking-widest text-[10px]">
-                {routeData.routeType === 'company' ? 'Company Collaboration' : routeData.routeType === 'yearbook' ? 'Yearbook Class Profile' : 'Exclusive Event'}
+                {routeData.routeType === 'yearbook' ? 'Yearbook Photo Profile' : 'Exclusive Event'}
               </span>
             </div>
 

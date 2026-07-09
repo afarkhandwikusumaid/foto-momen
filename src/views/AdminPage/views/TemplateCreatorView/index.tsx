@@ -7,12 +7,13 @@ import { saveTemplate, uploadTemplateImage } from '../../../../services/dbServic
 import { detectTransparentHoles } from '../../../../utils/imageAnalyzer';
 
 interface TemplateCreatorViewProps {
+  isPrivate: boolean;
   initialData?: any;
   onSuccess: () => Promise<void>;
   onCancel: () => void;
 }
 
-export default function TemplateCreatorView({ initialData, onSuccess, onCancel }: TemplateCreatorViewProps) {
+export default function TemplateCreatorView({ isPrivate, initialData, onSuccess, onCancel }: TemplateCreatorViewProps) {
   // Local Form State
   const [editingId, setEditingId] = useState<string | null>(null);
   const [file, setFile] = useState<File | null>(null);
@@ -121,7 +122,7 @@ export default function TemplateCreatorView({ initialData, onSuccess, onCancel }
       const newTemplate = {
         id: editingId || `tpl_${Date.now()}`,
         name: name.trim(),
-        eventCode: eventCode.trim() || undefined,
+        eventCode: isPrivate ? (eventCode.trim() || undefined) : undefined,
         hex,
         textColor,
         borderClass: 'border-slate-200',
@@ -146,6 +147,7 @@ export default function TemplateCreatorView({ initialData, onSuccess, onCancel }
       {/* Kiri: Form */}
       <div className="lg:col-span-5 flex flex-col gap-6">
         <TemplateForm 
+          isPrivate={isPrivate}
           editingId={editingId}
           name={name} setName={setName}
           layout={layout as any} setLayout={setLayout as any}

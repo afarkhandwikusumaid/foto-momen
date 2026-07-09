@@ -8,9 +8,10 @@ interface NavbarProps {
   activeTab: 'home' | 'catalog' | 'studio';
   setActiveTab: (tab: 'home' | 'catalog' | 'studio') => void;
   onStartBooth: () => void;
+  eventCode?: string;
 }
 
-export default function Navbar({ currentPhase, onReset, activeTab, setActiveTab, onStartBooth }: NavbarProps) {
+export default function Navbar({ currentPhase, onReset, activeTab, setActiveTab, onStartBooth, eventCode }: NavbarProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const handleNavClick = (tab: 'home' | 'catalog' | 'studio', e: React.MouseEvent) => {
@@ -39,6 +40,10 @@ export default function Navbar({ currentPhase, onReset, activeTab, setActiveTab,
             onClick={(e) => { 
               if (e.detail === 3) {
                 window.location.href = '/admin';
+                return;
+              }
+              if (eventCode) {
+                window.location.href = `/${eventCode}`;
                 return;
               }
               onReset(); 
@@ -94,7 +99,14 @@ export default function Navbar({ currentPhase, onReset, activeTab, setActiveTab,
           <div className="flex items-center gap-2">
             {!isLanding ? (
               <button
-                onClick={() => { onReset(); setActiveTab('home'); }}
+                onClick={() => { 
+                  if (eventCode) {
+                    window.location.href = `/${eventCode}`;
+                  } else {
+                    onReset(); 
+                    setActiveTab('home'); 
+                  }
+                }}
                 className="flex items-center gap-1.5 rounded-full bg-brand-blue hover:bg-blue-600 text-white px-4 py-2 text-xs font-bold shadow-md shadow-blue-500/20 cursor-pointer transition-all active:scale-95"
               >
                 <RefreshCw className="h-3 w-3" />

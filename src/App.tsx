@@ -68,6 +68,7 @@ export default function App() {
   const [capturedVideos, setCapturedVideos] = useState<Blob[]>([]);
   const [photoCount, setPhotoCount] = useSessionState<PhotoCount>('fm_count', 4);
   const [photoAreas, setPhotoAreas] = useSessionState<PhotoArea[]>('fm_areas', []);
+  const [eventCode, setEventCode] = useSessionState<string | undefined>('fm_event_code', undefined);
 
   const [sharedSession, setSharedSession] = useState<any>(null);
   const [hasVideo, setHasVideo] = useState(false);
@@ -79,6 +80,14 @@ export default function App() {
     ensureAuth().catch(console.error);
 
     const urlParams = new URLSearchParams(window.location.search);
+    const eventParam = urlParams.get('event') || urlParams.get('event_code');
+    if (eventParam) {
+      setEventCode(eventParam);
+      setCurrentPhase('select-frame');
+      window.history.replaceState({}, document.title, window.location.pathname);
+      return;
+    }
+
     const frameId = urlParams.get('frame');
     if (frameId) {
       getFrameTemplate(frameId)
@@ -180,6 +189,7 @@ export default function App() {
     setSelectedColor(EMPTY_FRAME);
     setCurrentPhase('landing');
     setSharedSession(null);
+    setEventCode(undefined);
     if (window.location.search.includes('share')) {
       window.history.replaceState({}, document.title, window.location.pathname);
     }
@@ -228,6 +238,7 @@ export default function App() {
           setSharedSession(null);
           setCurrentPhase('select-frame');
         }}
+        eventCode={eventCode}
       />
 
       <main className="flex-grow w-full flex flex-col py-2 sm:py-6 px-2 sm:px-4">
@@ -323,11 +334,18 @@ export default function App() {
               {currentPhase === 'select-frame' && (
                 <PageTransition key="select-frame">
                   <FrameSelector
+                    eventCode={eventCode}
                     selectedColor={selectedColor}
                     onColorSelect={handleColorSelect}
                     onPhotoCountSelect={setPhotoCount}
                     onNext={() => setCurrentPhase('camera')}
-                    onPrev={handleResetToHome}
+                    onPrev={() => {
+                      if (eventCode) {
+                        window.location.href = `/${eventCode}`;
+                      } else {
+                        handleResetToHome();
+                      }
+                    }}
                   />
                 </PageTransition>
               )}

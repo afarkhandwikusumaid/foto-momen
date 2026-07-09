@@ -122,7 +122,7 @@ export default function CollaborationRoutesView() {
     if (!slugRegex.test(cleanSlug)) {
       Swal.fire(
         'Format Slug Salah',
-        'Slug hanya boleh mengandung huruf kecil, angka, tanda hubung (-), garis bawah (_), dan garis miring (/) untuk struktur sub-folder (contoh: lentera/12a).',
+        'Slug hanya boleh mengandung huruf kecil, angka, tanda hubung (-), garis bawah (_), dan garis miring (/) untuk struktur sub-folder (contoh: namavendor/namasekolah).',
         'warning'
       );
       return;
@@ -205,8 +205,8 @@ export default function CollaborationRoutesView() {
               {/* Route Type Selection */}
               <div>
                 <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Tipe Rute</label>
-                <div className="grid grid-cols-3 gap-2">
-                  {(['company', 'yearbook', 'event'] as const).map((type) => (
+                <div className="grid grid-cols-2 gap-2">
+                  {(['yearbook', 'event'] as const).map((type) => (
                     <button
                       key={type}
                       type="button"
@@ -217,7 +217,7 @@ export default function CollaborationRoutesView() {
                           : 'bg-white text-slate-500 border-slate-200 hover:bg-slate-50'
                       }`}
                     >
-                      {type === 'company' ? 'Company' : type === 'yearbook' ? 'Yearbook/Class' : 'Event'}
+                      {type === 'yearbook' ? 'Yearbook' : 'Event'}
                     </button>
                   ))}
                 </div>
@@ -233,7 +233,7 @@ export default function CollaborationRoutesView() {
                   <input
                     type="text"
                     required
-                    placeholder={routeType === 'company' ? 'lentera' : routeType === 'yearbook' ? 'lentera/12a' : 'eventnama'}
+                    placeholder={routeType === 'yearbook' ? 'namavendor/namasekolah' : 'event-nama'}
                     value={slug}
                     onChange={(e) => setSlug(e.target.value)}
                     className="w-full px-4 py-3 text-sm bg-white focus:outline-none text-slate-800 font-medium"
@@ -251,7 +251,7 @@ export default function CollaborationRoutesView() {
                 <input
                   type="text"
                   required
-                  placeholder={routeType === 'company' ? 'PT Lentera Yearbook Indonesia' : routeType === 'yearbook' ? 'Kelas XII IPA 1' : 'Ulang Tahun Lentera'}
+                  placeholder={routeType === 'yearbook' ? 'SMA Negeri 1 Jakarta' : 'Grand Opening FOTO MOMEN'}
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                   className="w-full px-4 py-3 text-sm rounded-xl border border-slate-200 focus:outline-none focus:border-[#1d90ff] text-slate-800 font-medium"
@@ -271,7 +271,7 @@ export default function CollaborationRoutesView() {
               </div>
 
               {/* Target ID Field */}
-              {routeType !== 'company' && (
+              {true && (
                 <div>
                   <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1.5">
                     Target Event Code (Opsional)
@@ -354,13 +354,11 @@ export default function CollaborationRoutesView() {
                       {/* Route Type Badge */}
                       <td className="px-6 py-4 whitespace-nowrap">
                         <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold ${
-                          route.routeType === 'company'
-                            ? 'bg-blue-50 text-blue-600 border border-blue-100'
-                            : route.routeType === 'yearbook'
+                          route.routeType === 'yearbook'
                             ? 'bg-purple-50 text-purple-600 border border-purple-100'
                             : 'bg-emerald-50 text-emerald-600 border border-emerald-100'
                         }`}>
-                          {route.routeType === 'company' ? 'Company' : route.routeType === 'yearbook' ? 'Yearbook' : 'Event'}
+                          {route.routeType === 'yearbook' ? 'Yearbook' : 'Event'}
                         </span>
                       </td>
 
