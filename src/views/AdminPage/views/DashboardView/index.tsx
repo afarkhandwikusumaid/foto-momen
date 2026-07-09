@@ -13,9 +13,9 @@ export default function DashboardView({ templates }: DashboardViewProps) {
   const [totalSessions, setTotalSessions] = useState(0);
 
   useEffect(() => {
-    getAllSessions().then(data => {
-      setTotalSessions(data.length);
-    }).catch(err => console.error(err));
+    getAllSessions()
+      .then(data => setTotalSessions(data.length))
+      .catch(console.error);
   }, []);
 
   return (

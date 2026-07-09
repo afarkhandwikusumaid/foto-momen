@@ -91,3 +91,28 @@ CREATE POLICY "Public upload photobooth"
     ON storage.objects FOR INSERT
     WITH CHECK (bucket_id = 'photobooth');
 
+-- ==========================================
+-- STEP 8: RECREATE TABLE custom_routes
+-- Dynamic paths configuration managed by admin
+-- ==========================================
+CREATE TABLE IF NOT EXISTS public.custom_routes (
+    id          BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    slug        TEXT UNIQUE NOT NULL, -- e.g. 'lentera', 'lentera/12a', 'eventnama'
+    route_type  TEXT NOT NULL,        -- 'company', 'yearbook', 'event'
+    title       TEXT NOT NULL,
+    description TEXT,
+    target_id   TEXT,                 -- associated event_code or template_id
+    created_at  TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
+);
+
+-- Enable RLS
+ALTER TABLE public.custom_routes ENABLE ROW LEVEL SECURITY;
+
+-- Policies for custom_routes
+CREATE POLICY "Allow public read custom_routes"
+    ON public.custom_routes FOR SELECT USING (true);
+
+CREATE POLICY "Allow admin operations custom_routes"
+    ON public.custom_routes FOR ALL USING (true);
+
+

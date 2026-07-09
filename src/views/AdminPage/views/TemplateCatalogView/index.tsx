@@ -33,8 +33,7 @@ export default function TemplateCatalogView({ templates, loadTemplates, isLoadin
       await deleteTemplate(id);
       await loadTemplates();
       Swal.fire('Terhapus!', 'Template berhasil dihapus.', 'success');
-    } catch (err) {
-      console.error(err);
+    } catch {
       Swal.fire('Gagal', 'Gagal menghapus template.', 'error');
     }
   };

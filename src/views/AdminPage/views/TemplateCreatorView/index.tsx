@@ -39,14 +39,10 @@ export default function TemplateCreatorView({ initialData, onSuccess, onCancel }
       setTextColor(initialData.textColor || '#000000');
       setPhotoCount(initialData.photoCount || 4);
       
-      // Parse photoAreas dari layout jika formatnya JSON
-      if (initialData.layout && initialData.layout.startsWith('[')) {
+      if (initialData.layout?.startsWith('[')) {
         try {
-          const parsed = JSON.parse(initialData.layout);
-          setPhotoAreas(parsed);
-        } catch (e) {
-          console.error('Failed to parse layout as photoAreas', e);
-        }
+          setPhotoAreas(JSON.parse(initialData.layout));
+        } catch { /* ignore */ }
       }
       
       setIsActive(initialData.active !== false);
@@ -79,9 +75,7 @@ export default function TemplateCreatorView({ initialData, onSuccess, onCancel }
               const res = await fetch(processedImageUrl);
               const blob = await res.blob();
               setFile(new File([blob], selectedFile.name, { type: selectedFile.type }));
-            } catch(e) {
-              console.error("Gagal memproses file chroma key", e);
-            }
+            } catch { /* chroma key fallback */ }
           }
         } else {
           Swal.fire({
@@ -92,9 +86,7 @@ export default function TemplateCreatorView({ initialData, onSuccess, onCancel }
           });
           setPhotoAreas([]);
         }
-      } catch (err) {
-        console.error('Error mendeteksi frame:', err);
-      } finally {
+      } catch { /* no holes detected — fine */ } finally {
         setIsDetecting(false);
       }
     }
@@ -140,23 +132,10 @@ export default function TemplateCreatorView({ initialData, onSuccess, onCancel }
       };
       
       await saveTemplate(newTemplate);
-      
-      Swal.fire({
-        title: 'Berhasil!',
-        text: `Template berhasil ${editingId ? 'diperbarui' : 'ditambahkan'}!`,
-        icon: 'success',
-        confirmButtonColor: '#3085d6'
-      });
-      await onSuccess(); // This should reload templates and maybe redirect back to catalog
+      Swal.fire({ title: 'Berhasil!', text: `Template berhasil ${editingId ? 'diperbarui' : 'ditambahkan'}!`, icon: 'success', confirmButtonColor: '#3085d6' });
+      await onSuccess();
     } catch (err: any) {
-      console.error('handleSubmit error:', err);
-      const msg = err?.message || 'Terjadi kesalahan tidak dikenal.';
-      Swal.fire({
-        title: 'Gagal Menyimpan',
-        text: `Detail: ${msg}`,
-        icon: 'error',
-        confirmButtonColor: '#3085d6'
-      });
+      Swal.fire({ title: 'Gagal Menyimpan', text: err?.message || 'Terjadi kesalahan tidak dikenal.', icon: 'error', confirmButtonColor: '#3085d6' });
     } finally {
       setIsUploading(false);
     }

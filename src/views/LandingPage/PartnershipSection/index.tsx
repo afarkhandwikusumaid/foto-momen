@@ -109,10 +109,6 @@ export default function PartnershipSection() {
               
               {/* Inside Screen Header / Status */}
               <div className="text-center space-y-1.5 mb-6">
-                <div className="flex justify-center items-center gap-1.5 animate-pulse">
-                  <img src="/fm-logo-text.png" alt="Foto Momen" className="h-3 w-auto object-contain brightness-0 invert" />
-                  <span className="text-[6px] font-black text-slate-400 bg-slate-800/80 px-1.5 py-0.5 rounded uppercase tracking-wider">Partner</span>
-                </div>
                 <p className="text-[10px] font-bold text-slate-400">Incoming Call...</p>
               </div>
 
@@ -128,7 +124,7 @@ export default function PartnershipSection() {
 
                 <div className="text-center space-y-1">
                   <img src="/fm-logo-text.png" alt="Foto Momen" className="h-5 w-auto object-contain mx-auto brightness-0 invert" />
-                  <p className="text-[9px] font-semibold text-slate-400 mt-1">Event & Yearbook Team</p>
+                  <p className="text-[9px] font-semibold text-slate-400 mt-1">Event Collaboration</p>
                 </div>
                 
                 {/* Active connecting details */}

@@ -17,22 +17,23 @@ export default function TemplatesCatalog({ onStartWithTemplate }: TemplatesCatal
     setIsLoading(true);
     getFrameTemplates()
       .then(data => {
-        const mapped: FrameColor[] = data
-          .filter((t: any) => t.active !== false)
-          .map((t: any) => ({
-            id: t.id,
-            name: t.name,
-            bgClass: 'bg-white',
-            hex: t.hex || '#ffffff',
-            textColor: t.textColor || '#000000',
-            borderClass: t.borderClass || 'border-slate-200',
-            imageUrl: t.imageUrl,
-            layout: t.layout,
-            active: t.active,
-            photoCount: t.photoCount || (t.photoAreas?.length) || 4,
-            photoAreas: t.photoAreas,
-          }));
-        setTemplates(mapped);
+        setTemplates(
+          data
+            .filter(t => t.active !== false)
+            .map(t => ({
+              id: t.id,
+              name: t.name,
+              bgClass: 'bg-white',
+              hex: t.hex || '#ffffff',
+              textColor: t.textColor || '#000000',
+              borderClass: t.borderClass || 'border-slate-200',
+              imageUrl: t.imageUrl,
+              layout: t.layout,
+              active: t.active,
+              photoCount: t.photoCount || t.photoAreas?.length || 4,
+              photoAreas: t.photoAreas,
+            }))
+        );
       })
       .catch(console.error)
       .finally(() => setIsLoading(false));

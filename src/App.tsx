@@ -17,7 +17,7 @@ import LivePreview from './views/Photobooth/LivePreview';
 import PhotoPreview from './views/Photobooth/PhotoPreview';
 import PageTransition from './components/layout/PageTransition';
 import { ActivePhase, FrameColor, PhotoCount, PhotoArea } from './types';
-import { ensureAuth, getPhotoSession } from './services/dbService';
+import { ensureAuth, getPhotoSession, getFrameTemplate } from './services/dbService';
 
 // Empty placeholder FrameColor used as initial state before user selects a template
 const EMPTY_FRAME: FrameColor = {
@@ -79,6 +79,38 @@ export default function App() {
     ensureAuth().catch(console.error);
 
     const urlParams = new URLSearchParams(window.location.search);
+    const frameId = urlParams.get('frame');
+    if (frameId) {
+      getFrameTemplate(frameId)
+        .then((template) => {
+          if (template) {
+            setSelectedColor({
+              id: template.id,
+              name: template.name,
+              bgClass: 'bg-white',
+              hex: template.hex || '#ffffff',
+              textColor: template.textColor || '#000000',
+              borderClass: template.borderClass || 'border-slate-200',
+              imageUrl: template.imageUrl,
+              layout: template.layout,
+              active: template.active,
+              photoCount: template.photoCount || 4,
+              photoAreas: template.photoAreas,
+            });
+            if (template.photoAreas && template.photoAreas.length > 0) {
+              setPhotoAreas(template.photoAreas);
+              setPhotoCount(template.photoAreas.length as PhotoCount);
+            } else if (template.photoCount) {
+              setPhotoAreas([]);
+              setPhotoCount(template.photoCount as PhotoCount);
+            }
+            setCurrentPhase('camera');
+            window.history.replaceState({}, document.title, window.location.pathname);
+          }
+        })
+        .catch(console.error);
+    }
+
     const shareId = urlParams.get('share');
     if (shareId) {
       setIsLoadingShare(true);

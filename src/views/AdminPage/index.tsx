@@ -1,15 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { getFrameTemplates } from '../../services/dbService';
 import { supabase } from '../../config/supabase';
-
 import Swal from 'sweetalert2';
-
 import AdminLoginForm from './components/AdminLoginForm';
 import AdminLayout from './layouts/AdminLayout';
-
 import DashboardView from './views/DashboardView';
 import TemplateCreatorView from './views/TemplateCreatorView';
 import TemplateCatalogView from './views/TemplateCatalogView';
+import CollaborationRoutesView from './views/CollaborationRoutesView';
 
 export default function AdminPage() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -28,7 +26,7 @@ export default function AdminPage() {
   useEffect(() => {
     const handleHashChange = () => {
       const hash = window.location.hash.replace('#', '');
-      if (['dashboard', 'templates_add', 'templates_catalog'].includes(hash)) {
+      if (['dashboard', 'templates_add', 'templates_catalog', 'routes'].includes(hash)) {
         _setActiveTab(hash);
       } else if (!hash) {
         _setActiveTab('dashboard');
@@ -41,7 +39,6 @@ export default function AdminPage() {
       return () => window.removeEventListener('hashchange', handleHashChange);
     }
   }, []);
-
 
   const [templates, setTemplates] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -160,6 +157,8 @@ export default function AdminPage() {
             onEditRequest={handleEditRequest}
           />
         );
+      case 'routes':
+        return <CollaborationRoutesView />;
       default:
         return <DashboardView templates={templates} />;
     }

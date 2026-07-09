@@ -1,5 +1,5 @@
 import React from 'react';
-import { LayoutDashboard, Images, LogOut, Menu, User, Plus } from 'lucide-react';
+import { LayoutDashboard, Images, LogOut, Menu, User, Plus, Link2 } from 'lucide-react';
 
 interface AdminLayoutProps {
   children: React.ReactNode;
@@ -15,6 +15,7 @@ export default function AdminLayout({ children, activeTab, onTabChange, onLogout
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
     { id: 'templates_add', label: 'Tambah Template', icon: Plus },
     { id: 'templates_catalog', label: 'Katalog Template', icon: Images },
+    { id: 'routes', label: 'Kelola Rute', icon: Link2 },
   ];
 
   return (
@@ -91,7 +92,13 @@ export default function AdminLayout({ children, activeTab, onTabChange, onLogout
               <Menu className="w-5 h-5" />
             </button>
             <h1 className="text-lg font-black text-slate-800 capitalize hidden sm:block">
-              {activeTab === 'templates_add' ? 'Tambah Template Baru' : activeTab === 'templates_catalog' ? 'Katalog Template' : 'Dashboard Overview'}
+              {activeTab === 'templates_add' 
+                ? 'Tambah Template Baru' 
+                : activeTab === 'templates_catalog' 
+                ? 'Katalog Template' 
+                : activeTab === 'routes'
+                ? 'Kelola Rute Kolaborasi'
+                : 'Dashboard Overview'}
             </h1>
           </div>
           
