@@ -82,14 +82,15 @@ const LiveGifPreview = forwardRef<LiveGifPreviewRef, LiveGifPreviewProps>(({
     return new Promise(async (resolve, reject) => {
       const cachedFrames: ImageBitmap[] = [];
       try {
-        const fps = 30; // 30 FPS for perfect, ultra-smooth normal speed boomerang
-        const baseDurationMs = 1800; // 1.8s base to avoid blank frames at the end of the 2s recording
-        const baseFrames = Math.floor(baseDurationMs / 1000 * fps);
+        const captureFps = 30; // We capture at 30 frames per second
+        const outputFps = 15;  // We encode at 15 frames per second (0.5x Slow Motion)
+        const baseDurationMs = 1800; 
+        const baseFrames = Math.floor(baseDurationMs / 1000 * captureFps);
 
         // 1. Capture all forward frames into memory in real-time
         for (let i = 0; i < baseFrames; i++) {
           // Wait approx 1 frame duration (33ms) to capture playing videos natively
-          await new Promise(res => setTimeout(res, 1000 / fps));
+          await new Promise(res => setTimeout(res, 1000 / captureFps));
 
           // Draw the composited frame to canvas
           ctx.fillStyle = frame.hex || '#ffffff';
@@ -140,8 +141,8 @@ const LiveGifPreview = forwardRef<LiveGifPreviewRef, LiveGifPreviewProps>(({
           cycleFrames.push(i); // Forward
         }
 
-        // Loop 3 times
-        const loopCount = 3;
+        // Loop 2 times (since it's slow motion, 2 loops is already ~7.2 seconds)
+        const loopCount = 2;
         const totalSequence: number[] = [];
         for (let i = 0; i < loopCount; i++) {
           totalSequence.push(...cycleFrames);
@@ -153,7 +154,7 @@ const LiveGifPreview = forwardRef<LiveGifPreviewRef, LiveGifPreviewProps>(({
             codec: 'avc',
             width: canvas.width,
             height: canvas.height,
-            frameRate: fps,
+            frameRate: outputFps,
           },
           fastStart: 'in-memory',
         });
@@ -164,11 +165,11 @@ const LiveGifPreview = forwardRef<LiveGifPreviewRef, LiveGifPreviewProps>(({
         });
 
         videoEncoder.configure({
-          codec: 'avc1.4d0028', // Main Profile, Level 4.0 (supports HD at 30 FPS)
+          codec: 'avc1.4d0028', // Main Profile, Level 4.0
           width: canvas.width,
           height: canvas.height,
-          bitrate: 3_500_000, // Higher bitrate for HD resolution
-          framerate: fps,
+          bitrate: 3_500_000, 
+          framerate: outputFps,
         });
 
         for (let currentFrame = 0; currentFrame < totalSequence.length; currentFrame++) {
@@ -179,10 +180,10 @@ const LiveGifPreview = forwardRef<LiveGifPreviewRef, LiveGifPreviewProps>(({
           ctx.drawImage(bitmap, 0, 0);
 
           // Encode the frame to MP4
-          // @ts-ignore - TS might not have VideoFrame definitions built-in natively depending on config
+          // @ts-ignore
           const videoFrame = new VideoFrame(canvas, { 
-            timestamp: currentFrame * 1e6 / fps,
-            duration: 1e6 / fps
+            timestamp: currentFrame * 1e6 / outputFps,
+            duration: 1e6 / outputFps
           });
           videoEncoder.encode(videoFrame);
           // @ts-ignore
