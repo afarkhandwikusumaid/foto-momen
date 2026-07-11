@@ -75,32 +75,10 @@ const LiveGifPreview = forwardRef<LiveGifPreviewRef, LiveGifPreviewProps>(({
     const ctx = canvas.getContext('2d', { willReadFrequently: true });
     if (!ctx) throw new Error("No context");
 
-    // Create offscreen video elements in the DOM (hidden) to prevent browser decoding throttling
-    const offscreenUrls = videos.map(blob => URL.createObjectURL(blob));
-    const container = document.createElement('div');
-    container.style.position = 'absolute';
-    container.style.left = '-9999px';
-    container.style.top = '-9999px';
-    container.style.width = '1px';
-    container.style.height = '1px';
-    container.style.overflow = 'hidden';
-    container.style.opacity = '0';
-    container.style.pointerEvents = 'none';
-    document.body.appendChild(container);
-
-    const vids = await Promise.all(offscreenUrls.map(url => new Promise<HTMLVideoElement>((res, rej) => {
-      const v = document.createElement('video');
-      v.muted = true;
-      v.playsInline = true;
-      v.preload = 'auto';
-      v.src = url;
-      container.appendChild(v);
-      
-      // Wait for loadeddata to guarantee the browser has processed the initial frames
-      v.onloadeddata = () => res(v);
-      v.onerror = (e) => rej(e);
-    })));
-
+    // Use the existing visible video elements instead of creating off-screen ones.
+    // This avoids WebM seeking issues (missing cues) and Safari off-screen rendering bugs.
+    const vids = videoRefs.current.filter(Boolean) as HTMLVideoElement[];
+    
     return new Promise(async (resolve, reject) => {
       const cachedFrames: ImageBitmap[] = [];
       try {
@@ -108,37 +86,10 @@ const LiveGifPreview = forwardRef<LiveGifPreviewRef, LiveGifPreviewProps>(({
         const baseDurationMs = 1800; // 1.8s base to avoid blank frames at the end of the 2s recording
         const baseFrames = Math.floor(baseDurationMs / 1000 * fps);
 
-        // 1. Capture all forward frames into memory (avoids heavy backward seeking)
-        
+        // 1. Capture all forward frames into memory in real-time
         for (let i = 0; i < baseFrames; i++) {
-          const targetTime = i / fps;
-          
-          // Seek all videos to targetTime (forward only is fast and stable)
-          await Promise.all(vids.map(v => new Promise<void>((res) => {
-            if (Math.abs(v.currentTime - targetTime) < 0.01 && v.readyState >= 2) {
-              res();
-              return;
-            }
-            
-            let resolved = false;
-            const resolveSafe = () => {
-              if (resolved) return;
-              resolved = true;
-              clearTimeout(timeoutId);
-              v.removeEventListener('seeked', onReady);
-              res();
-            };
-
-            const onReady = () => {
-              if (v.readyState >= 2) {
-                resolveSafe();
-              }
-            };
-
-            const timeoutId = setTimeout(resolveSafe, 300);
-            v.addEventListener('seeked', onReady);
-            v.currentTime = targetTime;
-          })));
+          // Wait approx 1 frame duration (33ms) to capture playing videos natively
+          await new Promise(res => setTimeout(res, 1000 / fps));
 
           // Draw the composited frame to canvas
           ctx.fillStyle = frame.hex || '#ffffff';
@@ -183,13 +134,10 @@ const LiveGifPreview = forwardRef<LiveGifPreviewRef, LiveGifPreviewProps>(({
           }
         }
 
-        // 2. Generate boomerang sequence
+        // 2. Generate normal sequence (forward only)
         const cycleFrames: number[] = [];
         for (let i = 0; i < baseFrames; i++) {
           cycleFrames.push(i); // Forward
-        }
-        for (let i = baseFrames - 2; i > 0; i--) {
-          cycleFrames.push(i); // Backward
         }
 
         // Loop 3 times
@@ -252,20 +200,10 @@ const LiveGifPreview = forwardRef<LiveGifPreviewRef, LiveGifPreviewProps>(({
         // Clean up cached bitmaps
         cachedFrames.forEach(b => b.close());
 
-        // Clean up offscreen video elements to free memory
-        offscreenUrls.forEach(url => URL.revokeObjectURL(url));
-        vids.forEach(v => {
-          v.src = '';
-          v.load();
-        });
-        container.remove();
-
         let buffer = muxer.target.buffer;
         resolve(new Blob([buffer], { type: 'video/mp4' }));
       } catch (e) {
         cachedFrames.forEach(b => b.close());
-        offscreenUrls.forEach(url => URL.revokeObjectURL(url));
-        container.remove();
         reject(e);
       }
     });
