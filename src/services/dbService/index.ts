@@ -149,7 +149,7 @@ export async function uploadPhotoSession(
   const uid = await ensureAuth();
   const sessionId = existingSessionId || `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
   const filename = `${uid}/${sessionId}.png`;
-  const videoExt = videoBlob?.type === 'image/gif' ? 'gif' : 'webm';
+  const videoExt = videoBlob?.type === 'image/gif' ? 'gif' : videoBlob?.type === 'video/mp4' ? 'mp4' : 'webm';
   const videoFilename = `${uid}/${sessionId}.${videoExt}`;
 
   // Convert base64 → Blob, compress if > 2 MB
@@ -202,7 +202,7 @@ export async function uploadPhotoSession(
   if (dbError) throw dbError;
 
   const recordId = dbData?.length ? dbData[0].id : sessionId;
-  return { sessionId: recordId.toString(), shareUrl: `${window.location.origin}?share=${recordId}`, imageUrl, videoUrl };
+  return { sessionId: recordId.toString(), shareUrl: `${window.location.origin}/share/${recordId}`, imageUrl, videoUrl };
 }
 
 // ============================================================

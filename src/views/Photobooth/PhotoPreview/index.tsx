@@ -8,6 +8,7 @@ import BeautySliders from '../BeautySliders';
 import LiveGifPreview, { LiveGifPreviewRef } from '../LiveGifPreview';
 import PhotoPreviewControls from '../PhotoPreviewControls';
 import ShareSuccessPanel from '../ShareSuccessPanel';
+import QRCode from 'qrcode';
 
 interface PhotoPreviewProps {
   frameColor: FrameColor;
@@ -380,14 +381,17 @@ export default function PhotoPreview({
     if (!finalImageBase64 || isUploading) return;
     setIsUploading(true);
     try {
-      let videoBlob: Blob | undefined;
-      if (capturedVideos && capturedVideos.length > 0 && liveGifRef.current) {
-        try {
-          videoBlob = await liveGifRef.current.generateGifBlob();
-        } catch (e) {
-          console.error('Gagal men-generate video blob:', e);
+      // Show instant uploading status dialog
+      Swal.fire({
+        title: 'Mengunggah ke Cloud...',
+        text: 'Mengunggah foto momen Anda...',
+        showConfirmButton: false,
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        didOpen: () => {
+          Swal.showLoading();
         }
-      }
+      });
 
       const result = await uploadPhotoSession(finalImageBase64, {
         layout,
@@ -395,13 +399,14 @@ export default function PhotoPreview({
         filter: selectedFilter,
         stickerText,
         showDate
-      }, videoBlob, currentSessionId || undefined);
+      }, undefined, currentSessionId || undefined);
       
+      Swal.close(); // Close progress dialog
+
       setCurrentSessionId(result.sessionId);
 
       // Generate QR code for share URL
-      const QRCode = await import('qrcode');
-      const qrDataUrl = await QRCode.default.toDataURL(result.shareUrl, {
+      const qrDataUrl = await QRCode.toDataURL(result.shareUrl, {
         width: 300,
         margin: 2,
         color: { dark: '#0f2342', light: '#ffffff' },
@@ -410,7 +415,7 @@ export default function PhotoPreview({
       // Generate separate QR for live video if available
       let liveQrDataUrl: string | undefined;
       if (result.videoUrl) {
-        liveQrDataUrl = await QRCode.default.toDataURL(result.videoUrl, {
+        liveQrDataUrl = await QRCode.toDataURL(result.videoUrl, {
           width: 300,
           margin: 2,
           color: { dark: '#6d28d9', light: '#ffffff' },
@@ -474,7 +479,7 @@ export default function PhotoPreview({
                     : 'text-slate-500 hover:text-slate-800'
                 }`}
               >
-                Live Photo GIF 🎬
+                Live Photo MP4 🎬
               </button>
             </div>
           )}
@@ -511,12 +516,13 @@ export default function PhotoPreview({
           </div>
         </div>
 
-        {/* Right Column: Edit Options */}
         <div className="lg:col-span-7 order-2 space-y-6">
           {shareResult ? (
             <ShareSuccessPanel 
               qrDataUrl={shareResult.qrDataUrl}
               liveQrDataUrl={shareResult.liveQrDataUrl}
+              shareUrl={shareResult.shareUrl}
+              imageUrl={shareResult.imageUrl}
               onDownload={handleDownloadImage}
               onNewSession={() => {
                 setShareResult(null);

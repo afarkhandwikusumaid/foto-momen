@@ -36,6 +36,7 @@ export default function CameraBooth({ photoCount, onPhotosCaptured, onBack }: Ca
 
   const [capturedPhotos, setCapturedPhotos] = useState<string[]>([]);
   const [capturedVideos, setCapturedVideos] = useState<Blob[]>([]);
+  const capturedVideosRef = useRef<Blob[]>([]);
   const [isCapturing, setIsCapturing] = useState(false);
   const [currentPoseIndex, setCurrentPoseIndex] = useState(0);
   const [countdown, setCountdown] = useState<number | null>(null);
@@ -57,6 +58,7 @@ export default function CameraBooth({ photoCount, onPhotosCaptured, onBack }: Ca
   const handleReset = () => {
     setCapturedPhotos([]);
     setCapturedVideos([]);
+    capturedVideosRef.current = [];
     setIsCapturing(false);
     setCurrentPoseIndex(0);
     setCountdown(null);
@@ -100,14 +102,14 @@ export default function CameraBooth({ photoCount, onPhotosCaptured, onBack }: Ca
             setIsCapturing(false);
             setStatusMessage('Selesai! Memproses fotomu...');
             setTimeout(() => {
-              onPhotosCaptured(updated, capturedVideos); // We will append the current video in the effect
+              onPhotosCaptured(updated, capturedVideosRef.current); // We will append the current video in the effect
             }, 800);
           }
           return updated;
         });
       }
     }
-  }, [onPhotosCaptured, photoCount, selectedLiveFilter, capturedVideos]);
+  }, [onPhotosCaptured, photoCount, selectedLiveFilter]);
 
   // Handle Capture Sequence
   useEffect(() => {
@@ -136,13 +138,8 @@ export default function CameraBooth({ photoCount, onPhotosCaptured, onBack }: Ca
           mediaRecorderRef.current = new MediaRecorder(stream, { mimeType: 'video/webm' });
           mediaRecorderRef.current.ondataavailable = (e) => {
             if (e.data.size > 0) {
-              setCapturedVideos(prev => {
-                const newVideos = [...prev, e.data];
-                // If this is the last pose, onPhotosCaptured gets called in captureScreenshot.
-                // However, state updates are async, so captureScreenshot might use stale capturedVideos.
-                // We handle this edge case by passing the new array directly if it's the last pose, or we use a ref.
-                return newVideos;
-              });
+              capturedVideosRef.current = [...capturedVideosRef.current, e.data];
+              setCapturedVideos(capturedVideosRef.current);
             }
           };
           mediaRecorderRef.current.start();
@@ -171,6 +168,7 @@ export default function CameraBooth({ photoCount, onPhotosCaptured, onBack }: Ca
   const startPhotoSession = () => {
     setCapturedPhotos([]);
     setCapturedVideos([]);
+    capturedVideosRef.current = [];
     setIsCapturing(true);
     setCurrentPoseIndex(0);
   };
