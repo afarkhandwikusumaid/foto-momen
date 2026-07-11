@@ -121,13 +121,47 @@ export async function ensureAuth(): Promise<string | null> {
 export async function uploadTemplateImage(file: File): Promise<string> {
   if (!isSupabaseReady) throw new Error('Koneksi Supabase diperlukan untuk mengunggah gambar frame.');
 
-  const fileExt = file.name.split('.').pop() || 'png';
+  let uploadFile = file;
+
+  if (uploadFile.type === 'image/webp' || uploadFile.name.toLowerCase().endsWith('.webp')) {
+    uploadFile = await new Promise<File>((resolve) => {
+      const img = new Image();
+      const url = URL.createObjectURL(file);
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        canvas.width = img.width;
+        canvas.height = img.height;
+        const ctx = canvas.getContext('2d');
+        if (ctx) {
+          ctx.drawImage(img, 0, 0);
+          canvas.toBlob((blob) => {
+            URL.revokeObjectURL(url);
+            if (blob) {
+              resolve(new File([blob], file.name.replace(/\.webp$/i, '.png'), { type: 'image/png' }));
+            } else {
+              resolve(file);
+            }
+          }, 'image/png');
+        } else {
+          URL.revokeObjectURL(url);
+          resolve(file);
+        }
+      };
+      img.onerror = () => {
+        URL.revokeObjectURL(url);
+        resolve(file);
+      };
+      img.src = url;
+    });
+  }
+
+  const fileExt = uploadFile.name.split('.').pop() || 'png';
   const fileName = `frame_${Date.now()}_${Math.random().toString(36).substring(2, 9)}.${fileExt}`;
   const filePath = `frames/${fileName}`;
 
   const { error } = await supabase.storage
     .from('photobooth')
-    .upload(filePath, file, { contentType: file.type || 'image/png' });
+    .upload(filePath, uploadFile, { contentType: uploadFile.type || 'image/png' });
 
   if (error) throw new Error(`Gagal upload gambar ke storage: ${error.message}`);
 
